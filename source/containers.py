@@ -19,7 +19,9 @@ class ContGazemap:
     data_headers = [ # Only these data keys will be imported
         'Timestamp',
         'Gaze X',
-        'Gaze Y'
+        'Gaze Y',
+        'Interpolated Gaze X',
+        'Interpolated Gaze Y'
     ]
     
     def __init__(self): # Only these info keys will be imported

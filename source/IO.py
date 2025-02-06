@@ -73,7 +73,9 @@ def display_video_with_gazemap(path, gazemap:ContGazemap):
         while (int(gazemap.data[csv_timestamp + 1]['Timestamp']) <= video_timestamp):
             csv_timestamp += 1
         try:
-            gaze_position = (int(gazemap.data[csv_timestamp]['Gaze X']), int(gazemap.data[csv_timestamp]['Gaze Y']))
+            gaze_x = int(float(gazemap.data[csv_timestamp]['Interpolated Gaze X']))
+            gaze_y = int(float(gazemap.data[csv_timestamp]['Interpolated Gaze Y']))
+            gaze_position = (gaze_x, gaze_y)
             cv2.circle(frame, gaze_position, 15, (0, 255, 255), 2, cv2.FILLED)
         except:
             pass
