@@ -1,3 +1,20 @@
+from pathlib import Path
+
+class ContRecording:
+    def __init__(self, paths): # Only these info keys will be imported
+        self.paths = paths
+    
+    @property
+    def is_complete(self) -> bool:
+        for path in self.paths.values():
+            if path == "":
+                return False
+        return True
+    
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}(dir={self.paths['Directory'].stem}, complete={self.is_complete})"
+
+
 class ContGazemap:
     data_headers = [ # Only these data keys will be imported
         'Timestamp',

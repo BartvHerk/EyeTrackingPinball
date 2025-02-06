@@ -1,5 +1,28 @@
 import csv
-from containers import ContGazemap
+import os
+import cv2
+from pathlib import Path
+from containers import ContRecording, ContGazemap
+
+
+DIR_RECORDINGS = Path('data/recordings')
+
+
+def gather_data() -> list[ContRecording]:
+    recordings = []
+    recording_dirs = [entry.name for entry in os.scandir(DIR_RECORDINGS) if entry.is_dir()]
+    for dir in recording_dirs:
+        dir_path = (DIR_RECORDINGS / dir)
+        paths = {'Directory': dir_path}
+
+        # Locate relevant files from recording
+        paths['Gazemap'] = next((entry.path for entry in os.scandir(dir_path) if entry.name.endswith('.csv')), "")
+        paths['Video'] = next((entry.path for entry in os.scandir(dir_path) if entry.name.endswith('.mp4')), "")
+
+        # Create recording container
+        recordings.append(ContRecording(paths))
+    return recordings
+
 
 def import_csv_gazemap(path) -> ContGazemap:
     container = ContGazemap()
@@ -34,3 +57,34 @@ def import_csv_gazemap(path) -> ContGazemap:
                 container_row[key] = line[key]
             container.data.append(container_row)
     return container
+
+
+def display_video_with_gazemap(path, gazemap:ContGazemap):
+    cap = cv2.VideoCapture(path)
+
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        # Draw gazemap dot
+        video_timestamp = cap.get(cv2.CAP_PROP_POS_MSEC)
+        csv_timestamp = 0
+        while (int(gazemap.data[csv_timestamp + 1]['Timestamp']) <= video_timestamp):
+            csv_timestamp += 1
+        try:
+            gaze_position = (int(gazemap.data[csv_timestamp]['Gaze X']), int(gazemap.data[csv_timestamp]['Gaze Y']))
+            cv2.circle(frame, gaze_position, 15, (0, 255, 255), 2, cv2.FILLED)
+        except:
+            pass
+
+        # Show frame
+        cv2.imshow("Video", frame)
+        
+        # Advance and close video
+        cv2.waitKey(28)
+        if cv2.getWindowProperty("Video", cv2.WND_PROP_VISIBLE) < 1:
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
