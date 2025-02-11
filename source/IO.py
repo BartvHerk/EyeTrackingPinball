@@ -76,15 +76,15 @@ def display_video_with_gazemap(path, gazemap:ContGazemap):
             gaze_x = int(float(gazemap.data[csv_timestamp]['Interpolated Gaze X']))
             gaze_y = int(float(gazemap.data[csv_timestamp]['Interpolated Gaze Y']))
             gaze_position = (gaze_x, gaze_y)
-            cv2.circle(frame, gaze_position, 15, (0, 255, 255), 2, cv2.FILLED)
+            cv2.circle(frame, gaze_position, 20, (0, 255, 255), 3, cv2.FILLED)
         except:
             pass
 
         # Show frame
-        cv2.imshow("Video", frame)
+        cv2.imshow("Video", cv2.resize(frame, (700, 700), interpolation=cv2.INTER_AREA))
         
         # Advance and close video
-        cv2.waitKey(28)
+        cv2.waitKey(20)
         if cv2.getWindowProperty("Video", cv2.WND_PROP_VISIBLE) < 1:
             break
 
