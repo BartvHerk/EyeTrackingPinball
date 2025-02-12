@@ -137,7 +137,7 @@ def display_video_gaze_mapped(references:dict[str, np.ndarray], gazemap:ContGaze
         print('Error: Gazemap did not reference an image or the image was not found')
         return
     reference = references[gazemap.reference]
-    width, height = reference.shape[:2]
+    height, width = reference.shape[:2]
     data_width, data_height = gazemap.reference_dimensions
     ms_per_frame = 100
     video_timestamp = 0
