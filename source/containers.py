@@ -16,12 +16,16 @@ class ContRecording:
 
 
 class ContGazemap:
+    reference = ''
+    reference_dimensions = (0, 0)
     data_headers = [ # Only these data keys will be imported
         'Timestamp',
         'Gaze X',
         'Gaze Y',
         'Interpolated Gaze X',
-        'Interpolated Gaze Y'
+        'Interpolated Gaze Y',
+        'Mapped Gaze X',
+        'Mapped Gaze Y'
     ]
     
     def __init__(self): # Only these info keys will be imported
