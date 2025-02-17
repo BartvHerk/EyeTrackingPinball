@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from containers import ContExport
-from OpenCV import resize_image_to_fit, draw_gaze_circle
+from openCV import resize_image_to_fit, draw_gaze_circle
 
 
 def display_video_raw(path, export:ContExport):

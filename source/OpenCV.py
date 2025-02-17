@@ -37,7 +37,7 @@ def draw_polygon(img:np.ndarray, points:list[tuple[float, float]]):
 
 
 def draw_perspective_grid(img:np.ndarray, H_inv:np.ndarray, scale_factor, field_dimensions):
-    from Homography import perspective_map
+    from homography import perspective_map
     width, height = field_dimensions
     def mp(pt):
          pt_scaled = (pt[0] * width, pt[1] * height)

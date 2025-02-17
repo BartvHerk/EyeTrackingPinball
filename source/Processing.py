@@ -8,7 +8,6 @@ MAX_GAP_DURATION = 100
 def process_data(export:ContExport):
     convert_to_numerics(export)
     interpolate_mapped_gaze_gaps(export)
-    print(export.data[100]['Mapped Gaze X'])
 
 
 def convert_to_numerics(export:ContExport):

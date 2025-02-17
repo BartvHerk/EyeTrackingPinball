@@ -6,7 +6,7 @@ import re
 import numpy as np
 from pathlib import Path
 from containers import ContReference, ContRecording, ContExport
-from Processing import process_data
+from processing import process_data
 
 
 DIR_RECORDINGS = Path('data/recordings')
