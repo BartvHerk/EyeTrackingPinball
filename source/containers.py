@@ -1,4 +1,21 @@
-from pathlib import Path
+import numpy as np
+
+
+class ContReference:
+    H:np.ndarray = None
+    H_inv:np.ndarray = None
+
+    def __init__(self, name, image, H):
+        from Homography import perspective_mapping_inverse
+        self.name = name
+        self.image = image
+        if H is not None:
+            self.H = H
+            self.H_inv = perspective_mapping_inverse(H)
+    
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}(name={self.name})"
+
 
 class ContRecording:
     def __init__(self, paths): # Only these info keys will be imported
@@ -15,8 +32,8 @@ class ContRecording:
         return f"{type(self).__name__}(dir={self.paths['Directory'].stem}, complete={self.is_complete})"
 
 
-class ContGazemap:
-    reference = ''
+class ContExport:
+    reference:ContReference = None
     reference_dimensions = (0, 0)
     data_headers = [ # Only these data keys will be imported
         'Timestamp',

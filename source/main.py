@@ -1,15 +1,23 @@
-from IO import gather_references, gather_data, import_csv_gazemap, display_video_raw, display_video_gaze_mapped
+from IO import import_specifications, import_references, import_recordings, import_export_csv
+from Video import display_video_raw, display_video_gaze_mapped
+from Homography import set_perspective_mapping, perspective_map
 
 
-references = gather_references()
-recordings = gather_data()
-gazemap = import_csv_gazemap(recordings[0].paths["Gazemap"])
-display_video_gaze_mapped(references, gazemap)
-# display_video_raw(recordings[0].paths["Video"], gazemap)
+# Import relevant data
+specifications = import_specifications()
+field_dimensions = float(specifications['field']['width']), float(specifications['field']['height'])
+references = import_references()
 
-# print(f"timestamps: {len(gazemap.data)}")
+# set_perspective_mapping(references['IMG_20241210_154127'], field_dimensions)
 
-# container = import_csv_gazemap('data/recordings/Jesse1/Export.csv')
+recordings = import_recordings()
+export = import_export_csv(recordings[0].paths["Export"], references)
+display_video_gaze_mapped(export)
+# display_video_raw(recordings[0].paths["Video"], export)
+
+# print(f"timestamps: {len(export.data)}")
+
+# container = import_export_csv('data/recordings/Jesse1/Export.csv')
 # xMax = -100000
 # xMin = 100000
 # yMax = -100000
