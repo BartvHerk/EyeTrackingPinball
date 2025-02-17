@@ -8,6 +8,7 @@ MAX_GAP_DURATION = 100
 def process_data(export:ContExport):
     convert_to_numerics(export)
     interpolate_mapped_gaze_gaps(export)
+    print(export.data[100]['Mapped Gaze X'])
 
 
 def convert_to_numerics(export:ContExport):
@@ -40,10 +41,11 @@ def interpolate_mapped_gaze_gaps(export:ContExport):
             gap_duration = export.data[i]['Timestamp'] - export.data[i_last]['Timestamp']
             if (gap_duration <= MAX_GAP_DURATION):
                 for g in range(gap_length):
-                    t = (g + 1) / (gap_length + 1)
+                    step = i_last + 1 + g
+                    t = (export.data[step]['Timestamp'] - export.data[i_last]['Timestamp']) / (export.data[i]['Timestamp'] - export.data[i_last]['Timestamp'])
                     x = np.interp(t, [0, 1], [export.data[i_last]['Mapped Gaze X'], export.data[i]['Mapped Gaze X']])
                     y = np.interp(t, [0, 1], [export.data[i_last]['Mapped Gaze Y'], export.data[i]['Mapped Gaze Y']])
-                    export.data[i_last + 1 + g]['Mapped Gaze X'] = x
-                    export.data[i_last + 1 + g]['Mapped Gaze Y'] = y
+                    export.data[step]['Mapped Gaze X'] = x
+                    export.data[step]['Mapped Gaze Y'] = y
             i_last = i
         i += 1
