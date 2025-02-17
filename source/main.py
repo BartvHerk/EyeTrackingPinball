@@ -1,4 +1,4 @@
-from interface import run_interface
+from interface import Interface
 from IO import import_specifications, import_references, import_recordings, import_export_csv
 from video import display_video_raw, display_video_gaze_mapped
 from homography import set_perspective_mapping, perspective_map
@@ -10,7 +10,7 @@ field_dimensions = float(specifications['field']['width']), float(specifications
 references = import_references()
 
 # Start interface
-run_interface()
+Interface()
 
 
 
@@ -20,7 +20,7 @@ run_interface()
 
 recordings = import_recordings()
 export = import_export_csv(recordings[0].paths["Export"], references)
-display_video_gaze_mapped(export)
+# display_video_gaze_mapped(export)
 # display_video_raw(recordings[0].paths["Video"], export)
 
 # print(f"timestamps: {len(export.data)}")
