@@ -1,5 +1,5 @@
 import cv2
-import numpy as np
+
 from containers import ContExport
 from openCV import resize_image_to_fit, draw_gaze_circle
 

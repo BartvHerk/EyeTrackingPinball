@@ -1,13 +1,7 @@
 from interface import Interface
-from IO import import_specifications, import_references, import_recordings, import_export_csv
 from video import display_video_raw, display_video_gaze_mapped
 from homography import set_perspective_mapping, perspective_map
 
-
-# Import relevant data
-specifications = import_specifications()
-field_dimensions = float(specifications['field']['width']), float(specifications['field']['height'])
-references = import_references()
 
 # Start interface
 Interface()
@@ -18,8 +12,8 @@ Interface()
 
 # set_perspective_mapping(references['IMG_20241210_154127'], field_dimensions)
 
-recordings = import_recordings()
-export = import_export_csv(recordings[0].paths["Export"], references)
+
+#export = import_export_csv(recordings[0].paths["Export"], references)
 # display_video_gaze_mapped(export)
 # display_video_raw(recordings[0].paths["Video"], export)
 
