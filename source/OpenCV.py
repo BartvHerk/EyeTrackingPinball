@@ -8,6 +8,8 @@ MAX_DIMENSIONS = (800, 800)
 def resize_image_to_fit(img:np.ndarray, max_size:tuple[int, int]=MAX_DIMENSIONS):
     height, width = img.shape[:2]
     max_width, max_height = max_size
+    max_width = max(max_width, 1)
+    max_height = max(max_height, 1)
     if width <= max_width and height <= max_height: # Don't scale if size already fits
         return img, 1.0
     scale_factor = min(max_width / width, max_height / height)

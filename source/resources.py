@@ -1,4 +1,4 @@
-from IO import import_specifications, import_references, import_recordings, import_export_csv
+from IO import import_specifications, import_references, import_recordings
 
 
 class Resources:

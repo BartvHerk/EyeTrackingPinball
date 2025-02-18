@@ -17,21 +17,6 @@ class ContReference:
         return f"{type(self).__name__}(name={self.name})"
 
 
-class ContRecording:
-    def __init__(self, paths): # Only these info keys will be imported
-        self.paths = paths
-    
-    @property
-    def is_complete(self) -> bool:
-        for path in self.paths.values():
-            if path == "":
-                return False
-        return True
-    
-    def __repr__(self) -> str:
-        return f"{type(self).__name__}(dir={self.paths['Directory'].stem}, complete={self.is_complete})"
-
-
 class ContExport:
     reference:ContReference = None
     reference_dimensions = (0, 0)
@@ -57,3 +42,29 @@ class ContExport:
     
     def __repr__(self) -> str:
         return f"{type(self).__name__}(respondent={self.info['Respondent Name']})"
+
+
+class ContRecording:
+    def __init__(self, paths): # Only these info keys will be imported
+        self.paths = paths
+        self._export = None
+    
+    @property
+    def is_complete(self) -> bool:
+        for path in self.paths.values():
+            if path == "":
+                return False
+        return True
+    
+    @property
+    def export(self) -> ContExport:
+        if self._export is None:
+            from IO import import_export_csv
+            from resources import Resources
+            resources = Resources()
+            self._export = import_export_csv(self.paths['Export'], resources.references)
+        return self._export
+
+    
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}(dir={self.paths['Directory'].stem}, complete={self.is_complete})"
