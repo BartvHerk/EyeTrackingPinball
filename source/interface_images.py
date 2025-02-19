@@ -1,4 +1,4 @@
-from PIL import ImageTk, Image
+from PIL import ImageTk
 
 from containers import ContRecording
 from image_processing import cvimage_to_tkimage, resize_image_to_fit, draw_gaze_circle

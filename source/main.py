@@ -1,6 +1,5 @@
 from interface import Interface
-from video import display_video_raw, display_video_gaze_mapped
-from homography import set_perspective_mapping, perspective_map
+from homography import set_perspective_mapping
 
 
 # Start interface
@@ -9,15 +8,10 @@ Interface()
 
 
 
-
 # set_perspective_mapping(references['IMG_20241210_154127'], field_dimensions)
 
 
-#export = import_export_csv(recordings[0].paths["Export"], references)
-# display_video_gaze_mapped(export)
-# display_video_raw(recordings[0].paths["Video"], export)
 
-# print(f"timestamps: {len(export.data)}")
 
 # container = import_export_csv('data/recordings/Jesse1/Export.csv')
 # xMax = -100000

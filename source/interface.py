@@ -1,14 +1,9 @@
 import sys
 import tkinter as tk
 from tkinter import ttk
-import sv_ttk
-from PIL import ImageTk, Image
-import cv2
 
-from image_processing import cvimage_to_tkimage, resize_image_to_fit
 from resources import Resources
 from containers import ContRecording
-from video import Video
 from stopwatch import Stopwatch
 from interface_images import InterfaceImages
 
