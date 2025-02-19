@@ -1,8 +1,15 @@
 import cv2
 import numpy as np
+from PIL import ImageTk, Image
 
 
 MAX_DIMENSIONS = (800, 800)
+
+
+def cvimage_to_tkimage(img:np.ndarray):
+    rgb_image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    image = Image.fromarray(rgb_image)
+    return ImageTk.PhotoImage(image=image)
 
 
 def resize_image_to_fit(img:np.ndarray, max_size:tuple[int, int]=MAX_DIMENSIONS):

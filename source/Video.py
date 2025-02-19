@@ -1,7 +1,55 @@
 import cv2
 
 from containers import ContExport
-from openCV import resize_image_to_fit, draw_gaze_circle
+from image_processing import resize_image_to_fit, draw_gaze_circle
+
+
+class Video:
+    def __init__(self, path):
+        self.cap = cv2.VideoCapture(path)
+        self.fps = self.cap.get(cv2.CAP_PROP_FPS)
+        self.frame_count = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        self.duration = (self.frame_count / self.fps) * 1000
+        self.index_current = -1
+        self.frame_current = None
+    
+
+    def get_frame_at_timestamp(self, timestamp:int):
+        index = self.get_index_at_timestamp(timestamp)
+        return self.get_frame_at_index(index)
+    
+
+    def get_index_at_timestamp(self, timestamp:int):
+        index = int((timestamp / 1000) * self.fps)
+        return min(index, self.frame_count - 1)
+    
+
+    def get_frame_at_index(self, index:int):
+        if (not self.cap.isOpened()):
+            return None
+        if (index == self.index_current):
+            return self.frame_current
+        self.cap.set(cv2.CAP_PROP_POS_FRAMES, index)
+        success, frame = self.cap.read()
+        if success:
+            self.index_current = index
+            self.frame_current = frame
+            return frame
+        return None
+    
+
+    def destroy(self):
+        self.cap.release()
+
+
+
+
+
+
+
+
+
+
 
 
 def display_video_raw(path, export:ContExport):
@@ -16,7 +64,7 @@ def display_video_raw(path, export:ContExport):
         # Scale down if needed
         frame, scale_factor = resize_image_to_fit(frame)
 
-        # Draw gaze dot
+        # Draw gaze circle
         video_timestamp = cap.get(cv2.CAP_PROP_POS_MSEC)
         while (export.data[csv_timestamp + 1]['Timestamp'] <= video_timestamp):
             csv_timestamp += 1
@@ -55,7 +103,7 @@ def display_video_gaze_mapped(export:ContExport):
     while True:
         frame = scaled_reference.copy()
 
-        # Draw gaze dot
+        # Draw gaze circle
         while (export.data[csv_timestamp + 1]['Timestamp'] <= video_timestamp):
             csv_timestamp += 1
         try:

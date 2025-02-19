@@ -5,15 +5,21 @@ import sv_ttk
 from PIL import ImageTk, Image
 import cv2
 
-from openCV import resize_image_to_fit
+from image_processing import cvimage_to_tkimage, resize_image_to_fit
 from resources import Resources
 from containers import ContRecording
+from video import Video
+from stopwatch import Stopwatch
+from interface_images import InterfaceImages
 
 
 class Interface:
     resources:Resources
     recording_lookup = {}
-    active_recording = None
+    active_recording:ContRecording = None
+    stopwatch = Stopwatch()
+    interface_images = InterfaceImages()
+
 
     def __init__(self):
         # Create window
@@ -55,22 +61,24 @@ class Interface:
         self.selected_recording_frame["labelwidget"] = ttk.Label(self.selected_recording_frame)
         self.selected_recording_frame.pack(fill="both", expand=True)
 
-        self.selected_recording_frame.grid_columnconfigure(0, weight=1)
+        self.selected_recording_frame.grid_propagate(False)
+        self.selected_recording_frame.grid_columnconfigure(0, weight=2)
         self.selected_recording_frame.grid_columnconfigure(1, weight=1)
+        self.selected_recording_frame.grid_columnconfigure(2, weight=1)
+        self.selected_recording_frame.grid_columnconfigure(3, weight=1)
         self.selected_recording_frame.grid_rowconfigure(0, weight=1)
-        self.selected_recording_frame.grid_rowconfigure(1, weight=1)
 
         self.display_raw = ttk.Label(self.selected_recording_frame, anchor="center", background="lightblue")
-        self.display_raw.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
+        self.display_raw.grid(row=0, column=0, sticky="nsew")
         
-        self.display_reference = ttk.Label(self.selected_recording_frame, anchor="center", background="lightblue")
-        self.display_reference.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
+        self.display_gazemapped = ttk.Label(self.selected_recording_frame, anchor="center", background="lightblue")
+        self.display_gazemapped.grid(row=0, column=1, sticky="nsew")
 
-        self.display_static = ttk.Label(self.selected_recording_frame, anchor="center", background="lightblue")
-        self.display_static.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
+        self.display_ball = ttk.Label(self.selected_recording_frame, anchor="center", background="lightblue")
+        self.display_ball.grid(row=0, column=2, sticky="nsew")
 
         self.display_final = ttk.Label(self.selected_recording_frame, anchor="center", background="lightblue")
-        self.display_final.grid(row=1, column=1, padx=5, pady=5, sticky="nsew")
+        self.display_final.grid(row=0, column=3, sticky="nsew")
 
         # Theme
         # sv_ttk.set_theme("dark")
@@ -100,34 +108,41 @@ class Interface:
         if selected_recording:
             recording = self.recording_lookup.get(selected_recording[0])
             if recording:
-                updating = self.active_recording is not None
+                already_updating = self.active_recording is not None
+                if already_updating:
+                    self.end_recording()
                 self.active_recording = recording
-                if not updating:
+                self.start_recording()
+                if not already_updating:
                     self.update_images_loop()
+    
+
+    def start_recording(self):
+        self.interface_images.set_recording(self.active_recording)
+        self.stopwatch.set_time(0)
+        self.stopwatch.play()
+
+    
+    def end_recording(self):
+        self.stopwatch.pause()
 
 
     def update_images_loop(self):
         if self.active_recording is None:
             return
         self.update_images()
-        self.root.after(50, self.update_images_loop)
+        self.root.after(10, self.update_images_loop)
     
 
     def update_images(self):
-        frame_width = self.selected_recording_frame.winfo_width() / 2
-        frame_height = self.selected_recording_frame.winfo_height() / 2
+        timestamp = self.stopwatch.get_time()
+        frame_width = self.selected_recording_frame.winfo_width()
+        frame_height = self.selected_recording_frame.winfo_height()
 
-        # Reference image for gaze mapped display
-        reference_image = self.active_recording.export.reference.image
-        scaled_reference, scale_factor = resize_image_to_fit(reference_image.copy(), (frame_width, frame_height))
-
-        rgb_image = cv2.cvtColor(scaled_reference, cv2.COLOR_BGR2RGB)
-        img = Image.fromarray(rgb_image)
-        imgtk = ImageTk.PhotoImage(image=img)
-        self.display_reference.config(image=imgtk)
-        self.display_reference.image = imgtk
-
-        self.display_static.config(image=imgtk)
+        # Get and set interface images
+        (image_raw, image_gazemapped) = self.interface_images.get_images(timestamp, (frame_width, frame_height))
+        self.display_raw.config(image=image_raw)
+        self.display_gazemapped.config(image=image_gazemapped)
 
 
     def apply_titlebar_theme(self, window, theme):
