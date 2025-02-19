@@ -9,14 +9,6 @@ class Video:
         self.cap = cv2.VideoCapture(path)
         self.fps = self.cap.get(cv2.CAP_PROP_FPS)
         self.frame_count = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        self.duration = (self.frame_count / self.fps) * 1000
-        self.index_current = -1
-        self.frame_current = None
-    
-
-    def get_frame_at_timestamp(self, timestamp:int):
-        index = self.get_index_at_timestamp(timestamp)
-        return self.get_frame_at_index(index)
     
 
     def get_index_at_timestamp(self, timestamp:int):
@@ -27,15 +19,9 @@ class Video:
     def get_frame_at_index(self, index:int):
         if (not self.cap.isOpened()):
             return None
-        if (index == self.index_current):
-            return self.frame_current
         self.cap.set(cv2.CAP_PROP_POS_FRAMES, index)
         success, frame = self.cap.read()
-        if success:
-            self.index_current = index
-            self.frame_current = frame
-            return frame
-        return None
+        return frame if success else None
     
 
     def destroy(self):

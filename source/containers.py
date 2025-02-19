@@ -5,6 +5,7 @@ class ContReference:
     H:np.ndarray = None
     H_inv:np.ndarray = None
 
+
     def __init__(self, name, image, H):
         from homography import perspective_mapping_inverse
         self.name = name
@@ -13,6 +14,7 @@ class ContReference:
             self.H = H
             self.H_inv = perspective_mapping_inverse(H)
     
+
     def __repr__(self) -> str:
         return f"{type(self).__name__}(name={self.name})"
 
@@ -30,6 +32,7 @@ class ContExport:
         'Mapped Gaze Y'
     ]
     
+
     def __init__(self): # Only these info keys will be imported
         self.info = {
             'Study name':'',
@@ -39,6 +42,7 @@ class ContExport:
             'Recording time':''
         }
         self.data = []
+
     
     def __repr__(self) -> str:
         return f"{type(self).__name__}(respondent={self.info['Respondent Name']})"
@@ -49,6 +53,7 @@ class ContRecording:
         self.paths = paths
         self._export = None
     
+
     @property
     def is_complete(self) -> bool:
         for path in self.paths.values():
@@ -56,6 +61,7 @@ class ContRecording:
                 return False
         return True
     
+
     @property
     def export(self) -> ContExport:
         if self._export is None:

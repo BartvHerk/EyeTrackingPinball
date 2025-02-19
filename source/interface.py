@@ -82,7 +82,7 @@ class Interface:
 
         # Theme
         # sv_ttk.set_theme("dark")
-        self.apply_titlebar_theme(self.root, "dark")
+        self.apply_titlebar_theme(self.root)
 
         # Start
         self.start()
@@ -145,8 +145,8 @@ class Interface:
         self.display_gazemapped.config(image=image_gazemapped)
 
 
-    def apply_titlebar_theme(self, window, theme):
+    def apply_titlebar_theme(self, window):
         if sys.platform == "win32": # Only affects Windows
             import pywinstyles
-            # pywinstyles.apply_style(window, theme)
+            # pywinstyles.apply_style(window, "dark")
             pywinstyles.change_header_color(window, color="#5695C1")  
