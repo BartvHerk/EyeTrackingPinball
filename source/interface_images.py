@@ -57,6 +57,7 @@ class InterfaceImages:
                 if self.data[self.index + 1]['Timestamp'] > timestamp:
                     break
                 self.index += 1
+            self.index = min(self.index, len(self.data) - 2)
             a = self.data[self.index]['Timestamp']
             b = self.data[self.index + 1]['Timestamp']
             self.t = max(min((timestamp - a) / (b - a), 1), 0)
