@@ -1,13 +1,19 @@
 from PIL import ImageTk
+import numpy as np
 
 from containers import ContRecording
 from image_processing import cvimage_to_tkimage, resize_image_to_fit, draw_gaze_circle
 from video import Video
+from resources import Resources
+
+
+PERSPECTIVE_PX_PER_CM = 10
 
 
 class InterfaceImages:
     image_raw:ImageTk.PhotoImage = None
     image_gazemapped:ImageTk.PhotoImage = None
+    image_perspective:ImageTk.PhotoImage = None
 
     index_raw_current = -1
     frame_raw = None
@@ -17,6 +23,8 @@ class InterfaceImages:
     reference_image = None
     reference_image_scaled = None
     reference_image_scale_factor = 0
+
+    field_image = None
 
     index = 0 # Current index in export data
     t = 0 # Percentage between current index and next index
@@ -29,7 +37,7 @@ class InterfaceImages:
         self.video:Video
     
 
-    def set_recording(self, recording:ContRecording):
+    def set_recording(self, recording:ContRecording, resources:Resources):
         if (self.active_recording is not None):
             self.video.destroy()
         self.active_recording = recording
@@ -37,6 +45,11 @@ class InterfaceImages:
         self.reference_image = recording.export.reference.image
         self.w, self.h = recording.export.reference_dimensions
         self.data = recording.export.data
+
+        # Field image
+        self.field_image_width = (int)(resources.field_dimensions[0] * PERSPECTIVE_PX_PER_CM)
+        self.field_image_height = (int)(resources.field_dimensions[1] * PERSPECTIVE_PX_PER_CM)
+        self.field_image = np.zeros((self.field_image_height, self.field_image_width, 3), dtype=np.uint8)
 
 
     def get_images(self, timestamp:int, size:tuple[int, int]):
@@ -74,7 +87,7 @@ class InterfaceImages:
         if (frame_raw_scaled_changed or timestamp_changed):
             position = self.get_export_position('Interpolated Gaze X', 'Interpolated Gaze Y')
             modify_position = lambda p: (p[0] * self.frame_raw_scale_factor, p[1] * self.frame_raw_scale_factor)
-            frame_raw_final = self.copy_image_with_circle(self.frame_raw_scaled, position, modify_position)
+            frame_raw_final = self.add_gaze_circle(self.frame_raw_scaled.copy(), position, modify_position)
             self.image_raw = cvimage_to_tkimage(frame_raw_final)
 
         # Gazemapped image
@@ -84,10 +97,18 @@ class InterfaceImages:
         if (timestamp_changed or size_changed):
             position = self.get_export_position('Mapped Gaze X', 'Mapped Gaze Y')
             modify_position = lambda p: (p[0] / self.w * self.reference_image_width, p[1] / self.h * self.reference_image_height)
-            reference_image_final = self.copy_image_with_circle(self.reference_image_scaled, position, modify_position)
+            reference_image_final = self.add_gaze_circle(self.reference_image_scaled.copy(), position, modify_position)
             self.image_gazemapped = cvimage_to_tkimage(reference_image_final)
+        
+        # Perspective image
+        if (timestamp_changed or size_changed):
+            field_image_scaled, field_image_scale_factor = resize_image_to_fit(self.field_image, (width, height))
+            position = self.get_export_position('Perspective Gaze X', 'Perspective Gaze Y')
+            modify_position = lambda p: (tuple(map(lambda x: x * PERSPECTIVE_PX_PER_CM * field_image_scale_factor, p)))
+            field_image_final = self.add_gaze_circle(field_image_scaled, position, modify_position)
+            self.image_perspective = cvimage_to_tkimage(field_image_final)
 
-        return (self.image_raw, self.image_gazemapped)
+        return (self.image_raw, self.image_gazemapped, self.image_perspective)
     
 
     def get_export_position(self, x_param, y_param):
@@ -102,10 +123,9 @@ class InterfaceImages:
         return (a_x + (b_x - a_x) * self.t, a_y + (b_y - a_y) * self.t)
     
 
-    def copy_image_with_circle(self, img, position, modify_position):
+    def add_gaze_circle(self, img:np.ndarray, position, modify_position):
         img_with_circle = img.copy()
         if (position[0] is not None and position[1] is not None):
             x, y = modify_position(position)
             draw_gaze_circle(img_with_circle, (x, y))
         return img_with_circle
-        

@@ -29,6 +29,7 @@ def draw_gaze_circle(img:np.ndarray, position:tuple[float, float]):
     height, width = img.shape[:2]
     x, y = tuple(map(int, position))
     if x >= 0 and x < width and y >= 0 and y < height:
+        cv2.circle(img, (x, y), 25, (0, 0, 0), 3, cv2.LINE_AA)
         cv2.circle(img, (x, y), 25, (0, 255, 255), 2, cv2.LINE_AA)
 
 

@@ -9,6 +9,7 @@ MAX_GAP_DURATION = 100
 def process_data(export:ContExport):
     convert_to_numerics(export)
     interpolate_mapped_gaze_gaps(export)
+    generate_perspective_mapped_data(export)
 
 
 def convert_to_numerics(export:ContExport):
@@ -30,9 +31,6 @@ def convert(value: str, type):
 
 
 def interpolate_mapped_gaze_gaps(export:ContExport):
-    def has_mapped_gaze(row):
-        return (row['Mapped Gaze X'] is not None) and (row['Mapped Gaze Y'] is not None)
-
     i_last = next((i for i, x in enumerate(export.data) if (lambda x: has_mapped_gaze(x))(x)), len(export.data))
     i = i_last + 1
     while i < len(export.data):
@@ -49,3 +47,21 @@ def interpolate_mapped_gaze_gaps(export:ContExport):
                     export.data[step]['Mapped Gaze Y'] = y
             i_last = i
         i += 1
+
+
+def generate_perspective_mapped_data(export:ContExport):
+    from homography import perspective_map
+    H = export.reference.H
+    reference_image_height, reference_image_width = export.reference.image.shape[:2]
+    x_scale = (reference_image_width / export.reference_dimensions[0])
+    y_scale = (reference_image_height / export.reference_dimensions[1])
+    for row in export.data:
+        x, y = None, None
+        if has_mapped_gaze(row):
+            x, y = perspective_map(H, (row['Mapped Gaze X'] * x_scale, row['Mapped Gaze Y'] * y_scale))
+        row['Perspective Gaze X'] = x
+        row['Perspective Gaze Y'] = y
+
+
+def has_mapped_gaze(row) -> bool:
+    return (row['Mapped Gaze X'] is not None) and (row['Mapped Gaze Y'] is not None)

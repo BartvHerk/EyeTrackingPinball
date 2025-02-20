@@ -1,4 +1,4 @@
-from interface import Interface
+from Interface.interface import Interface
 from homography import set_perspective_mapping
 
 

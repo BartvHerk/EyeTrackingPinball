@@ -5,7 +5,7 @@ from tkinter import ttk
 from resources import Resources
 from containers import ContRecording
 from stopwatch import Stopwatch
-from interface_images import InterfaceImages
+from Interface.interface_images import InterfaceImages
 
 
 class Interface:
@@ -113,7 +113,7 @@ class Interface:
     
 
     def start_recording(self):
-        self.interface_images.set_recording(self.active_recording)
+        self.interface_images.set_recording(self.active_recording, self.resources)
         self.stopwatch.set_time(0)
         self.stopwatch.play()
 
@@ -135,9 +135,10 @@ class Interface:
         frame_height = self.selected_recording_frame.winfo_height()
 
         # Get and set interface images
-        (image_raw, image_gazemapped) = self.interface_images.get_images(timestamp, (frame_width, frame_height))
+        (image_raw, image_gazemapped, image_perspective) = self.interface_images.get_images(timestamp, (frame_width, frame_height))
         self.display_raw.config(image=image_raw)
         self.display_gazemapped.config(image=image_gazemapped)
+        self.display_ball.config(image=image_perspective)
 
 
     def apply_titlebar_theme(self, window):
