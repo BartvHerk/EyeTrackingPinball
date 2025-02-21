@@ -28,12 +28,28 @@ class TabReferences(Tab):
         selected_item_frame.grid_rowconfigure(0, weight=1)
 
         # Information
-        self.text_frame = ttk.Frame(selected_item_frame)
+        self.information_frame = ttk.Frame(selected_item_frame)
+        self.information_frame.grid(row=0, column=0, sticky="nsew")
+        self.information_frame.grid_columnconfigure(0, weight=1)
+        self.information_frame.grid_rowconfigure(0, weight=1)
+        self.information_frame.grid_rowconfigure(1, weight=0)
+
+        self.text_frame = ttk.Frame(self.information_frame)
         self.text_frame.grid(row=0, column=0, sticky="nsew")
         self.text_frame.pack_propagate(False)
 
         self.text_widget = tk.Text(self.text_frame, wrap="word", state="disabled", bg=root["background"], borderwidth=0)
         self.text_widget.pack(fill="both", expand=True)
+
+        # Buttons
+        self.button_frame = ttk.Frame(self.information_frame) #, relief="groove", borderwidth=1)
+        self.button_frame.config(height=100)
+        self.button_frame.grid(row=1, column=0, sticky="nsew")
+        self.button_frame.pack_propagate(False)
+
+        self.button_homography = ttk.Button(self.button_frame, text="Define perspective plane", command=self.on_button_homography_click)
+        self.button_homography.config(state="disabled")
+        self.button_homography.pack(side='bottom', anchor='w')
 
         # Image
         self.selected_reference_frame = ttk.Frame(selected_item_frame, relief="groove", borderwidth=1, padding=10)
@@ -67,6 +83,7 @@ class TabReferences(Tab):
 
         self.update_image((width, height))
         self.update_information()
+        self.button_homography.config(state="normal")
 
     
     def on_resize(self, event):
@@ -77,6 +94,10 @@ class TabReferences(Tab):
         height = event.height
 
         self.update_image((width, height))
+    
+
+    def on_button_homography_click(self):
+        print("Button was clicked!")
     
 
     def update_image(self, size):
