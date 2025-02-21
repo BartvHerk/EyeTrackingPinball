@@ -3,9 +3,9 @@ import tkinter as tk
 from tkinter import ttk
 
 from resources import Resources
-from Interface.interface_custom import Tab
+from Interface.interface_custom import LazyNotebook, Tab
 from Interface.tab_recordings import TabRecordings
-from Interface.rab_references import TabReferences
+from Interface.tab_references import TabReferences
 
 
 class Interface:
@@ -21,25 +21,19 @@ class Interface:
         self.root.geometry("1200x700")
 
         # Tabs
-        self.tabs_control = ttk.Notebook(self.root)
-        self.tabs_control.pack(expand = 1, fill ="both")
-        self.tabs:list[Tab] = []
-        self.tabs.append(TabRecordings(self.root, self.tabs_control, 'Recordings', self.resources))
-        self.tabs.append(TabReferences(self.root, self.tabs_control, 'References', self.resources))
+        self.tabs_control = LazyNotebook(self.root)
+        self.tabs_control.pack(expand=True, fill ="both")
+
+        self.tabs_control.add_tab('Recordings', TabRecordings(self.resources))
+        self.tabs_control.add_tab('References', TabReferences(self.resources))
+
+        self.tabs_control.load_tab()
 
         # Theme
         self.apply_theme(self.root)
 
-        # Start
-        self.start()
-
         # Main event loop
         self.root.mainloop()
-
-    
-    def start(self):
-        for tab in self.tabs:
-            tab.start()
 
 
     def apply_theme(self, window):

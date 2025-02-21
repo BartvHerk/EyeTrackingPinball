@@ -10,15 +10,32 @@ from containers import ContReference, ContRecording, ContExport
 from processing import process_data
 
 
+SENSOR_NAME = 'Pupil_Invisible_Glasses'
 DIR_RECORDINGS = Path('data/recordings')
 DIR_REFERENCE = Path('data/reference')
-SENSOR_NAME = 'Pupil_Invisible_Glasses'
+FILE_SETTINGS = Path('data/settings.json')
+DEFAULT_SETTINGS = {
+    "show_perspective_plane": True
+}
 
 
-def import_specifications():
+def load_specifications():
     with open('data/specifications.json', 'r') as json_file:
         specifications = json.load(json_file)
         return specifications
+
+
+def load_settings():
+    if not os.path.exists(FILE_SETTINGS):
+        save_settings(DEFAULT_SETTINGS)
+    with open(FILE_SETTINGS, 'r') as json_file:
+        settings = json.load(json_file)
+        return settings
+
+
+def save_settings(settings):
+    with open(FILE_SETTINGS, 'w') as json_file:
+        json.dump(settings, json_file, indent=2)
 
 
 def import_references() -> dict[str, ContReference]:

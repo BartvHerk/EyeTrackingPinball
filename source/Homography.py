@@ -20,6 +20,7 @@ def set_perspective_mapping(reference:ContReference, field_dimensions:tuple[floa
 
     # Save
     save_perspective_matrix(reference)
+    return True
 
 
 def set_corner_points(reference_image:np.ndarray, field_dimensions:tuple[float, float]) -> np.ndarray:

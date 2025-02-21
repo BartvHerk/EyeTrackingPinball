@@ -66,11 +66,15 @@ class ContRecording:
     @property
     def export(self) -> ContExport:
         if self._export is None:
-            from IO import import_export_csv
-            from resources import Resources
-            resources = Resources()
-            self._export = import_export_csv(self.paths['Export'], resources.references)
+            self.generate_export()
         return self._export
+    
+
+    def generate_export(self):
+        from IO import import_export_csv
+        from resources import Resources
+        resources = Resources()
+        self._export = import_export_csv(self.paths['Export'], resources.references)
 
     
     def __repr__(self) -> str:

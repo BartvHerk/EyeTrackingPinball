@@ -9,13 +9,17 @@ from Interface.interface_images import InterfaceImages
 
 
 class TabRecordings(Tab):
-    recording_lookup = {}
-    active_recording:ContRecording = None
-    stopwatch = Stopwatch()
-    interface_images = InterfaceImages()
+    def __init__(self, resources:Resources):
+        Tab.__init__(self, resources)
+    
 
-    def __init__(self, root:tk.Tk, master:ttk.Notebook, name:str, resources:Resources):
-        Tab.__init__(self, root, master, name, resources)
+    def load(self, master):
+        super().load(master)
+
+        self.recording_lookup = {}
+        self.active_recording:ContRecording = None
+        self.stopwatch = Stopwatch()
+        self.interface_images = InterfaceImages()
 
         # List layout
         self.treeview, selected_item_frame = list_layout(self.tab_frame, self.on_recording_selected)
@@ -42,9 +46,7 @@ class TabRecordings(Tab):
 
         self.display_final = ttk.Label(self.selected_recording_frame, anchor="center", background="lightblue")
         self.display_final.grid(row=0, column=3, sticky="nsew")
-    
 
-    def start(self):
         # Add recordings to interface
         for recording in self.resources.recordings:
             item_id = self.treeview.insert("", "end", text=recording.paths['Directory'])
@@ -79,7 +81,7 @@ class TabRecordings(Tab):
         if self.active_recording is None:
             return
         self.update_images()
-        self.root.after(10, self.update_images_loop)
+        self.tab_frame.after(10, self.update_images_loop)
     
 
     def update_images(self):
