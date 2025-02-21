@@ -3,8 +3,9 @@ import tkinter as tk
 from tkinter import ttk
 
 from resources import Resources
+from Interface.interface_custom import Tab
 from Interface.tab_recordings import TabRecordings
-from Interface.tab import Tab
+from Interface.rab_references import TabReferences
 
 
 class Interface:
@@ -24,7 +25,7 @@ class Interface:
         self.tabs_control.pack(expand = 1, fill ="both")
         self.tabs:list[Tab] = []
         self.tabs.append(TabRecordings(self.root, self.tabs_control, 'Recordings', self.resources))
-        self.tabs.append(Tab(self.root, self.tabs_control, 'References', self.resources))
+        self.tabs.append(TabReferences(self.root, self.tabs_control, 'References', self.resources))
 
         # Theme
         self.apply_theme(self.root)

@@ -6,9 +6,10 @@ class ContReference:
     H_inv:np.ndarray = None
 
 
-    def __init__(self, name, image, H):
+    def __init__(self, name, path, image, H):
         from homography import perspective_mapping_inverse
         self.name = name
+        self.path = path
         self.image = image
         if H is not None:
             self.H = H

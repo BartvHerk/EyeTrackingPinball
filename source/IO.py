@@ -26,12 +26,13 @@ def import_references() -> dict[str, ContReference]:
     paths = (entry.path for entry in os.scandir(DIR_REFERENCE) if entry.name.endswith(('.jpg', '.png')))
     perspective_matrices = load_perspective_matrices()
     for file in paths:
-        name = Path(file).stem
+        path = Path(file)
+        name = path.stem
         H = None
         if (name in perspective_matrices):
             H = np.array(perspective_matrices[name])
         image = cv2.imread(file)
-        references[name] = ContReference(name, image, H)
+        references[name] = ContReference(name, path, image, H)
     return references
 
 

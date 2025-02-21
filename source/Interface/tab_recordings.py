@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from resources import Resources
-from Interface.tab import Tab
+from Interface.interface_custom import Tab, list_layout
 from containers import ContRecording
 from stopwatch import Stopwatch
 from Interface.interface_images import InterfaceImages
@@ -17,30 +17,14 @@ class TabRecordings(Tab):
     def __init__(self, root:tk.Tk, master:ttk.Notebook, name:str, resources:Resources):
         Tab.__init__(self, root, master, name, resources)
 
-        # Recordings
-        self.recordings_frame = ttk.Frame(self.tab_frame, padding=10)
-        self.recordings_frame.grid(row=0, column=0, sticky="nsew")
+        # List layout
+        self.treeview, selected_item_frame = list_layout(self.tab_frame, self.on_recording_selected)
 
-        self.tab_frame.grid_columnconfigure(0, weight=0, minsize=350)
-        self.tab_frame.grid_columnconfigure(1, weight=1)
-        self.tab_frame.grid_rowconfigure(0, weight=1)
-
-        self.scrollbar = ttk.Scrollbar(self.recordings_frame)
-        self.treeview = ttk.Treeview(self.recordings_frame, yscrollcommand=self.scrollbar.set, show="tree")
-        self.scrollbar.configure(command=self.treeview.yview)
-
-        self.scrollbar.pack(side="right", fill="y")
-        self.treeview.pack(side="left", fill="both", expand=True)
-        self.treeview.bind("<<TreeviewSelect>>", self.on_recording_selected)
-
-        # Selected recording
-        self.spacer = ttk.Frame(self.tab_frame, padding=(10, 1, 10, 10))
-        self.spacer.grid(row=0, column=1, sticky="nsew")
-        self.selected_recording_frame = ttk.LabelFrame(self.spacer, padding=(10, 1, 10, 10))
-        self.selected_recording_frame["labelwidget"] = ttk.Label(self.selected_recording_frame)
+        # Active recording
+        self.selected_recording_frame = ttk.Frame(selected_item_frame, relief="groove", borderwidth=1, padding=10)
         self.selected_recording_frame.pack(fill="both", expand=True)
-
         self.selected_recording_frame.grid_propagate(False)
+        
         self.selected_recording_frame.grid_columnconfigure(0, weight=2)
         self.selected_recording_frame.grid_columnconfigure(1, weight=1)
         self.selected_recording_frame.grid_columnconfigure(2, weight=1)
