@@ -77,3 +77,10 @@ def list_layout(master:ttk.Frame, on_item_selected):
     selected_item_frame.grid(row=0, column=2, sticky="nsew")
 
     return (treeview, selected_item_frame)
+
+
+def update_text_widget(text_widget:tk.Text, text:str):
+    text_widget.config(state="normal")
+    text_widget.delete(1.0, "end")
+    text_widget.insert(1.0, text)
+    text_widget.config(state="disabled")

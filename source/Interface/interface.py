@@ -3,9 +3,9 @@ import tkinter as tk
 from tkinter import ttk
 
 from resources import Resources
-from Interface.interface_custom import LazyNotebook, Tab
-from Interface.tab_recordings import TabRecordings
-from Interface.tab_references import TabReferences
+from interface.interface_custom import LazyNotebook, Tab
+from interface.tab_recordings import TabRecordings
+from interface.tab_references import TabReferences
 
 
 class Interface:
@@ -16,7 +16,7 @@ class Interface:
         # Create window
         self.root = tk.Tk()
         self.root.title("Pinball Tracker")
-        icon = tk.PhotoImage(file = 'icon.png')
+        icon = tk.PhotoImage(file = 'assets/icon.png')
         self.root.iconphoto(True, icon)
         self.root.geometry("1200x700")
 

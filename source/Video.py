@@ -6,6 +6,7 @@ class Video:
         self.cap = cv2.VideoCapture(path)
         self.fps = self.cap.get(cv2.CAP_PROP_FPS)
         self.frame_count = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        self.duration = (self.frame_count / self.fps) * 1000
     
 
     def get_index_at_timestamp(self, timestamp:int):

@@ -107,6 +107,7 @@ def import_export_csv(path, references:dict[str, ContReference]) -> ContExport:
             csv_info[line[0].replace('#','')] = line[1]
         for key in container.info.keys(): # Fill only the keys present in ContExport
             container.info[key] = csv_info[key]
+        container.info['Recording time'] = container.info['Recording time'].split(' ')[1]
         
         # Metadata
         line = jump_section(csv_reader, '#Group')

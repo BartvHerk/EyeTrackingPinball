@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from resources import Resources
-from Interface.interface_custom import Tab, list_layout
+from interface.interface_custom import Tab, list_layout, update_text_widget
 from containers import ContReference
 from image_processing import cvimage_to_tkimage, draw_perspective_grid, resize_image_to_fit
 from homography import set_perspective_mapping
@@ -136,10 +136,7 @@ class TabReferences(Tab):
         )
 
         # Update text widget
-        self.text_widget.config(state="normal")
-        self.text_widget.delete(1.0, "end")
-        self.text_widget.insert(1.0, text)
-        self.text_widget.config(state="disabled")
+        update_text_widget(self.text_widget, text)
     
 
     def homography_matrix_text(self):
