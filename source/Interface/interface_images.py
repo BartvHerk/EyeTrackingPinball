@@ -5,9 +5,7 @@ from containers import ContRecording
 from image_processing import cvimage_to_tkimage, resize_image_to_fit, draw_gaze_circle
 from video import Video
 from resources import Resources
-
-
-PERSPECTIVE_PX_PER_CM = 10
+from homography import perspective_map
 
 
 class InterfaceImages:
@@ -35,6 +33,7 @@ class InterfaceImages:
         self.size_current = (-1, -1)
         self.active_recording:ContRecording = None
         self.video:Video
+        self.resources = Resources()
     
 
     def set_recording(self, recording:ContRecording, resources:Resources):
@@ -45,11 +44,6 @@ class InterfaceImages:
         self.reference_image = recording.export.reference.image
         self.w, self.h = recording.export.reference_dimensions
         self.data = recording.export.data
-
-        # Field image
-        self.field_image_width = (int)(resources.field_dimensions[0] * PERSPECTIVE_PX_PER_CM)
-        self.field_image_height = (int)(resources.field_dimensions[1] * PERSPECTIVE_PX_PER_CM)
-        self.field_image = np.zeros((self.field_image_height, self.field_image_width, 3), dtype=np.uint8)
 
 
     def get_images(self, timestamp:int, size:tuple[int, int]):
@@ -102,13 +96,17 @@ class InterfaceImages:
         
         # Perspective image
         if (timestamp_changed or size_changed):
-            field_image_scaled, field_image_scale_factor = resize_image_to_fit(self.field_image, (width, height))
+            field_image_scaled, self.field_image_scale_factor = resize_image_to_fit(self.resources.image_field, (width, height))
             position = self.get_export_position('Perspective Gaze X', 'Perspective Gaze Y')
-            modify_position = lambda p: (tuple(map(lambda x: x * PERSPECTIVE_PX_PER_CM * field_image_scale_factor, p)))
-            field_image_final = self.add_gaze_circle(field_image_scaled, position, modify_position)
+            field_image_final = self.add_gaze_circle(field_image_scaled, position, self.map_to_field)
             self.image_perspective = cvimage_to_tkimage(field_image_final)
 
         return (self.image_raw, self.image_gazemapped, self.image_perspective)
+    
+
+    def map_to_field(self, p):
+        p_mapped = perspective_map(self.resources.H_inv_field, p)
+        return tuple(map(lambda x: x * self.field_image_scale_factor, p_mapped))
     
 
     def get_export_position(self, x_param, y_param):

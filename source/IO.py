@@ -13,16 +13,23 @@ from processing import process_data
 SENSOR_NAME = 'Pupil_Invisible_Glasses'
 DIR_RECORDINGS = Path('data/recordings')
 DIR_REFERENCE = Path('data/reference')
+FILE_SPECIFICATIONS = Path('data/specifications.json')
 FILE_SETTINGS = Path('data/settings.json')
+FILE_FIELD_IMAGE = Path('data/field.png')
 DEFAULT_SETTINGS = {
-    "show_perspective_plane": True
+    "show_plane": True
 }
 
 
 def load_specifications():
-    with open('data/specifications.json', 'r') as json_file:
+    with open(FILE_SPECIFICATIONS, 'r') as json_file:
         specifications = json.load(json_file)
         return specifications
+    
+
+def save_specifications(specifications):
+    with open(FILE_SPECIFICATIONS, 'w') as json_file:
+        json.dump(specifications, json_file, indent=2)
 
 
 def load_settings():
@@ -41,32 +48,37 @@ def save_settings(settings):
 def import_references() -> dict[str, ContReference]:
     references = {}
     paths = (entry.path for entry in os.scandir(DIR_REFERENCE) if entry.name.endswith(('.jpg', '.png')))
-    perspective_matrices = load_perspective_matrices()
+    reference_points = load_reference_points()
     for file in paths:
         path = Path(file)
         name = path.stem
-        H = None
-        if (name in perspective_matrices):
-            H = np.array(perspective_matrices[name])
+        points = None
+        if (name in reference_points):
+            points = list(map(tuple, reference_points[name]))
         image = cv2.imread(file)
-        references[name] = ContReference(name, path, image, H)
+        references[name] = ContReference(name, path, image, points)
     return references
 
 
-def load_perspective_matrices() -> np.ndarray:
+def load_reference_points() -> np.ndarray:
     try:
-        with open(DIR_REFERENCE / 'perspective_matrices.json', 'r') as json_file:
-            perspective_matrices = json.load(json_file)
-            return perspective_matrices
+        with open(DIR_REFERENCE / 'reference_points.json', 'r') as json_file:
+            reference_points = json.load(json_file)
+            return reference_points
     except:
         return {}
 
 
-def save_perspective_matrix(reference:ContReference):
-    perspective_matrices = load_perspective_matrices()
-    perspective_matrices[reference.name] = reference.H.tolist()
-    with open(DIR_REFERENCE / 'perspective_matrices.json', 'w') as json_file:
-        json.dump(perspective_matrices, json_file, indent=2)
+def save_reference_points(reference:ContReference):
+    reference_points = load_reference_points()
+    reference_points[reference.name] = reference.points
+    with open(DIR_REFERENCE / 'reference_points.json', 'w') as json_file:
+        json.dump(reference_points, json_file, indent=2)
+
+
+def import_image_field():
+    image_field = cv2.imread(FILE_FIELD_IMAGE)
+    return image_field
 
 
 def import_recordings() -> list[ContRecording]:

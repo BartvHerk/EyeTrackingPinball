@@ -2,19 +2,25 @@ import numpy as np
 
 
 class ContReference:
-    H:np.ndarray = None
-    H_inv:np.ndarray = None
-
-
-    def __init__(self, name, path, image, H):
-        from homography import perspective_mapping_inverse
+    def __init__(self, name, path, image, points):
         self.name = name
         self.path = path
         self.image = image
-        if H is not None:
-            self.H = H
-            self.H_inv = perspective_mapping_inverse(H)
+        self.points = points
+        self._H = None
+        self.H_computed = False
     
+
+    @property
+    def H(self) -> np.ndarray:
+        if not self.H_computed:
+            from homography import compute_perspective_mapping
+            from resources import Resources
+            resources = Resources()
+            self._H = compute_perspective_mapping(self.points, resources.field_dimensions)
+            self.H_computed = True
+        return self._H
+
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}(name={self.name})"

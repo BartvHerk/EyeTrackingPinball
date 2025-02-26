@@ -1,5 +1,4 @@
 from interface.interface import Interface
-from homography import set_perspective_mapping
 
 
 # Start interface
@@ -7,8 +6,6 @@ Interface()
 
 
 
-
-# set_perspective_mapping(references['IMG_20241210_154127'], field_dimensions)
 
 
 

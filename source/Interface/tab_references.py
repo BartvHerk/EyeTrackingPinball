@@ -4,8 +4,8 @@ from tkinter import ttk
 from resources import Resources
 from interface.interface_custom import Tab, list_layout, update_text_widget
 from containers import ContReference
-from image_processing import cvimage_to_tkimage, draw_perspective_grid, resize_image_to_fit
-from homography import set_perspective_mapping
+from interface.grid_editor import GridEditor
+from IO import save_reference_points
 
 
 H_DIGITS = 9
@@ -26,11 +26,15 @@ class TabReferences(Tab):
         # List layout
         self.treeview, selected_item_frame = list_layout(self.tab_frame, self.on_reference_selected)
 
-        # Active reference display
+        # Split display
         selected_item_frame.grid_columnconfigure(0, weight=1)
         selected_item_frame.grid_columnconfigure(1, weight=0, minsize=10)
         selected_item_frame.grid_columnconfigure(2, weight=1)
         selected_item_frame.grid_rowconfigure(0, weight=1)
+
+        # Grid editor
+        self.grid_editor = GridEditor(selected_item_frame)
+        self.grid_editor.grid(row=0, column=2, sticky="nsew")
 
         # Information
         self.information_frame = ttk.Frame(selected_item_frame)
@@ -45,31 +49,6 @@ class TabReferences(Tab):
 
         self.text_widget = tk.Text(self.text_frame, wrap="word", state="disabled", bg='gray94', borderwidth=0)
         self.text_widget.pack(fill="both", expand=True)
-
-        # Buttons
-        self.button_frame = ttk.Frame(self.information_frame) #, relief="groove", borderwidth=1)
-        self.button_frame.config(height=100)
-        self.button_frame.grid(row=1, column=0, sticky="nsew")
-        self.button_frame.pack_propagate(False)
-
-        self.button_homography = ttk.Button(self.button_frame, text="Define perspective plane", command=self.on_button_homography_click)
-        self.button_homography.config(state="disabled")
-        self.button_homography.pack(side='bottom', anchor='w')
-
-        self.check_var_plane = tk.BooleanVar()
-        self.check_var_plane.set(self.resources.settings["show_perspective_plane"])
-        self.check_button_plane = ttk.Checkbutton(self.button_frame, text="Show perspective plane", variable=self.check_var_plane, command=self.on_check_plane)
-        self.check_button_plane.config(state="disabled")
-        self.check_button_plane.pack(side='bottom', anchor='w')
-
-        # Image
-        self.selected_reference_frame = ttk.Frame(selected_item_frame, relief="groove", borderwidth=1, padding=10)
-        self.selected_reference_frame.grid(row=0, column=2, sticky="nsew")
-        self.selected_reference_frame.bind("<Configure>", self.on_resize)
-        self.selected_reference_frame.pack_propagate(False)
-
-        self.display_reference = ttk.Label(self.selected_reference_frame, anchor="center")
-        self.display_reference.pack(fill="both", expand=True)
 
         # Add references to interface
         for reference in self.resources.references.values():
@@ -87,60 +66,33 @@ class TabReferences(Tab):
     
 
     def select_reference(self):
-        self.update_image()
+        self.grid_editor.load(self.active_reference.image, self.active_reference.points, self.update_information, self.callback_apply, False)
         self.update_information()
-        self.check_button_plane.config(state="normal")
-        self.button_homography.config(state="normal")
 
     
-    def on_resize(self, event):
-        if (self.active_reference is None):
-            return
-
-        self.update_image()
-
-    
-    def on_check_plane(self):
-        self.resources.settings["show_perspective_plane"] = self.check_var_plane.get()
-        self.resources.save_settings_changes()
-        self.update_image()
-    
-
-    def on_button_homography_click(self):
-        if set_perspective_mapping(self.resources.references[self.active_reference.name], self.resources.field_dimensions):
-            self.resources.on_homography_matrix_update(self.active_reference)
-            self.update_image()
-            self.update_information()
-    
-
-    def update_image(self):
-        width = self.selected_reference_frame.winfo_width()
-        height = self.selected_reference_frame.winfo_height()
-        img, scale_factor = resize_image_to_fit(self.active_reference.image, (width, height))
-        if (self.check_var_plane.get() and self.active_reference.H_inv is not None):
-            draw_perspective_grid(img, self.active_reference.H_inv, scale_factor, self.resources.field_dimensions)
-        image_reference = cvimage_to_tkimage(img)
-        self.display_reference.config(image=image_reference)
-        self.display_reference.image = image_reference
+    def callback_apply(self, points):
+        self.active_reference.points = list(map(lambda t: tuple(map(round, t)), points))
+        self.active_reference.H_computed = False
+        save_reference_points(self.active_reference)
 
 
     def update_information(self):
         # Get information
         name = self.active_reference.name
         reference_image_height, reference_image_width = self.active_reference.image.shape[:2]
+        H = self.grid_editor.H
         text = (
             f"Name:\n{name}\n\n"
             f"Path:\n{self.active_reference.path}\n\n"
-            f"Dimensions: \n{reference_image_width} x {reference_image_height}\n\n"
-            f"Homography matrix: \n{self.homography_matrix_text()}\n\n"
+            f"Image dimensions (px): \n{reference_image_width} x {reference_image_height}\n\n"
+            f"Homography matrix: \n{self.homography_matrix_text(H)}\n\n"
         )
 
         # Update text widget
         update_text_widget(self.text_widget, text)
     
 
-    def homography_matrix_text(self):
-        H = self.active_reference.H
+    def homography_matrix_text(self, H):
         if (H is None):
             return "n/a"
         

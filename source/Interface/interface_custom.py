@@ -80,7 +80,8 @@ def list_layout(master:ttk.Frame, on_item_selected):
 
 
 def update_text_widget(text_widget:tk.Text, text:str):
+    state = text_widget.cget("state")
     text_widget.config(state="normal")
     text_widget.delete(1.0, "end")
     text_widget.insert(1.0, text)
-    text_widget.config(state="disabled")
+    text_widget.config(state=state)

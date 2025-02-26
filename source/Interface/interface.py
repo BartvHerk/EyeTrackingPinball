@@ -1,11 +1,11 @@
 import sys
 import tkinter as tk
-from tkinter import ttk
 
 from resources import Resources
 from interface.interface_custom import LazyNotebook, Tab
 from interface.tab_recordings import TabRecordings
 from interface.tab_references import TabReferences
+from interface.tab_field import TabField
 
 
 class Interface:
@@ -26,6 +26,7 @@ class Interface:
 
         self.tabs_control.add_tab('Recordings', TabRecordings(self.resources))
         self.tabs_control.add_tab('References', TabReferences(self.resources))
+        self.tabs_control.add_tab('Field', TabField(self.resources))
 
         self.tabs_control.load_tab()
 

@@ -1,9 +1,11 @@
+import math
 import cv2
 import numpy as np
 from PIL import ImageTk, Image
 
 
-MAX_DIMENSIONS = (800, 800)
+MAX_DIMENSIONS = (900, 900)
+GRID_CELL_SIZE = 10
 
 
 def cvimage_to_tkimage(img:np.ndarray):
@@ -49,21 +51,19 @@ def draw_polygon(img:np.ndarray, points:list[tuple[float, float]]):
 def draw_perspective_grid(img:np.ndarray, H_inv:np.ndarray, scale_factor, field_dimensions):
     from homography import perspective_map
     width, height = field_dimensions
+    cuts_w, cuts_h = math.floor(width / GRID_CELL_SIZE), math.floor(height / GRID_CELL_SIZE)
     def mp(pt):
-         pt_scaled = (pt[0] * width, pt[1] * height)
-         return scale_position(perspective_map(H_inv, pt_scaled), scale_factor)
+         return scale_position(perspective_map(H_inv, pt), scale_factor)
 
-    corners = [mp((0, 0)), mp((1, 0)), mp((1, 1)), mp((0, 1))]
+    corners = [mp((0, 0)), mp((width, 0)), mp((width, height)), mp((0, height))]
     draw_polygon(img, corners)
-    for i in np.arange(0.1, 1.0, 0.1):
-        pos1, pos2, pos3, pos4 = mp((0, i)), mp((1, i)), mp((i, 0)), mp((i, 1))
-        draw_line(img, pos1, pos2, 1)
-        draw_line(img, pos3, pos4, 1)
+    for i in range(1, cuts_w + 1):
+         pos1, pos2 = mp((i * GRID_CELL_SIZE, 0)), mp((i * GRID_CELL_SIZE, height))
+         draw_line(img, pos1, pos2, 1)
+    for i in range(1, cuts_h + 1):
+         pos1, pos2 = mp((0, i * GRID_CELL_SIZE)), mp((width, i * GRID_CELL_SIZE))
+         draw_line(img, pos1, pos2, 1)
 
 
 def scale_position(pos:tuple[float, float], scale_factor:float) -> tuple[float, float]:
         return tuple(map(lambda x: x * scale_factor, pos))
-
-
-def set_brightness(img:np.ndarray, factor:float) -> np.ndarray:
-    return np.clip((img.astype(np.float32) * factor), 0, 255).astype(np.uint8)
