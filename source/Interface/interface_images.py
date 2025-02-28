@@ -1,4 +1,5 @@
 from PIL import ImageTk
+import cv2
 import numpy as np
 
 from containers import ContRecording
@@ -12,6 +13,7 @@ class InterfaceImages:
     image_raw:ImageTk.PhotoImage = None
     image_gazemapped:ImageTk.PhotoImage = None
     image_perspective:ImageTk.PhotoImage = None
+    image_static:ImageTk.PhotoImage = None
 
     index_raw_current = -1
     frame_raw = None
@@ -22,7 +24,7 @@ class InterfaceImages:
     reference_image_scaled = None
     reference_image_scale_factor = 0
 
-    field_image = None
+    static_image = None #TODO: Replace later
 
     index = 0 # Current index in export data
     t = 0 # Percentage between current index and next index
@@ -34,6 +36,8 @@ class InterfaceImages:
         self.active_recording:ContRecording = None
         self.video:Video
         self.resources = Resources()
+
+        self.static_image = cv2.imread('data/static_video_placeholder.png') #TODO: Replace later
     
 
     def set_recording(self, recording:ContRecording, resources:Resources):
@@ -69,7 +73,7 @@ class InterfaceImages:
             b = self.data[self.index + 1]['Timestamp']
             self.t = max(min((timestamp - a) / (b - a), 1), 0)
 
-        # Raw image
+        # Raw video image
         index_raw = self.video.get_index_at_timestamp(timestamp)
         if (index_raw != self.index_raw_current):
             self.index_current = index_raw
@@ -93,6 +97,11 @@ class InterfaceImages:
             modify_position = lambda p: (p[0] / self.w * self.reference_image_width, p[1] / self.h * self.reference_image_height)
             reference_image_final = self.add_gaze_circle(self.reference_image_scaled.copy(), position, modify_position)
             self.image_gazemapped = cvimage_to_tkimage(reference_image_final)
+
+        # Static video image TODO: Replace later
+        if (size_changed):
+            static_image_scaled, _ = resize_image_to_fit(self.static_image, (width, height))
+            self.image_static = cvimage_to_tkimage(static_image_scaled)
         
         # Perspective image
         if (timestamp_changed or size_changed):
@@ -101,7 +110,7 @@ class InterfaceImages:
             field_image_final = self.add_gaze_circle(field_image_scaled, position, self.map_to_field)
             self.image_perspective = cvimage_to_tkimage(field_image_final)
 
-        return (self.image_raw, self.image_gazemapped, self.image_perspective)
+        return (self.image_raw, self.image_gazemapped, self.image_perspective, self.image_static)
     
 
     def map_to_field(self, p):

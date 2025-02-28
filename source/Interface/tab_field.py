@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from resources import Resources
-from interface.interface_custom import Tab, update_text_widget
+from interface.interface_custom import Tab, update_text_widget, x_y_input
 from interface.grid_editor import GridEditor
 
 
@@ -38,25 +38,23 @@ class TabField(Tab):
         self.dimensions_label = tk.Text(self.information_frame, height=1, wrap="word", state="disabled", bg='gray94', borderwidth=0)
         update_text_widget(self.dimensions_label, "Plane dimensions (cm):")
         self.dimensions_label.pack(anchor="w")
-        self.dimensions_frame = ttk.Frame(self.information_frame)
+        self.dimensions_frame, self.dimensions_input_x, self.dimensions_input_y = x_y_input(self.information_frame)
         self.dimensions_frame.pack(anchor="w")
-        self.dimensions_frame.grid_columnconfigure(0, weight=0)
-        self.dimensions_frame.grid_columnconfigure(1, weight=0)
-        self.dimensions_frame.grid_columnconfigure(2, weight=1)
-        self.dimensions_input_x = tk.Text(self.dimensions_frame, height=1, width=5, wrap="none")
         self.dimensions_input_x.bind("<<Modified>>", lambda event: self.edit_dimension(event, 0))
-        self.dimensions_input_x.grid(row=0, column=0)
-        self.dimensions_input_divider = tk.Text(self.dimensions_frame, height=1, width=3, wrap="word", state="disabled", bg='gray94', borderwidth=0)
-        update_text_widget(self.dimensions_input_divider, " x ")
-        self.dimensions_input_divider.grid(row=0, column=1)
-        self.dimensions_input_y = tk.Text(self.dimensions_frame, height=1, width=5, wrap="none")
         self.dimensions_input_y.bind("<<Modified>>", lambda event: self.edit_dimension(event, 1))
-        self.dimensions_input_y.grid(row=0, column=2)
         self.update_dimensions()
 
-        self.remaining_info_label = tk.Text(self.information_frame, wrap="word", state="disabled", bg='gray94', borderwidth=0)
+        self.remaining_info_label = tk.Text(self.information_frame, height=8, wrap="word", state="disabled", bg='gray94', borderwidth=0)
         self.update_information()
         self.remaining_info_label.pack(anchor="w")
+
+        self.flippers_frame, self.flippers_input_x, self.flippers_input_y = x_y_input(self.information_frame)
+        self.flippers_frame.pack(anchor="w")
+        flippers = (tuple)(self.resources.specifications['flippers'])
+        update_text_widget(self.flippers_input_x, flippers[0])
+        update_text_widget(self.flippers_input_y, flippers[1])
+        self.flippers_input_x.bind("<<Modified>>", self.edit_flippers)
+        self.flippers_input_y.bind("<<Modified>>", self.edit_flippers)
 
 
     def callback_change(self, points):
@@ -73,19 +71,31 @@ class TabField(Tab):
             reference.H_computed = False
     
 
-    def edit_dimension(self, event, dimension:int):
-        input = self.dimensions_input_x if dimension == 0 else self.dimensions_input_y
+    def edit_dimension(self, event, axis:int):
+        input = self.dimensions_input_x if axis == 0 else self.dimensions_input_y
         if input.edit_modified() and not self.changing_dimensions:
             try:
                 length_cm = float(input.get("1.0", tk.END).strip())
-                length_px = self.plane_width if dimension == 0 else self.plane_height
+                length_px = self.plane_width if axis == 0 else self.plane_height
                 self.resources.specifications['field']['cms_per_pixel'] = float(length_cm / length_px)
                 self.resources.save_specifications_changes()
-                self.update_dimensions(update_x=(dimension != 0), update_y=(dimension != 1))
+                self.update_dimensions(update_x=(axis != 0), update_y=(axis != 1))
                 self.update_information()
             except:
                 pass
         input.edit_modified(False)
+    
+
+    def edit_flippers(self, event):
+        try:
+            flippers_x = float(self.flippers_input_x.get("1.0", tk.END).strip())
+            flippers_y = float(self.flippers_input_y.get("1.0", tk.END).strip())
+            self.resources.specifications['flippers'] = (flippers_x, flippers_y)
+            self.resources.save_specifications_changes()
+        except:
+            pass
+        self.flippers_input_x.edit_modified(False)
+        self.flippers_input_y.edit_modified(False)
     
 
     def update_dimensions(self, update_x:bool=True, update_y:bool=True):
@@ -109,5 +119,6 @@ class TabField(Tab):
         text = (
             f"\nImage dimensions (px): \n{image_field_w} x {image_field_h}\n\n"
             f"Pixels per cm: \n{pixels_per_cm:.1f}\n\n"
+            f"Flippers position (cm):"
         )
         update_text_widget(self.remaining_info_label, text)

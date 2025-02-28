@@ -56,11 +56,11 @@ class TabRecordings(Tab):
         self.display_gazemapped = ttk.Label(self.selected_recording_displays_frame, anchor="center", background="lightblue")
         self.display_gazemapped.grid(row=0, column=1, sticky="nsew")
 
-        self.display_ball = ttk.Label(self.selected_recording_displays_frame, anchor="center", background="lightblue")
-        self.display_ball.grid(row=0, column=2, sticky="nsew")
-
         self.display_final = ttk.Label(self.selected_recording_displays_frame, anchor="center", background="lightblue")
-        self.display_final.grid(row=0, column=3, sticky="nsew")
+        self.display_final.grid(row=0, column=2, sticky="nsew")
+
+        self.display_ball = ttk.Label(self.selected_recording_displays_frame, anchor="center", background="lightblue")
+        self.display_ball.grid(row=0, column=3, sticky="nsew")
 
         # Media buttons
         self.media_buttons_frame = ttk.Frame(self.selected_recording_frame)
@@ -94,7 +94,7 @@ class TabRecordings(Tab):
 
         # Add recordings to interface
         for recording in self.resources.recordings:
-            item_id = self.treeview.insert("", "end", text=recording.paths['Directory'])
+            item_id = self.treeview.insert("", "end", values=(f"{recording.paths['Directory']}",))
             self.recording_lookup[item_id] = recording
 
 
@@ -178,11 +178,12 @@ class TabRecordings(Tab):
 
     def update_images(self):
         timestamp = self.stopwatch.get_time()
-        frame_width = self.selected_recording_displays_frame.winfo_width()
-        frame_height = self.selected_recording_displays_frame.winfo_height()
+        frame_width = self.selected_recording_displays_frame.winfo_width() - 24
+        frame_height = self.selected_recording_displays_frame.winfo_height() - 24
 
         # Get and set interface images
-        (image_raw, image_gazemapped, image_perspective) = self.interface_images.get_images(timestamp, (frame_width, frame_height))
+        (image_raw, image_gazemapped, image_perspective, image_static) = self.interface_images.get_images(timestamp, (frame_width, frame_height))
         self.display_raw.config(image=image_raw)
         self.display_gazemapped.config(image=image_gazemapped)
-        self.display_ball.config(image=image_perspective)
+        self.display_final.config(image=image_perspective)
+        self.display_ball.config(image=image_static)

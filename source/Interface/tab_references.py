@@ -52,7 +52,7 @@ class TabReferences(Tab):
 
         # Add references to interface
         for reference in self.resources.references.values():
-            item_id = self.treeview.insert("", "end", text=reference.name)
+            item_id = self.treeview.insert("", "end", values=(f"{reference.name}",))
             self.reference_lookup[item_id] = reference
 
 

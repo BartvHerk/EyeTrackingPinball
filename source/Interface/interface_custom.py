@@ -54,7 +54,7 @@ class LazyNotebook(ttk.Notebook):
 
 
 def list_layout(master:ttk.Frame, on_item_selected):
-    master.grid_columnconfigure(0, weight=0, minsize=350)
+    master.grid_columnconfigure(0, weight=0, minsize=220)
     master.grid_columnconfigure(1, weight=0, minsize=20)
     master.grid_columnconfigure(2, weight=1)
     master.grid_rowconfigure(0, weight=1)
@@ -65,7 +65,10 @@ def list_layout(master:ttk.Frame, on_item_selected):
 
 
     scrollbar = ttk.Scrollbar(list_frame)
-    treeview = ttk.Treeview(list_frame, yscrollcommand=scrollbar.set, show="tree")
+    treeview = ttk.Treeview(list_frame, yscrollcommand=scrollbar.set, columns=("Item",), show="tree")
+    treeview.heading("Item", text="Item")
+    treeview.column("#0", width=0, stretch=tk.NO)
+    treeview.column("Item", anchor="w")
     scrollbar.configure(command=treeview.yview)
 
     scrollbar.pack(side="right", fill="y")
@@ -77,6 +80,23 @@ def list_layout(master:ttk.Frame, on_item_selected):
     selected_item_frame.grid(row=0, column=2, sticky="nsew")
 
     return (treeview, selected_item_frame)
+
+
+def x_y_input(master:ttk.Frame):
+    x_y_frame = ttk.Frame(master)
+    x_y_frame.grid_columnconfigure(0, weight=0)
+    x_y_frame.grid_columnconfigure(1, weight=0)
+    x_y_frame.grid_columnconfigure(2, weight=1)
+
+    input_x = tk.Text(x_y_frame, height=1, width=5, wrap="none")
+    input_x.grid(row=0, column=0)
+    input_divider = tk.Text(x_y_frame, height=1, width=3, wrap="word", state="disabled", bg='gray94', borderwidth=0)
+    update_text_widget(input_divider, " x ")
+    input_divider.grid(row=0, column=1)
+    input_y = tk.Text(x_y_frame, height=1, width=5, wrap="none")
+    input_y.grid(row=0, column=2)
+
+    return x_y_frame, input_x, input_y
 
 
 def update_text_widget(text_widget:tk.Text, text:str):
