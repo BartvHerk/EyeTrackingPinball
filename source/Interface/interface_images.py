@@ -48,6 +48,7 @@ class InterfaceImages:
         self.reference_image = recording.export.reference.image
         self.w, self.h = recording.export.reference_dimensions
         self.data = recording.export.data
+        self.calculate_aspect()
 
 
     def get_images(self, timestamp:int, size:tuple[int, int]):
@@ -57,10 +58,14 @@ class InterfaceImages:
         size_changed = size != self.size_current
         self.timestamp_current = timestamp
         self.size_current = size
-        width, height = size[0] / 5, size[1]
+        #width, height = size[0] / 5, size[1]
 
         frame_raw_changed = False
         frame_raw_scaled_changed = False
+
+        # Set size
+        if (size_changed):
+            self.set_scale_from_aspect()
 
         # Find moment in export
         if (timestamp_changed):
@@ -80,7 +85,7 @@ class InterfaceImages:
             self.frame_raw = self.video.get_frame_at_index(index_raw)
             frame_raw_changed = True
         if (size_changed or frame_raw_changed):
-            self.frame_raw_scaled, self.frame_raw_scale_factor = resize_image_to_fit(self.frame_raw, (width * 2, height))
+            self.frame_raw_scaled, self.frame_raw_scale_factor = resize_image_to_fit(self.frame_raw, (self.scale * self.raw_aspect, self.scale))
             frame_raw_scaled_changed = True
         if (frame_raw_scaled_changed or timestamp_changed):
             position = self.get_export_position('Interpolated Gaze X', 'Interpolated Gaze Y')
@@ -90,7 +95,7 @@ class InterfaceImages:
 
         # Gazemapped image
         if (size_changed):
-            self.reference_image_scaled, _ = resize_image_to_fit(self.reference_image, (width, height))
+            self.reference_image_scaled, _ = resize_image_to_fit(self.reference_image, (self.scale, self.scale))
             self.reference_image_height, self.reference_image_width = self.reference_image_scaled.shape[:2]
         if (timestamp_changed or size_changed):
             position = self.get_export_position('Mapped Gaze X', 'Mapped Gaze Y')
@@ -100,12 +105,12 @@ class InterfaceImages:
 
         # Static video image TODO: Replace later
         if (size_changed):
-            static_image_scaled, _ = resize_image_to_fit(self.static_image, (width, height))
+            static_image_scaled, _ = resize_image_to_fit(self.static_image, (self.scale, self.scale))
             self.image_static = cvimage_to_tkimage(static_image_scaled)
         
         # Perspective image
         if (timestamp_changed or size_changed):
-            field_image_scaled, self.field_image_scale_factor = resize_image_to_fit(self.resources.image_field, (width, height))
+            field_image_scaled, self.field_image_scale_factor = resize_image_to_fit(self.resources.image_field, (self.scale, self.scale))
             position = self.get_export_position('Perspective Gaze X', 'Perspective Gaze Y')
             field_image_final = self.add_gaze_circle(field_image_scaled, position, self.map_to_field)
             self.image_perspective = cvimage_to_tkimage(field_image_final)
@@ -113,6 +118,24 @@ class InterfaceImages:
         return (self.image_raw, self.image_gazemapped, self.image_perspective, self.image_static)
     
 
+    def calculate_aspect(self):
+        g_height, g_width = self.reference_image.shape[:2]
+        p_height, p_width = self.resources.image_field.shape[:2]
+        s_height, s_width = self.static_image.shape[:2] # TODO: Replace later
+
+        self.raw_aspect = self.video.width / self.video.height
+        self.gazemapped_aspect = g_width / g_height
+        self.perspective_aspect = p_width / p_height
+        self.static_aspect = s_width / s_height
+
+        self.width_aspect = self.raw_aspect + self.gazemapped_aspect + self.perspective_aspect + self.static_aspect
+    
+
+    def set_scale_from_aspect(self):
+        width, height = self.size_current[0], self.size_current[1]
+        self.scale = min(width / self.width_aspect, height)
+    
+    
     def map_to_field(self, p):
         p_mapped = perspective_map(self.resources.H_inv_field, p)
         return tuple(map(lambda x: x * self.field_image_scale_factor, p_mapped))

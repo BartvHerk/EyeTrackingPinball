@@ -44,7 +44,7 @@ class TabRecordings(Tab):
         self.selected_recording_displays_frame.grid(row=0, column=0, sticky="nsew")
         self.selected_recording_displays_frame.grid_propagate(False)
         
-        self.selected_recording_displays_frame.grid_columnconfigure(0, weight=2)
+        self.selected_recording_displays_frame.grid_columnconfigure(0, weight=1)
         self.selected_recording_displays_frame.grid_columnconfigure(1, weight=1)
         self.selected_recording_displays_frame.grid_columnconfigure(2, weight=1)
         self.selected_recording_displays_frame.grid_columnconfigure(3, weight=1)
