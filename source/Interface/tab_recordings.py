@@ -14,6 +14,8 @@ class TabRecordings(Tab):
 
         self.icon_play = tk.PhotoImage(file="assets/button_play.png")
         self.icon_pause = tk.PhotoImage(file="assets/button_pause.png")
+        self.icon_right = tk.PhotoImage(file="assets/button_right.png")
+        self.icon_left = tk.PhotoImage(file="assets/button_left.png")
     
 
     def load(self, master):
@@ -42,48 +44,68 @@ class TabRecordings(Tab):
         # Displays
         self.selected_recording_displays_frame = ttk.Frame(self.selected_recording_frame, relief="groove", borderwidth=1, padding=10)
         self.selected_recording_displays_frame.grid(row=0, column=0, sticky="nsew")
-        self.selected_recording_displays_frame.grid_propagate(False)
+
+        style = ttk.Style()
+        style.configure("Custom.TFrame", background="lightblue")  # Set background color
+        self.selected_recording_displays = ttk.Frame(self.selected_recording_displays_frame, style="Custom.TFrame")
+        self.selected_recording_displays.pack(fill="both", expand=True)
+
+        self.selected_recording_displays.grid_propagate(False)
         
-        self.selected_recording_displays_frame.grid_columnconfigure(0, weight=1)
-        self.selected_recording_displays_frame.grid_columnconfigure(1, weight=1)
-        self.selected_recording_displays_frame.grid_columnconfigure(2, weight=1)
-        self.selected_recording_displays_frame.grid_columnconfigure(3, weight=1)
-        self.selected_recording_displays_frame.grid_rowconfigure(0, weight=1)
+        self.selected_recording_displays.grid_columnconfigure(0, weight=1)
+        self.selected_recording_displays.grid_columnconfigure(1, weight=0)
+        self.selected_recording_displays.grid_columnconfigure(2, weight=0)
+        self.selected_recording_displays.grid_columnconfigure(3, weight=0)
+        self.selected_recording_displays.grid_columnconfigure(4, weight=0)
+        self.selected_recording_displays.grid_columnconfigure(5, weight=1)
+        self.selected_recording_displays.grid_rowconfigure(0, weight=1)
 
-        self.display_raw = ttk.Label(self.selected_recording_displays_frame, anchor="center", background="lightblue")
-        self.display_raw.grid(row=0, column=0, sticky="nsew")
+        self.display_raw = ttk.Label(self.selected_recording_displays, anchor="center", background="lightblue")
+        self.display_raw.grid(row=0, column=1, sticky="nsew")
         
-        self.display_gazemapped = ttk.Label(self.selected_recording_displays_frame, anchor="center", background="lightblue")
-        self.display_gazemapped.grid(row=0, column=1, sticky="nsew")
+        self.display_gazemapped = ttk.Label(self.selected_recording_displays, anchor="center", background="lightblue")
+        self.display_gazemapped.grid(row=0, column=2, sticky="nsew")
 
-        self.display_final = ttk.Label(self.selected_recording_displays_frame, anchor="center", background="lightblue")
-        self.display_final.grid(row=0, column=2, sticky="nsew")
+        self.display_final = ttk.Label(self.selected_recording_displays, anchor="center", background="lightblue")
+        self.display_final.grid(row=0, column=3, sticky="nsew")
 
-        self.display_ball = ttk.Label(self.selected_recording_displays_frame, anchor="center", background="lightblue")
-        self.display_ball.grid(row=0, column=3, sticky="nsew")
+        self.display_ball = ttk.Label(self.selected_recording_displays, anchor="center", background="lightblue")
+        self.display_ball.grid(row=0, column=4, sticky="nsew")
 
         # Media buttons
         self.media_buttons_frame = ttk.Frame(self.selected_recording_frame)
         self.media_buttons_frame.grid(row=2, column=0, sticky="nsew")
 
         self.media_buttons_frame.grid_columnconfigure(0, weight=0)
-        self.media_buttons_frame.grid_columnconfigure(1, weight=0, minsize=10)
+        self.media_buttons_frame.grid_columnconfigure(1, weight=0, minsize=2)
         self.media_buttons_frame.grid_columnconfigure(2, weight=0)
-        self.media_buttons_frame.grid_columnconfigure(3, weight=0, minsize=10)
-        self.media_buttons_frame.grid_columnconfigure(4, weight=1)
+        self.media_buttons_frame.grid_columnconfigure(3, weight=0, minsize=2)
+        self.media_buttons_frame.grid_columnconfigure(4, weight=0)
+        self.media_buttons_frame.grid_columnconfigure(5, weight=0, minsize=10)
+        self.media_buttons_frame.grid_columnconfigure(6, weight=0)
+        self.media_buttons_frame.grid_columnconfigure(7, weight=0, minsize=10)
+        self.media_buttons_frame.grid_columnconfigure(8, weight=1)
         self.media_buttons_frame.grid_rowconfigure(0, weight=1)
 
         self.button_play = ttk.Button(self.media_buttons_frame, image=self.icon_play, command=self.on_button_play_click)
         self.button_play.config(state="disabled")
         self.button_play.grid(row=0, column=0)
 
+        self.button_left = ttk.Button(self.media_buttons_frame, image=self.icon_left, command=lambda: self.scrub_frame(-1))
+        self.button_left.config(state="disabled")
+        self.button_left.grid(row=0, column=2)
+
+        self.button_right = ttk.Button(self.media_buttons_frame, image=self.icon_right, command=lambda: self.scrub_frame(1))
+        self.button_right.config(state="disabled")
+        self.button_right.grid(row=0, column=4)
+
         self.label_timestamp = ttk.Label(self.media_buttons_frame, text=self.format_duration(0))
-        self.label_timestamp.grid(row=0, column=2, sticky="ew")
+        self.label_timestamp.grid(row=0, column=6, sticky="ew")
 
         self.scrubber_value = tk.DoubleVar()
         self.scrubber = ttk.Scale(self.media_buttons_frame, from_=0, to=1, orient="horizontal", variable=self.scrubber_value, command=self.on_scrubber_drag)
         self.scrubber.config(state="disabled")
-        self.scrubber.grid(row=0, column=4, sticky="ew")
+        self.scrubber.grid(row=0, column=8, sticky="ew")
 
         # Information
         self.text_frame = ttk.Frame(self.selected_recording_frame)
@@ -111,6 +133,8 @@ class TabRecordings(Tab):
                 if not already_updating:
                     self.update_images_loop()
                 self.button_play.config(state="normal")
+                self.button_left.config(state="normal")
+                self.button_right.config(state="normal")
                 self.scrubber.config(state="normal")
     
 
@@ -129,6 +153,12 @@ class TabRecordings(Tab):
         self.playing = not self.playing
         self.button_play.config(image=(self.icon_pause if self.playing else self.icon_play))
         self.stopwatch.play() if self.playing else self.stopwatch.pause()
+
+    
+    def scrub_frame(self, offset):
+        duration = self.interface_images.video.frame_duration * offset
+        time = self.stopwatch.get_time() + duration
+        self.stopwatch.set_time(time)
 
 
     def on_scrubber_drag(self, value):
@@ -178,8 +208,8 @@ class TabRecordings(Tab):
 
     def update_images(self):
         timestamp = self.stopwatch.get_time()
-        frame_width = self.selected_recording_displays_frame.winfo_width() - 24
-        frame_height = self.selected_recording_displays_frame.winfo_height() - 24
+        frame_width = self.selected_recording_displays.winfo_width() - 14
+        frame_height = self.selected_recording_displays.winfo_height() - 4
 
         # Get and set interface images
         (image_raw, image_gazemapped, image_perspective, image_static) = self.interface_images.get_images(timestamp, (frame_width, frame_height))

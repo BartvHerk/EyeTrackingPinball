@@ -5,6 +5,7 @@ class Video:
     def __init__(self, path):
         self.cap = cv2.VideoCapture(path)
         self.fps = self.cap.get(cv2.CAP_PROP_FPS)
+        self.frame_duration = 1000 / self.fps
         self.frame_count = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
         self.duration = (self.frame_count / self.fps) * 1000
         self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
