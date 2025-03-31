@@ -5,7 +5,7 @@ from resources import Resources
 from interface.interface_custom import Tab, list_layout, update_text_widget
 from containers import ContReference
 from interface.grid_editor import GridEditor
-from IO import save_reference_points
+from IO import save_reference
 
 
 H_DIGITS = 9
@@ -45,15 +45,22 @@ class TabReferences(Tab):
 
         self.text_frame = ttk.Frame(self.information_frame)
         self.text_frame.grid(row=0, column=0, sticky="nsew")
-        self.text_frame.pack_propagate(False)
+        self.text_frame.grid_propagate(False)
 
         self.text_widget = tk.Text(self.text_frame, wrap="word", state="disabled", bg='gray94', borderwidth=0)
-        self.text_widget.pack(fill="both", expand=True)
+        self.text_widget.grid(row=0, column=0, sticky="w")
+
+        # Field dropdown
+        self.dropdown = ttk.Combobox(self.text_frame, values=list(self.resources.fields.keys()), width=40)
+        self.dropdown.bind("<<ComboboxSelected>>", self.on_dropdown_select)
+        self.dropdown.set("No fields")  # Default text
+        self.dropdown.grid(row=1, column=0, sticky="w")
 
         # Add references to interface
         for reference in self.resources.references.values():
             item_id = self.treeview.insert("", "end", values=(f"{reference.name}",))
             self.reference_lookup[item_id] = reference
+        self.treeview.selection_set(next(iter(self.reference_lookup)))
 
 
     def on_reference_selected(self, event):
@@ -67,13 +74,31 @@ class TabReferences(Tab):
 
     def select_reference(self):
         self.grid_editor.load(self.active_reference.image, self.active_reference.points, self.update_information, self.callback_apply, False)
+        self.grid_editor.field_dimensions = self.resources.fields[self.active_reference.field].field_dimensions
+        self.grid_editor.update_with_matrix()
         self.update_information()
+        self.dropdown.set(self.active_reference.field)
+    
+
+    def on_dropdown_select(self, event):
+        selected_field = self.dropdown.get()
+        if self.resources.fields.get(selected_field, None): # Field exists
+            self.active_reference.field = selected_field
+            self.save_active_reference()
+            self.grid_editor.field_dimensions = self.resources.fields[selected_field].field_dimensions
+            self.grid_editor.update_with_matrix()
+            self.update_information()
 
     
     def callback_apply(self, points):
         self.active_reference.points = list(map(lambda t: tuple(map(round, t)), points))
+        self.save_active_reference()
+    
+
+    def save_active_reference(self):
         self.active_reference.H_computed = False
-        save_reference_points(self.active_reference)
+        save_reference(self.active_reference)
+        self.resources.recalculate_exports()
 
 
     def update_information(self):
@@ -86,10 +111,13 @@ class TabReferences(Tab):
             f"Path:\n{self.active_reference.path}\n\n"
             f"Image dimensions (px): \n{reference_image_width} x {reference_image_height}\n\n"
             f"Homography matrix: \n{self.homography_matrix_text(H)}\n\n"
+            f"Field:"
         )
 
         # Update text widget
         update_text_widget(self.text_widget, text)
+        num_lines = int(self.text_widget.index('end-1c').split('.')[0])
+        self.text_widget.config(height=max(num_lines, 1))
     
 
     def homography_matrix_text(self, H):

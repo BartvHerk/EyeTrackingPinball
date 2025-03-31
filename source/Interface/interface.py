@@ -26,7 +26,7 @@ class Interface:
 
         self.tabs_control.add_tab('Recordings', TabRecordings(self.resources))
         self.tabs_control.add_tab('References', TabReferences(self.resources))
-        self.tabs_control.add_tab('Field', TabField(self.resources))
+        self.tabs_control.add_tab('Fields', TabField(self.resources))
 
         self.tabs_control.load_tab()
 

@@ -4,32 +4,23 @@ import os
 import cv2
 import re
 import numpy as np
+import traceback
+
 
 from pathlib import Path
-from containers import ContReference, ContRecording, ContExport
+from containers import ContReference, ContField, ContRecording, ContExport
 from processing import process_data
 
 
 SENSOR_NAME = 'Pupil_Invisible_Glasses'
 DIR_RECORDINGS = Path('data/recordings')
 DIR_REFERENCE = Path('data/reference')
-FILE_SPECIFICATIONS = Path('data/specifications.json')
+DIR_FIELDS = Path('data/fields')
 FILE_SETTINGS = Path('data/settings.json')
-FILE_FIELD_IMAGE = Path('data/field.png')
+FILE_FIELD_IMAGE = Path('data/fields/field_jurassic_park.png')
 DEFAULT_SETTINGS = {
     "show_plane": True
 }
-
-
-def load_specifications():
-    with open(FILE_SPECIFICATIONS, 'r') as json_file:
-        specifications = json.load(json_file)
-        return specifications
-    
-
-def save_specifications(specifications):
-    with open(FILE_SPECIFICATIONS, 'w') as json_file:
-        json.dump(specifications, json_file, indent=2)
 
 
 def load_settings():
@@ -45,40 +36,70 @@ def save_settings(settings):
         json.dump(settings, json_file, indent=2)
 
 
-def import_references() -> dict[str, ContReference]:
-    references = {}
-    paths = (entry.path for entry in os.scandir(DIR_REFERENCE) if entry.name.endswith(('.jpg', '.png')))
-    reference_points = load_reference_points()
-    for file in paths:
-        path = Path(file)
-        name = path.stem
-        points = None
-        if (name in reference_points):
-            points = list(map(tuple, reference_points[name]))
-        image = cv2.imread(file)
-        references[name] = ContReference(name, path, image, points)
-    return references
-
-
-def load_reference_points() -> np.ndarray:
+def load_dictionary(path:Path):
     try:
-        with open(DIR_REFERENCE / 'reference_points.json', 'r') as json_file:
-            reference_points = json.load(json_file)
-            return reference_points
+        with open(path, 'r') as json_file:
+            return json.load(json_file)
     except:
         return {}
 
 
-def save_reference_points(reference:ContReference):
-    reference_points = load_reference_points()
-    reference_points[reference.name] = reference.points
-    with open(DIR_REFERENCE / 'reference_points.json', 'w') as json_file:
-        json.dump(reference_points, json_file, indent=2)
+def save_dictionary_entry(key, value, path:Path):
+    dict = load_dictionary(path)
+    dict[key] = value
+    with open(path, 'w') as json_file:
+        json.dump(dict, json_file, indent=2)
 
 
-def import_image_field():
-    image_field = cv2.imread(FILE_FIELD_IMAGE)
-    return image_field
+def import_references() -> dict[str, ContReference]:
+    references = {}
+    paths = (entry.path for entry in os.scandir(DIR_REFERENCE) if entry.name.endswith(('.jpg', '.png')))
+    reference_points = load_dictionary(DIR_REFERENCE / 'reference_points.json')
+    for file in paths:
+        path = Path(file)
+        name = path.stem
+        field = ""
+        points = None
+        if (name in reference_points):
+            field = reference_points[name]["field"]
+            try:
+                points = list(map(tuple, reference_points[name]["points"]))
+            except:
+                pass
+        image = cv2.imread(file)
+        references[name] = ContReference(name, path, image, points, field)
+    return references
+
+
+def save_reference(reference:ContReference):
+    obj = {"field": reference.field}
+    try:
+        obj["points"] = list(map(lambda t: tuple(map(round, t)), reference.points.copy()))
+    except:
+        pass
+    save_dictionary_entry(reference.name, obj, DIR_REFERENCE / 'reference_points.json')
+
+
+def import_fields() -> dict[str, ContField]:
+    fields = {}
+    paths = (entry.path for entry in os.scandir(DIR_FIELDS) if entry.name.endswith(('.jpg', '.png')))
+    field_points = load_dictionary(DIR_FIELDS / 'field_points.json')
+    for file in paths:
+        path = Path(file)
+        name = path.stem
+        cms_per_pixel = 0.1
+        points = None
+        if (name in field_points):
+            cms_per_pixel = float(field_points[name]["cms_per_pixel"])
+            points = list(map(tuple, field_points[name]["points"]))
+        image = cv2.imread(file)
+        fields[name] = ContField(name, path, image, points, cms_per_pixel)
+    return fields
+
+
+def save_field(field:ContField):
+    obj = {"cms_per_pixel": field.cms_per_pixel, "points": list(map(lambda t: tuple(map(round, t)), field.points.copy()))}
+    save_dictionary_entry(field.name, obj, DIR_FIELDS / 'field_points.json')
 
 
 def import_recordings() -> list[ContRecording]:
@@ -90,7 +111,7 @@ def import_recordings() -> list[ContRecording]:
 
         # Locate relevant files from recording
         paths['Export'] = next((entry.path for entry in os.scandir(dir_path) if entry.name.endswith('.csv')), "")
-        paths['Video'] = next((entry.path for entry in os.scandir(dir_path) if entry.name.endswith('.mp4')), "")
+        paths['VideoWorld'] = next((entry.path for entry in os.scandir(dir_path) if entry.name == 'World.mp4'), "")
 
         # Create recording container
         recordings.append(ContRecording(paths))
@@ -134,12 +155,14 @@ def import_export_csv(path, references:dict[str, ContReference]) -> ContExport:
             line = jump_section(csv_reader, '#Channel identifier')
             match = re.search(fr"{SENSOR_NAME}_(.*?)_Mapped_Gaze_X", line[index])
             reference = match.group(1) if match else ''
-            if reference in references:
-                container.reference = references[reference]
+            for key in references:
+                if (reference.lower() == key.lower()):
+                    container.reference = references[key]
+                    reference = container.reference.name
             str_x = f'{reference}_Gaze_X'
             str_y = f'{reference}_Gaze_Y'
         except:
-            pass
+            print("Error: Couldn't load gaze mapped datapoints")
 
         # Data
         jump_section(csv_reader, '#DATA')

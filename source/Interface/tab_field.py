@@ -2,8 +2,10 @@ import tkinter as tk
 from tkinter import ttk
 
 from resources import Resources
-from interface.interface_custom import Tab, update_text_widget, x_y_input
+from interface.interface_custom import Tab, list_layout, update_text_widget, x_y_input
 from interface.grid_editor import GridEditor
+from containers import ContField
+from IO import save_field
 
 
 class TabField(Tab):
@@ -14,24 +16,26 @@ class TabField(Tab):
     def load(self, master):
         super().load(master)
 
+        self.field_lookup = {}
+        self.active_field:ContField = None
+
         self.changing_dimensions = False
-        p1, p2 = self.resources.field_points[0], self.resources.field_points[1]
-        self.plane_width, self.plane_height = (abs(p1[0] - p2[0]), abs(p1[1] - p2[1]))
+
+        # List layout
+        self.treeview, selected_item_frame = list_layout(self.tab_frame, self.on_field_selected)
 
         # Split display
-        self.tab_frame.grid_columnconfigure(0, weight=1)
-        self.tab_frame.grid_columnconfigure(1, weight=0, minsize=10)
-        self.tab_frame.grid_columnconfigure(2, weight=1)
-        self.tab_frame.grid_rowconfigure(0, weight=1)
+        selected_item_frame.grid_columnconfigure(0, weight=1)
+        selected_item_frame.grid_columnconfigure(1, weight=0, minsize=10)
+        selected_item_frame.grid_columnconfigure(2, weight=1)
+        selected_item_frame.grid_rowconfigure(0, weight=1)
 
         # Grid editor
-        self.grid_editor = GridEditor(self.tab_frame)
+        self.grid_editor = GridEditor(selected_item_frame)
         self.grid_editor.grid(row=0, column=2, sticky="nsew")
 
-        self.grid_editor.load(self.resources.image_field, self.resources.field_points, self.callback_change, self.callback_apply, True)
-
         # Information
-        self.information_frame = ttk.Frame(self.tab_frame)
+        self.information_frame = ttk.Frame(selected_item_frame)
         self.information_frame.grid(row=0, column=0, sticky="nsew")
         self.information_frame.pack_propagate(False)
 
@@ -42,19 +46,42 @@ class TabField(Tab):
         self.dimensions_frame.pack(anchor="w")
         self.dimensions_input_x.bind("<<Modified>>", lambda event: self.edit_dimension(event, 0))
         self.dimensions_input_y.bind("<<Modified>>", lambda event: self.edit_dimension(event, 1))
-        self.update_dimensions()
 
         self.remaining_info_label = tk.Text(self.information_frame, height=8, wrap="word", state="disabled", bg='gray94', borderwidth=0)
-        self.update_information()
         self.remaining_info_label.pack(anchor="w")
 
-        self.flippers_frame, self.flippers_input_x, self.flippers_input_y = x_y_input(self.information_frame)
+        self.flippers_frame, self.flippers_input_x, self.flippers_input_y = x_y_input(self.information_frame, ", ")
         self.flippers_frame.pack(anchor="w")
-        flippers = (tuple)(self.resources.specifications['flippers'])
+        flippers = [12, 34] # TODO: Add later
         update_text_widget(self.flippers_input_x, flippers[0])
         update_text_widget(self.flippers_input_y, flippers[1])
         self.flippers_input_x.bind("<<Modified>>", self.edit_flippers)
         self.flippers_input_y.bind("<<Modified>>", self.edit_flippers)
+
+        # Add fields to interface
+        for field in self.resources.fields.values():
+            item_id = self.treeview.insert("", "end", values=(f"{field.name}",))
+            self.field_lookup[item_id] = field
+        self.treeview.selection_set(next(iter(self.field_lookup)))
+
+
+    def on_field_selected(self, event):
+        selected_field = self.treeview.selection()
+        if selected_field:
+            field = self.field_lookup.get(selected_field[0])
+            if field:
+                self.active_field = field
+                self.select_field()
+    
+
+    def select_field(self):
+        self.grid_editor.load(self.active_field.image, self.active_field.points, self.callback_change, self.callback_apply, True)
+        p1, p2 = self.grid_editor.points[0], self.grid_editor.points[1]
+        self.plane_width, self.plane_height = (abs(p1[0] - p2[0]), abs(p1[1] - p2[1]))
+        self.grid_editor.field_dimensions = self.plane_width * self.active_field.cms_per_pixel, self.plane_height * self.active_field.cms_per_pixel
+        self.grid_editor.update_with_matrix()
+        self.update_dimensions()
+        self.update_information()
 
 
     def callback_change(self, points):
@@ -63,12 +90,8 @@ class TabField(Tab):
 
     
     def callback_apply(self, points):
-        self.resources.specifications['field']['points'] = list(map(lambda t: tuple(map(round, t)), points.copy()))
-        self.resources.save_specifications_changes()
-        self.resources._H_inv_field = None
-        self.resources.recalculate_exports()
-        for reference in self.resources.references.values():
-            reference.H_computed = False
+        self.active_field.points = points.copy()
+        self.save_active_field()
     
 
     def edit_dimension(self, event, axis:int):
@@ -77,33 +100,37 @@ class TabField(Tab):
             try:
                 length_cm = float(input.get("1.0", tk.END).strip())
                 length_px = self.plane_width if axis == 0 else self.plane_height
-                self.resources.specifications['field']['cms_per_pixel'] = float(length_cm / length_px)
-                self.resources.save_specifications_changes()
+                self.active_field.cms_per_pixel = float(length_cm / length_px)
+                self.save_active_field()
                 self.update_dimensions(update_x=(axis != 0), update_y=(axis != 1))
                 self.update_information()
             except:
-                pass
+                print("Error: Couldn't edit field dimension(s)")
         input.edit_modified(False)
+    
+
+    def save_active_field(self):
+        save_field(self.active_field)
+        self.resources._H_inv_field = None
+        self.resources.recalculate_exports()
+        for reference in self.resources.references.values():
+            reference.H_computed = False
     
 
     def edit_flippers(self, event):
         try:
             flippers_x = float(self.flippers_input_x.get("1.0", tk.END).strip())
             flippers_y = float(self.flippers_input_y.get("1.0", tk.END).strip())
-            self.resources.specifications['flippers'] = (flippers_x, flippers_y)
-            self.resources.save_specifications_changes()
         except:
-            pass
+            print("Error: Couldn't edit flippers")
         self.flippers_input_x.edit_modified(False)
         self.flippers_input_y.edit_modified(False)
     
 
     def update_dimensions(self, update_x:bool=True, update_y:bool=True):
-        (width, height) = (self.plane_width * self.resources.field_scale, self.plane_height * self.resources.field_scale)
+        (width, height) = (self.plane_width * self.active_field.cms_per_pixel, self.plane_height * self.active_field.cms_per_pixel)
         self.grid_editor.field_dimensions = (width, height)
-        self.grid_editor.compute_matrix()
-        self.grid_editor.update_image()
-        self.grid_editor.apply_updated_plane()
+        self.grid_editor.update_with_matrix()
         self.changing_dimensions = True
         if update_x:
             update_text_widget(self.dimensions_input_x, f"{width:.1f}")
@@ -113,9 +140,9 @@ class TabField(Tab):
 
 
     def update_information(self):
-        cm_per_pixels = self.resources.field_scale
+        cm_per_pixels = self.active_field.cms_per_pixel
         pixels_per_cm = (1 / cm_per_pixels) if cm_per_pixels != 0 else 0
-        image_field_h, image_field_w = self.resources.image_field.shape[:2]
+        image_field_h, image_field_w = self.active_field.image.shape[:2]
         text = (
             f"\nImage dimensions (px): \n{image_field_w} x {image_field_h}\n\n"
             f"Pixels per cm: \n{pixels_per_cm:.1f}\n\n"

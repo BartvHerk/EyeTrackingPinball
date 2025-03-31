@@ -24,6 +24,8 @@ class InterfaceImages:
     reference_image_scaled = None
     reference_image_scale_factor = 0
 
+    field_image = None
+
     static_image = None #TODO: Replace later
 
     index = 0 # Current index in export data
@@ -41,12 +43,16 @@ class InterfaceImages:
     
 
     def set_recording(self, recording:ContRecording, resources:Resources):
+        self.timestamp_current = -1
+        self.size_current = (-1, -1)
         if (self.active_recording is not None):
             self.video.destroy()
         self.active_recording = recording
-        self.video = Video(recording.paths['Video'])
+        self.video = Video(recording.paths['VideoWorld'])
         self.reference_image = recording.export.reference.image
         self.w, self.h = recording.export.reference_dimensions
+        self.field = resources.fields[recording.export.reference.field]
+        self.field_image = self.field.image
         self.data = recording.export.data
         self.calculate_aspect()
 
@@ -110,7 +116,7 @@ class InterfaceImages:
         
         # Perspective image
         if (timestamp_changed or size_changed):
-            field_image_scaled, self.field_image_scale_factor = resize_image_to_fit(self.resources.image_field, (self.scale, self.scale))
+            field_image_scaled, self.field_image_scale_factor = resize_image_to_fit(self.field_image, (self.scale, self.scale))
             position = self.get_export_position('Perspective Gaze X', 'Perspective Gaze Y')
             field_image_final = self.add_gaze_circle(field_image_scaled, position, self.map_to_field)
             self.image_perspective = cvimage_to_tkimage(field_image_final)
@@ -120,7 +126,7 @@ class InterfaceImages:
 
     def calculate_aspect(self):
         g_height, g_width = self.reference_image.shape[:2]
-        p_height, p_width = self.resources.image_field.shape[:2]
+        p_height, p_width = self.field_image.shape[:2]
         s_height, s_width = self.static_image.shape[:2] # TODO: Replace later
 
         self.raw_aspect = self.video.width / self.video.height
@@ -137,7 +143,7 @@ class InterfaceImages:
     
     
     def map_to_field(self, p):
-        p_mapped = perspective_map(self.resources.H_inv_field, p)
+        p_mapped = perspective_map(self.field.H_inv_field, p)
         return tuple(map(lambda x: x * self.field_image_scale_factor, p_mapped))
     
 

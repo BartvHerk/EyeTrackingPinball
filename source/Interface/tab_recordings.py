@@ -111,13 +111,14 @@ class TabRecordings(Tab):
         self.text_frame = ttk.Frame(self.selected_recording_frame)
         self.text_frame.grid(row=4, column=0, sticky="nsew")
 
-        self.text_widget = tk.Text(self.text_frame, height=2, wrap="word", state="disabled", bg='gray94', borderwidth=0)
+        self.text_widget = tk.Text(self.text_frame, height=3, wrap="word", state="disabled", bg='gray94', borderwidth=0)
         self.text_widget.pack(fill="both", expand=True)
 
         # Add recordings to interface
         for recording in self.resources.recordings:
             item_id = self.treeview.insert("", "end", values=(f"{recording.paths['Directory']}",))
             self.recording_lookup[item_id] = recording
+        self.treeview.selection_set(next(iter(self.recording_lookup)))
 
 
     def on_recording_selected(self, event):
@@ -182,7 +183,8 @@ class TabRecordings(Tab):
         video = self.interface_images.video
 
         text = (
-            f"Recording:  Path = {self.active_recording.paths['Directory']},  Duration = {self.format_duration(video.duration)},  Date = {export.info['Recording time']}\n"
+            f"Export:  Path = {self.active_recording.paths['Directory']},  Duration = {self.format_duration(export.data[len(export.data) - 1]['Timestamp'])},  Date = {export.info['Recording time']},  Reference = {export.reference.name}\n"
+            f"World video:  Duration = {self.format_duration(video.duration)}\n"
             f"Respondent:  Name = {export.info['Respondent Name']},  Age = {export.info['Respondent Age']},  Gender = {export.info['Respondent Gender']}"
         )
 

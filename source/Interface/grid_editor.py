@@ -19,7 +19,7 @@ class GridEditor(ttk.Frame):
         self.points_saved:list[tuple[int, int]] = None
         self.editing = False
         self.rectified = True
-        self.field_dimensions = self.resources.field_dimensions
+        self.field_dimensions = [1, 1]
 
         # Split display
         self.grid_columnconfigure(0, weight=1)
@@ -68,6 +68,8 @@ class GridEditor(ttk.Frame):
 
     
     def load(self, img:np.ndarray, points:list[tuple[int, int]], callback_change, callback_apply, rectified:bool=True):
+        if self.editing:
+            self.revert()
         self.button_edit.config(state="normal")
         self.check_button_show.config(state="normal")
         self.callback_change = callback_change
@@ -137,7 +139,7 @@ class GridEditor(ttk.Frame):
                 self.H_inv = perspective_mapping_inverse(self.H)
                 self.valid_matrix = True
             except:
-                pass
+                print("Error: Couldn't invert plane editor homography matrix")
     
 
     def update_image(self):
@@ -155,7 +157,7 @@ class GridEditor(ttk.Frame):
             self.image_label.config(image=image)
             self.image_label.image = image
         except:
-            pass
+            print("Error: Couldn't update grid editor image")
     
 
     def edit_start(self):
@@ -177,10 +179,6 @@ class GridEditor(ttk.Frame):
     def apply(self):
         self.edit_finish()
         self.points_saved = self.points
-        self.apply_updated_plane()
-    
-
-    def apply_updated_plane(self):
         self.callback_apply(self.points)
 
 
@@ -201,3 +199,8 @@ class GridEditor(ttk.Frame):
     def on_resize(self, event):
         if self.img is not None:
             self.update_image()
+    
+
+    def update_with_matrix(self):
+        self.compute_matrix()
+        self.update_image()

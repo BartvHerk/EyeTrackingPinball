@@ -17,12 +17,10 @@ def cvimage_to_tkimage(img:np.ndarray):
 def resize_image_to_fit(img:np.ndarray, max_size:tuple[int, int]=MAX_DIMENSIONS):
     height, width = img.shape[:2]
     max_width, max_height = max_size
-    max_width = max(max_width, 1)
-    max_height = max(max_height, 1)
     if width <= max_width and height <= max_height: # Don't scale if size already fits
-        return img, 1.0
+        return img.copy(), 1.0
     scale_factor = min(max_width / width, max_height / height)
-    new_size = (int(width * scale_factor), int(height * scale_factor))
+    new_size = (max(int(width * scale_factor), 1), max(int(height * scale_factor), 1))
     new_img = cv2.resize(img, new_size, interpolation=cv2.INTER_AREA) # Scale
     return new_img, scale_factor
 

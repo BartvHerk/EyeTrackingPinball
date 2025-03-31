@@ -82,7 +82,7 @@ def list_layout(master:ttk.Frame, on_item_selected):
     return (treeview, selected_item_frame)
 
 
-def x_y_input(master:ttk.Frame):
+def x_y_input(master:ttk.Frame, separator:str=" x "):
     x_y_frame = ttk.Frame(master)
     x_y_frame.grid_columnconfigure(0, weight=0)
     x_y_frame.grid_columnconfigure(1, weight=0)
@@ -90,8 +90,8 @@ def x_y_input(master:ttk.Frame):
 
     input_x = tk.Text(x_y_frame, height=1, width=5, wrap="none")
     input_x.grid(row=0, column=0)
-    input_divider = tk.Text(x_y_frame, height=1, width=3, wrap="word", state="disabled", bg='gray94', borderwidth=0)
-    update_text_widget(input_divider, " x ")
+    input_divider = tk.Text(x_y_frame, height=1, width=len(separator), wrap="word", state="disabled", bg='gray94', borderwidth=0)
+    update_text_widget(input_divider, separator)
     input_divider.grid(row=0, column=1)
     input_y = tk.Text(x_y_frame, height=1, width=5, wrap="none")
     input_y.grid(row=0, column=2)

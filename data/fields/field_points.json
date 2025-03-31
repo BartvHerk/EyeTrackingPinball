@@ -1,0 +1,28 @@
+{
+  "field_jurassic_park": {
+    "cms_per_pixel": 0.1001926782273603,
+    "points": [
+      [
+        544,
+        1252
+      ],
+      [
+        25,
+        109
+      ]
+    ]
+  },
+  "field_mandalorian": {
+    "cms_per_pixel": 0.10483870967741936,
+    "points": [
+      [
+        519,
+        89
+      ],
+      [
+        23,
+        1185
+      ]
+    ]
+  }
+}
