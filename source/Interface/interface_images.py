@@ -26,7 +26,10 @@ class InterfaceImages:
 
     field_image = None
 
-    static_image = None #TODO: Replace later
+    index_static_current = -1
+    frame_static = None
+    frame_static_scaled = None
+    frame_static_scale_factor = 0
 
     index = 0 # Current index in export data
     t = 0 # Percentage between current index and next index
@@ -36,23 +39,26 @@ class InterfaceImages:
         self.timestamp_current = -1
         self.size_current = (-1, -1)
         self.active_recording:ContRecording = None
-        self.video:Video
+        self.videoWorld:Video
+        self.videoField:Video
         self.resources = Resources()
-
         self.static_image = cv2.imread('data/static_video_placeholder.png') #TODO: Replace later
     
 
     def set_recording(self, recording:ContRecording, resources:Resources):
         self.timestamp_current = -1
+        self.index_static_current = -1
         self.size_current = (-1, -1)
         if (self.active_recording is not None):
-            self.video.destroy()
+            self.videoWorld.destroy()
         self.active_recording = recording
-        self.video = Video(recording.paths['VideoWorld'])
+        self.videoWorld = Video(recording.paths['VideoWorld'])
+        self.videoField = Video(recording.paths['VideoField'], 1)
         self.reference_image = recording.export.reference.image
         self.w, self.h = recording.export.reference_dimensions
         self.field = resources.fields[recording.export.reference.field]
         self.field_image = self.field.image
+        self.image_static = None
         self.data = recording.export.data
         self.calculate_aspect()
 
@@ -64,10 +70,11 @@ class InterfaceImages:
         size_changed = size != self.size_current
         self.timestamp_current = timestamp
         self.size_current = size
-        #width, height = size[0] / 5, size[1]
 
         frame_raw_changed = False
         frame_raw_scaled_changed = False
+        frame_static_changed = False
+        frame_static_scaled_changed = False
 
         # Set size
         if (size_changed):
@@ -85,10 +92,10 @@ class InterfaceImages:
             self.t = max(min((timestamp - a) / (b - a), 1), 0)
 
         # Raw video image
-        index_raw = self.video.get_index_at_timestamp(timestamp)
+        index_raw = self.videoWorld.get_index_at_timestamp(timestamp)
         if (index_raw != self.index_raw_current):
-            self.index_current = index_raw
-            self.frame_raw = self.video.get_frame_at_index(index_raw)
+            self.index_raw_current = index_raw
+            self.frame_raw = self.videoWorld.get_frame_at_index(index_raw)
             frame_raw_changed = True
         if (size_changed or frame_raw_changed):
             self.frame_raw_scaled, self.frame_raw_scale_factor = resize_image_to_fit(self.frame_raw, (self.scale * self.raw_aspect, self.scale))
@@ -110,9 +117,18 @@ class InterfaceImages:
             self.image_gazemapped = cvimage_to_tkimage(reference_image_final)
 
         # Static video image TODO: Replace later
-        if (size_changed):
-            static_image_scaled, _ = resize_image_to_fit(self.static_image, (self.scale, self.scale))
-            self.image_static = cvimage_to_tkimage(static_image_scaled)
+        if self.videoField.ok:
+            index_static = self.videoField.get_index_at_timestamp(timestamp)
+            if (index_static != self.index_static_current):
+                self.index_static_current = index_static
+                self.frame_static = self.videoField.get_frame_at_index(index_static)
+                frame_static_changed = True
+            if (size_changed or frame_static_changed):
+                self.frame_static_scaled, self.frame_static_scale_factor = resize_image_to_fit(self.frame_static, (self.scale * self.static_aspect, self.scale))
+                frame_static_scaled_changed = True
+            if (frame_static_scaled_changed or timestamp_changed):
+                # TODO: Add ball locations
+                self.image_static = cvimage_to_tkimage(self.frame_static_scaled)
         
         # Perspective image
         if (timestamp_changed or size_changed):
@@ -127,12 +143,14 @@ class InterfaceImages:
     def calculate_aspect(self):
         g_height, g_width = self.reference_image.shape[:2]
         p_height, p_width = self.field_image.shape[:2]
-        s_height, s_width = self.static_image.shape[:2] # TODO: Replace later
 
-        self.raw_aspect = self.video.width / self.video.height
+        self.raw_aspect = self.videoWorld.width / self.videoWorld.height
         self.gazemapped_aspect = g_width / g_height
         self.perspective_aspect = p_width / p_height
-        self.static_aspect = s_width / s_height
+        if self.videoField.ok:
+            self.static_aspect = self.videoField.width / self.videoField.height
+        else:
+            self.static_aspect = 0
 
         self.width_aspect = self.raw_aspect + self.gazemapped_aspect + self.perspective_aspect + self.static_aspect
     

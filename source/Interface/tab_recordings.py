@@ -157,30 +157,30 @@ class TabRecordings(Tab):
 
     
     def scrub_frame(self, offset):
-        duration = self.interface_images.video.frame_duration * offset
+        duration = self.interface_images.videoWorld.frame_duration * offset
         time = self.stopwatch.get_time() + duration
         self.stopwatch.set_time(time)
 
 
     def on_scrubber_drag(self, value):
-        timestamp = (int)(float(value) * self.interface_images.video.duration)
+        timestamp = (int)(float(value) * self.interface_images.videoWorld.duration)
         self.update_timestamp()
         self.stopwatch.set_time(timestamp)
 
     
     def update_scrubber(self):
-        ratio = max(min(self.stopwatch.get_time() / self.interface_images.video.duration, 1), 0)
+        ratio = max(min(self.stopwatch.get_time() / self.interface_images.videoWorld.duration, 1), 0)
         self.scrubber_value.set(ratio)
 
     def update_timestamp(self):
-        timestamp = (int)(self.scrubber_value.get() * self.interface_images.video.duration)
+        timestamp = (int)(self.scrubber_value.get() * self.interface_images.videoWorld.duration)
         self.label_timestamp.config(text=self.format_duration(timestamp))
     
 
     def update_information(self):
         # Get information
         export = self.active_recording.export
-        video = self.interface_images.video
+        video = self.interface_images.videoWorld
 
         text = (
             f"Export:  Path = {self.active_recording.paths['Directory']},  Duration = {self.format_duration(export.data[len(export.data) - 1]['Timestamp'])},  Date = {export.info['Recording time']},  Reference = {export.reference.name}\n"

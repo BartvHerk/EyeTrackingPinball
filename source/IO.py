@@ -112,6 +112,7 @@ def import_recordings() -> list[ContRecording]:
         # Locate relevant files from recording
         paths['Export'] = next((entry.path for entry in os.scandir(dir_path) if entry.name.endswith('.csv')), "")
         paths['VideoWorld'] = next((entry.path for entry in os.scandir(dir_path) if entry.name == 'World.mp4'), "")
+        paths['VideoField'] = next((entry.path for entry in os.scandir(dir_path) if entry.name == 'Field.mp4'), "")
 
         # Create recording container
         recordings.append(ContRecording(paths))
