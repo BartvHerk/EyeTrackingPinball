@@ -42,7 +42,6 @@ class InterfaceImages:
         self.videoWorld:Video
         self.videoField:Video
         self.resources = Resources()
-        self.static_image = cv2.imread('data/static_video_placeholder.png') #TODO: Replace later
     
 
     def set_recording(self, recording:ContRecording, resources:Resources):
@@ -96,7 +95,7 @@ class InterfaceImages:
         if (index_raw != self.index_raw_current):
             self.index_raw_current = index_raw
             self.frame_raw = self.videoWorld.get_frame_at_index(index_raw)
-            frame_raw_changed = True
+            frame_raw_changed = self.frame_raw is not None
         if (size_changed or frame_raw_changed):
             self.frame_raw_scaled, self.frame_raw_scale_factor = resize_image_to_fit(self.frame_raw, (self.scale * self.raw_aspect, self.scale))
             frame_raw_scaled_changed = True
@@ -116,7 +115,7 @@ class InterfaceImages:
             reference_image_final = self.add_gaze_circle(self.reference_image_scaled.copy(), position, modify_position)
             self.image_gazemapped = cvimage_to_tkimage(reference_image_final)
 
-        # Static video image TODO: Replace later
+        # Static video image
         if self.videoField.ok:
             index_static = self.videoField.get_index_at_timestamp(timestamp)
             if (index_static != self.index_static_current):

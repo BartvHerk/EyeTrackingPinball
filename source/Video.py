@@ -1,6 +1,9 @@
 import cv2
 
 
+BUFFER_SIZE = 16
+
+
 class Video:
     def __init__(self, path, rotate=0): # 1 = 90, -1 = -90, 2 = 180
         self.ok = False
@@ -10,6 +13,8 @@ class Video:
         self.ok = self.cap.isOpened()
         if not self.ok:
             return
+        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, BUFFER_SIZE)
+        self.last_index = 0
         self.fps = self.cap.get(cv2.CAP_PROP_FPS)
         self.frame_duration = 1000 / self.fps
         self.frame_count = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -39,7 +44,11 @@ class Video:
     def get_frame_at_index(self, index:int):
         if (not self.ok):
             return None
-        self.cap.set(cv2.CAP_PROP_POS_FRAMES, index)
+        if self.last_index > index - BUFFER_SIZE and self.last_index <= index:
+            [self.cap.read() for _ in range(index - self.last_index - 1)]
+        else:
+            self.cap.set(cv2.CAP_PROP_POS_FRAMES, index)
+        self.last_index = index
         success, frame = self.cap.read()
         if self.rotation is not None:
             frame = cv2.rotate(frame, self.rotation)
