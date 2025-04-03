@@ -33,6 +33,8 @@ class InterfaceImages:
 
     index = 0 # Current index in export data
     t = 0 # Percentage between current index and next index
+    start_time_video_raw = 0
+    start_time_video_static = 0
 
     
     def __init__(self):
@@ -46,6 +48,7 @@ class InterfaceImages:
 
     def set_recording(self, recording:ContRecording, resources:Resources):
         self.timestamp_current = -1
+        self.index = 0
         self.index_static_current = -1
         self.size_current = (-1, -1)
         if (self.active_recording is not None):
@@ -80,22 +83,23 @@ class InterfaceImages:
             self.set_scale_from_aspect()
 
         # Find moment in export
+        timestamp_raw = timestamp + self.start_time_video_raw
         if (timestamp_changed):
             while self.index < len(self.data) - 1:
-                if self.data[self.index + 1]['Timestamp'] > timestamp:
+                if self.data[self.index + 1]['Timestamp'] > timestamp_raw:
                     break
                 self.index += 1
             self.index = min(self.index, len(self.data) - 2)
             a = self.data[self.index]['Timestamp']
             b = self.data[self.index + 1]['Timestamp']
-            self.t = max(min((timestamp - a) / (b - a), 1), 0)
+            self.t = max(min((timestamp_raw - a) / (b - a), 1), 0)
 
         # Raw video image
-        index_raw = self.videoWorld.get_index_at_timestamp(timestamp)
+        index_raw = self.videoWorld.get_index_at_timestamp(timestamp_raw)
         if (index_raw != self.index_raw_current):
             self.index_raw_current = index_raw
             self.frame_raw = self.videoWorld.get_frame_at_index(index_raw)
-            frame_raw_changed = self.frame_raw is not None
+            frame_raw_changed = True
         if (size_changed or frame_raw_changed):
             self.frame_raw_scaled, self.frame_raw_scale_factor = resize_image_to_fit(self.frame_raw, (self.scale * self.raw_aspect, self.scale))
             frame_raw_scaled_changed = True
@@ -117,7 +121,7 @@ class InterfaceImages:
 
         # Static video image
         if self.videoField.ok:
-            index_static = self.videoField.get_index_at_timestamp(timestamp)
+            index_static = self.videoField.get_index_at_timestamp(timestamp + self.start_time_video_static)
             if (index_static != self.index_static_current):
                 self.index_static_current = index_static
                 self.frame_static = self.videoField.get_frame_at_index(index_static)

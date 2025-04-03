@@ -5,10 +5,11 @@ class Stopwatch:
         self.start_time = 0
         self.time_elapsed = 0
         self.playing = False
+        self.limit = 0
     
 
     def set_time(self, time):
-        self.time_elapsed = time / 1000
+        self.time_elapsed = max(time / 1000, 0)
         self.start_time = timeit.default_timer()
     
 
@@ -25,4 +26,4 @@ class Stopwatch:
     
     def get_time(self):
         time_elapsed_since_start = timeit.default_timer() - self.start_time
-        return int((self.time_elapsed + (time_elapsed_since_start if self.playing else 0)) * 1000)
+        return int(min((self.time_elapsed + (time_elapsed_since_start if self.playing else 0)) * 1000, self.limit))

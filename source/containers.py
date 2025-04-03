@@ -96,7 +96,18 @@ class ContRecording:
     def __init__(self, paths:dict): # Only these info keys will be imported
         self.paths = paths
         self._export = None
+        self._metadata = {}
+        self.loaded_metadata = False
     
+
+    @property
+    def metadata(self) -> dict[str, any]:
+        if not self.loaded_metadata:
+            from IO import import_recording_metadata
+            self._metadata = import_recording_metadata(self)
+            self.loaded_metadata = True
+        return self._metadata
+
 
     @property
     def is_complete(self) -> bool:

@@ -2,8 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 
 from resources import Resources
-from interface.interface_custom import Tab, list_layout, update_text_widget
+from interface.interface_custom import Tab, list_layout, set_start_widget, update_text_widget
 from containers import ContRecording
+from IO import save_recording_metadata
 from stopwatch import Stopwatch
 from interface.interface_images import InterfaceImages
 
@@ -50,8 +51,6 @@ class TabRecordings(Tab):
         self.selected_recording_displays = ttk.Frame(self.selected_recording_displays_frame, style="Custom.TFrame")
         self.selected_recording_displays.pack(fill="both", expand=True)
 
-        self.selected_recording_displays.grid_propagate(False)
-        
         self.selected_recording_displays.grid_columnconfigure(0, weight=1)
         self.selected_recording_displays.grid_columnconfigure(1, weight=0)
         self.selected_recording_displays.grid_columnconfigure(2, weight=0)
@@ -59,18 +58,31 @@ class TabRecordings(Tab):
         self.selected_recording_displays.grid_columnconfigure(4, weight=0)
         self.selected_recording_displays.grid_columnconfigure(5, weight=1)
         self.selected_recording_displays.grid_rowconfigure(0, weight=1)
+        self.selected_recording_displays.grid_rowconfigure(1, weight=0)
+        self.selected_recording_displays.grid_rowconfigure(2, weight=0)
+        self.selected_recording_displays.grid_rowconfigure(3, weight=1)
+
+        self.selected_recording_displays.grid_propagate(False)
 
         self.display_raw = ttk.Label(self.selected_recording_displays, anchor="center", background="lightblue")
-        self.display_raw.grid(row=0, column=1, sticky="nsew")
+        self.display_raw.grid(row=1, column=1, sticky="nsew")
+        set_start_frame, self.button_set_start_raw, self.entry_set_start_raw = set_start_widget(self.selected_recording_displays)
+        set_start_frame.grid(row=2, column=1, sticky="nsew")
+        self.button_set_start_raw.config(command=lambda: self.start_time_button_pressed('start_world'))
+        self.entry_set_start_raw.bind("<<Modified>>", lambda event: self.start_time_edited(event, 'start_world'))
         
         self.display_gazemapped = ttk.Label(self.selected_recording_displays, anchor="center", background="lightblue")
-        self.display_gazemapped.grid(row=0, column=2, sticky="nsew")
+        self.display_gazemapped.grid(row=1, column=2, sticky="nsew")
 
         self.display_final = ttk.Label(self.selected_recording_displays, anchor="center", background="lightblue")
-        self.display_final.grid(row=0, column=3, sticky="nsew")
+        self.display_final.grid(row=1, column=3, sticky="nsew")
 
         self.display_ball = ttk.Label(self.selected_recording_displays, anchor="center", background="lightblue")
-        self.display_ball.grid(row=0, column=4, sticky="nsew")
+        self.display_ball.grid(row=1, column=4, sticky="nsew")
+        set_start_frame, self.button_set_start_ball, self.entry_set_start_ball = set_start_widget(self.selected_recording_displays)
+        set_start_frame.grid(row=2, column=4, sticky="nsew")
+        self.button_set_start_ball.config(command=lambda: self.start_time_button_pressed('start_field'))
+        self.entry_set_start_ball.bind("<<Modified>>", lambda event: self.start_time_edited(event, 'start_field'))
 
         # Media buttons
         self.media_buttons_frame = ttk.Frame(self.selected_recording_frame)
@@ -142,8 +154,50 @@ class TabRecordings(Tab):
     def start_recording(self):
         self.interface_images.set_recording(self.active_recording, self.resources)
         self.update_information()
+        self.recalculate_offset_and_duration()
+        update_text_widget(self.entry_set_start_raw, f"{float(self.start_world / 1000):.3f}")
+        update_text_widget(self.entry_set_start_ball, f"{float(self.start_field / 1000):.3f}")
         self.stopwatch.set_time(0)
         self.stopwatch.play() if self.playing else self.stopwatch.pause()
+    
+
+    def recalculate_offset_and_duration(self):
+        self.start_world = self.active_recording.metadata.get('start_world', 0)
+        self.start_field = self.active_recording.metadata.get('start_field', 0)
+        self.interface_images.start_time_video_raw = self.start_world
+        self.interface_images.start_time_video_static = self.start_field
+        self.interface_images.timestamp_current = -1
+        self.duration = self.interface_images.videoWorld.duration - self.start_world
+        self.stopwatch.limit = self.duration
+    
+
+    def start_time_button_pressed(self, key):
+        widget = self.entry_set_start_raw if key == "start_world" else self.entry_set_start_ball
+        video = self.interface_images.videoWorld if key == "start_world" else self.interface_images.videoField
+        current_time = min((int)(video.last_index * video.frame_duration), 99999)
+        self.active_recording.metadata[key] = current_time
+        save_recording_metadata(self.active_recording)
+        update_text_widget(widget, f"{(current_time / 1000):.3f}")
+        self.recalculate_offset_and_duration()
+    
+
+    def start_time_edited(self, event, key):
+        widget = event.widget
+        text = widget.get("1.0", tk.END).strip()
+        try:
+            start_time = float(text)
+            if start_time > 99.999:
+                start_time = 99.999
+                update_text_widget(widget, f"{start_time:.3f}")
+            start_time_ms = (int)(start_time * 1000)
+            start_time_saved = self.active_recording.metadata.get(key, 0)
+            if start_time_ms != start_time_saved:
+                self.active_recording.metadata[key] = start_time_ms
+                save_recording_metadata(self.active_recording)
+                self.recalculate_offset_and_duration()
+        except:
+            pass
+        widget.edit_modified(False)
 
     
     def end_recording(self):
@@ -163,17 +217,17 @@ class TabRecordings(Tab):
 
 
     def on_scrubber_drag(self, value):
-        timestamp = (int)(float(value) * self.interface_images.videoWorld.duration)
+        timestamp = float(value) * self.duration
         self.update_timestamp()
         self.stopwatch.set_time(timestamp)
 
     
     def update_scrubber(self):
-        ratio = max(min(self.stopwatch.get_time() / self.interface_images.videoWorld.duration, 1), 0)
+        ratio = max(min(self.stopwatch.get_time() / self.duration, 1), 0)
         self.scrubber_value.set(ratio)
 
     def update_timestamp(self):
-        timestamp = (int)(self.scrubber_value.get() * self.interface_images.videoWorld.duration)
+        timestamp = (int)(self.scrubber_value.get() * self.duration)
         self.label_timestamp.config(text=self.format_duration(timestamp))
     
 
@@ -211,7 +265,7 @@ class TabRecordings(Tab):
     def update_images(self):
         timestamp = self.stopwatch.get_time()
         frame_width = self.selected_recording_displays.winfo_width() - 14
-        frame_height = self.selected_recording_displays.winfo_height() - 4
+        frame_height = self.selected_recording_displays.winfo_height() - 32
 
         # Get and set interface images
         (image_raw, image_gazemapped, image_perspective, image_static) = self.interface_images.get_images(timestamp, (frame_width, frame_height))

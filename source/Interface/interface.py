@@ -16,8 +16,8 @@ class Interface:
         # Create window
         self.root = tk.Tk()
         self.root.title("Pinball Tracker")
-        icon = tk.PhotoImage(file = 'assets/icon.png')
-        self.root.iconphoto(True, icon)
+        self.icon = tk.PhotoImage(file = 'assets/icon.png')
+        self.root.iconphoto(True, self.icon)
         self.root.geometry("1200x700")
 
         # Tabs

@@ -1,7 +1,7 @@
 import cv2
 
 
-BUFFER_SIZE = 16
+BUFFER_SIZE = 32
 
 
 class Video:
@@ -44,15 +44,17 @@ class Video:
     def get_frame_at_index(self, index:int):
         if (not self.ok):
             return None
-        if self.last_index > index - BUFFER_SIZE and self.last_index <= index:
+        if (self.last_index > index - BUFFER_SIZE and self.last_index < index):
             [self.cap.read() for _ in range(index - self.last_index - 1)]
         else:
             self.cap.set(cv2.CAP_PROP_POS_FRAMES, index)
         self.last_index = index
         success, frame = self.cap.read()
+        if not success:
+            return self.get_frame_at_index(index - 1)
         if self.rotation is not None:
             frame = cv2.rotate(frame, self.rotation)
-        return frame if success else None
+        return frame
     
 
     def destroy(self):

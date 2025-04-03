@@ -99,6 +99,23 @@ def x_y_input(master:ttk.Frame, separator:str=" x "):
     return x_y_frame, input_x, input_y
 
 
+def set_start_widget(master:ttk.Frame):
+    style = ttk.Style()
+    style.configure("Custom.TButton", background="lightblue")
+
+    set_start_outer = tk.Frame(master, height=20, bg="lightblue")
+    set_start_widget = tk.Frame(set_start_outer, bg="lightblue")
+    set_start_widget.place(relx=0.5, rely=0.5, anchor="center")
+    set_start_inner = tk.Frame(set_start_widget, bg="lightblue")
+    set_start_inner.pack()
+    set_start_button = ttk.Button(set_start_inner, text="Set start", style="Custom.TButton")
+    set_start_button.pack(side="left")
+    set_start_entry = tk.Text(set_start_inner, height=1, width=6, wrap="none")
+    set_start_entry.pack(side="left", padx=(5, 0))
+
+    return set_start_outer, set_start_button, set_start_entry
+
+
 def update_text_widget(text_widget:tk.Text, text:str):
     state = text_widget.cget("state")
     text_widget.config(state="normal")
