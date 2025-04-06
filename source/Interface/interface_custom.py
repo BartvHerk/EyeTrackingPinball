@@ -122,3 +122,46 @@ def update_text_widget(text_widget:tk.Text, text:str):
     text_widget.delete(1.0, "end")
     text_widget.insert(1.0, text)
     text_widget.config(state=state)
+
+
+def create_toplevel(root:tk.Tk, title:str, ok_action=None):
+    toplevel = tk.Toplevel(root)
+
+    # Frame and OK button
+    toplevel_frame = ttk.Frame(toplevel, padding=10)
+    toplevel_frame.pack(fill="both", expand=True)
+    toplevel_frame.grid_columnconfigure(0, weight=1)
+    toplevel_frame.grid_rowconfigure(0, weight=1)
+    toplevel.toplevel_frame = toplevel_frame
+    
+    content_frame = ttk.Frame(toplevel_frame)
+    content_frame.grid(row=0, column=0, sticky="nsew")
+
+    if (ok_action is not None):
+        toplevel_frame.grid_rowconfigure(1, weight=0, minsize=20)
+        toplevel_frame.grid_rowconfigure(2, weight=0)
+        OK_button = ttk.Button(toplevel_frame, text="OK", command=ok_action)
+        OK_button.grid(row=2, column=0)
+    
+    # Settings
+    toplevel.title(title)
+    toplevel.resizable(False, False)
+    return toplevel, content_frame
+
+
+
+def ready_toplevel(toplevel:tk.Toplevel, root:tk.Tk):
+    # Size and position
+    root.update_idletasks()
+    parent_x, parent_y = root.winfo_x(), root.winfo_y()
+    parent_w, parent_h = root.winfo_width(), root.winfo_height()
+    w, h = toplevel.toplevel_frame.winfo_reqwidth(), toplevel.toplevel_frame.winfo_reqheight()
+    x, y = parent_x + (parent_w - w) // 2, parent_y + (parent_h - h) // 2
+
+    # Create window
+    toplevel.geometry(f"{w}x{h}+{x}+{y}")
+
+    # Disable interaction with root
+    toplevel.grab_set()        # Redirect all events to this popup
+    toplevel.transient(root)  # Keep on top of main window
+    toplevel.wait_window()

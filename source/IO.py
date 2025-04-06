@@ -1,10 +1,10 @@
 import csv
 import json
 import os
+import random
 import cv2
 import re
 import numpy as np
-import traceback
 
 
 from pathlib import Path
@@ -18,6 +18,7 @@ DIR_REFERENCE = Path('data/reference')
 DIR_FIELDS = Path('data/fields')
 FILE_SETTINGS = Path('data/settings.json')
 FILE_FIELD_IMAGE = Path('data/fields/field_jurassic_park.png')
+DIR_DATASET = Path('data/dataset')
 DEFAULT_SETTINGS = {
     "show_plane": True
 }
@@ -194,3 +195,39 @@ def import_export_csv(path, references:dict[str, ContReference]) -> ContExport:
             container.data.append(container_row)
     process_data(container)
     return container
+
+
+def load_dataset_frames_for_recording(recording:ContRecording) -> list[int]:
+    name = recording.paths['Directory'].stem
+
+    # Get paths
+    dir_train = DIR_DATASET / "labels/train"
+    dir_val = DIR_DATASET / "labels/val"
+    paths_train, paths_val = [], []
+    if os.path.exists(dir_train):
+        paths_train = list(entry.path for entry in os.scandir(dir_train) if entry.name.endswith(('.txt')))
+    if os.path.exists(dir_val):
+        paths_val = list(entry.path for entry in os.scandir(dir_val) if entry.name.endswith(('.txt')))
+    
+    # Get frames
+    frames = []
+    for path in (paths_train + paths_val):
+        filename:str = Path(path).stem
+        try:
+            frame_nr = (int)(filename.replace(name + "_", ''))
+            frames.append(frame_nr)
+        except:
+            pass
+    return frames
+
+
+def save_dataset_frame_for_recording(recording:ContRecording, index:int, img:np.ndarray, text:str):
+    # Decide if training or validation data
+    data = "train" if random.random() < 0.8 else "val"
+    file_image = DIR_DATASET / f"images/{data}/{recording.paths['Directory'].stem}_{index}.png"
+    file_label = DIR_DATASET / f"labels/{data}/{recording.paths['Directory'].stem}_{index}.txt"
+    os.makedirs(os.path.dirname(file_image), exist_ok=True)
+    os.makedirs(os.path.dirname(file_label), exist_ok=True)
+    cv2.imwrite(file_image, img)
+    with open(file_label, "w") as file:
+        file.write(text)

@@ -5,6 +5,7 @@ from resources import Resources
 from interface.interface_custom import Tab, list_layout, set_start_widget, update_text_widget
 from containers import ContRecording
 from IO import save_recording_metadata
+from interface.annotation import start_annotation
 from stopwatch import Stopwatch
 from interface.interface_images import InterfaceImages
 
@@ -12,18 +13,13 @@ from interface.interface_images import InterfaceImages
 class TabRecordings(Tab):
     def __init__(self, resources:Resources):
         Tab.__init__(self, resources)
-
-        self.icon_play = tk.PhotoImage(file="assets/button_play.png")
-        self.icon_pause = tk.PhotoImage(file="assets/button_pause.png")
-        self.icon_right = tk.PhotoImage(file="assets/button_right.png")
-        self.icon_left = tk.PhotoImage(file="assets/button_left.png")
     
 
     def load(self, master):
         super().load(master)
 
+        self.icons = self.resources.icons
         self.playing = False
-
         self.recording_lookup = {}
         self.active_recording:ContRecording = None
         self.stopwatch = Stopwatch()
@@ -41,6 +37,8 @@ class TabRecordings(Tab):
         self.selected_recording_frame.grid_rowconfigure(2, weight=0)
         self.selected_recording_frame.grid_rowconfigure(3, weight=0, minsize=10)
         self.selected_recording_frame.grid_rowconfigure(4, weight=0)
+        self.selected_recording_frame.grid_rowconfigure(5, weight=0, minsize=10)
+        self.selected_recording_frame.grid_rowconfigure(6, weight=0)
 
         # Displays
         self.selected_recording_displays_frame = ttk.Frame(self.selected_recording_frame, relief="groove", borderwidth=1, padding=10)
@@ -99,15 +97,15 @@ class TabRecordings(Tab):
         self.media_buttons_frame.grid_columnconfigure(8, weight=1)
         self.media_buttons_frame.grid_rowconfigure(0, weight=1)
 
-        self.button_play = ttk.Button(self.media_buttons_frame, image=self.icon_play, command=self.on_button_play_click)
+        self.button_play = ttk.Button(self.media_buttons_frame, image=self.icons.icon_play, command=self.on_button_play_click)
         self.button_play.config(state="disabled")
         self.button_play.grid(row=0, column=0)
 
-        self.button_left = ttk.Button(self.media_buttons_frame, image=self.icon_left, command=lambda: self.scrub_frame(-1))
+        self.button_left = ttk.Button(self.media_buttons_frame, image=self.icons.icon_left, command=lambda: self.scrub_frame(-1))
         self.button_left.config(state="disabled")
         self.button_left.grid(row=0, column=2)
 
-        self.button_right = ttk.Button(self.media_buttons_frame, image=self.icon_right, command=lambda: self.scrub_frame(1))
+        self.button_right = ttk.Button(self.media_buttons_frame, image=self.icons.icon_right, command=lambda: self.scrub_frame(1))
         self.button_right.config(state="disabled")
         self.button_right.grid(row=0, column=4)
 
@@ -125,6 +123,12 @@ class TabRecordings(Tab):
 
         self.text_widget = tk.Text(self.text_frame, height=3, wrap="word", state="disabled", bg='gray94', borderwidth=0)
         self.text_widget.pack(fill="both", expand=True)
+
+        # Action buttons
+        action_button_frame = ttk.Frame(self.selected_recording_frame)
+        action_button_frame.grid(row=6, column=0, sticky="nsew")
+        self.button_annotate = ttk.Button(action_button_frame, text="Annotate frames", command=lambda: start_annotation(self.active_recording))
+        self.button_annotate.pack(side="left")
 
         # Add recordings to interface
         for recording in self.resources.recordings:
@@ -206,7 +210,7 @@ class TabRecordings(Tab):
     
     def on_button_play_click(self):
         self.playing = not self.playing
-        self.button_play.config(image=(self.icon_pause if self.playing else self.icon_play))
+        self.button_play.config(image=(self.icons.icon_pause if self.playing else self.icons.icon_play))
         self.stopwatch.play() if self.playing else self.stopwatch.pause()
 
     

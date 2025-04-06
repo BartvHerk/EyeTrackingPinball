@@ -2,9 +2,9 @@ import math
 import cv2
 import numpy as np
 from PIL import ImageTk, Image
+from resources import Resources
 
 
-MAX_DIMENSIONS = (900, 900)
 GRID_CELL_SIZE = 10
 
 
@@ -14,7 +14,10 @@ def cvimage_to_tkimage(img:np.ndarray):
     return ImageTk.PhotoImage(image=image)
 
 
-def resize_image_to_fit(img:np.ndarray, max_size:tuple[int, int]=MAX_DIMENSIONS):
+def resize_image_to_fit(img:np.ndarray, max_size:tuple[int, int]=None):
+    resources = Resources()
+    if max_size is None:
+         max_size = resources.root.winfo_screenwidth() * 0.75, resources.root.winfo_screenheight() * 0.75
     height, width = img.shape[:2]
     max_width, max_height = max_size
     if width <= max_width and height <= max_height: # Don't scale if size already fits
@@ -39,11 +42,11 @@ def draw_line(img:np.ndarray, pos1:tuple[float, float], pos2:tuple[float, float]
     cv2.line(img, pt1, pt2, (0, 255, 255), thickness, cv2.LINE_AA)
 
 
-def draw_polygon(img:np.ndarray, points:list[tuple[float, float]]):
+def draw_polygon(img:np.ndarray, points:list[tuple[float, float]], thickness:int=2):
     for i in range(len(points)):
             pos1 = points[i]
             pos2 = points[(i + 1) % len(points)]
-            draw_line(img, pos1, pos2)
+            draw_line(img, pos1, pos2, thickness)
 
 
 def draw_perspective_grid(img:np.ndarray, H_inv:np.ndarray, scale_factor, field_dimensions):

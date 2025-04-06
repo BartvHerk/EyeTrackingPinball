@@ -18,7 +18,12 @@ class Interface:
         self.root.title("Pinball Tracker")
         self.icon = tk.PhotoImage(file = 'assets/icon.png')
         self.root.iconphoto(True, self.icon)
-        self.root.geometry("1200x700")
+        w, h = 1200, 700
+        screen_w, screen_h = self.root.winfo_screenwidth(), self.root.winfo_screenheight()
+        pos_x, pos_y = (screen_w - w) // 2, (screen_h - h) // 2
+        self.root.geometry(f"{w}x{h}+{pos_x}+{pos_y}")
+
+        self.resources.root = self.root
 
         # Tabs
         self.tabs_control = LazyNotebook(self.root)
