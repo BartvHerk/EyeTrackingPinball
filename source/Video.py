@@ -41,7 +41,7 @@ class Video:
         return min(index, self.frame_count - 1)
     
 
-    def get_frame_at_index(self, index:int):
+    def get_frame_at_index(self, index:int, enable_rotation:bool=True):
         if (not self.ok):
             return None
         if (self.last_index > index - BUFFER_SIZE and self.last_index < index):
@@ -52,7 +52,7 @@ class Video:
         success, frame = self.cap.read()
         if not success:
             return self.get_frame_at_index(index - 1)
-        if self.rotation is not None:
+        if self.rotation is not None and enable_rotation:
             frame = cv2.rotate(frame, self.rotation)
         return frame
     

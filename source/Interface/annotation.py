@@ -70,7 +70,7 @@ def annotate_random_frame(recording:ContRecording, video:Video, frames_left:int)
         nonlocal display_label, frame_text, offset_total, frame, frame_scaled
 
         # Image
-        frame = video.get_frame_at_index(index)
+        frame = video.get_frame_at_index(index, False)
         frame_scaled, _ = resize_image_to_fit(frame)
         update_frame()
 
