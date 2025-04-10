@@ -17,7 +17,7 @@ def cvimage_to_tkimage(img:np.ndarray):
 def resize_image_to_fit(img:np.ndarray, max_size:tuple[int, int]=None):
     resources = Resources()
     if max_size is None:
-         max_size = resources.root.winfo_screenwidth() * 0.75, resources.root.winfo_screenheight() * 0.75
+         max_size = resources.root.winfo_screenwidth() * 0.7, resources.root.winfo_screenheight() * 0.7
     height, width = img.shape[:2]
     max_width, max_height = max_size
     if width <= max_width and height <= max_height: # Don't scale if size already fits
