@@ -74,7 +74,10 @@ class TabReferences(Tab):
 
     def select_reference(self):
         self.grid_editor.load(self.active_reference.image, self.active_reference.points, self.update_information, self.callback_apply, False)
-        self.grid_editor.field_dimensions = self.resources.fields[self.active_reference.field].field_dimensions
+        try:
+            self.grid_editor.field_dimensions = self.resources.fields[self.active_reference.field].field_dimensions
+        except:
+            self.grid_editor.field_dimensions = 100, 100
         self.grid_editor.update_with_matrix()
         self.update_information()
         self.dropdown.set(self.active_reference.field)

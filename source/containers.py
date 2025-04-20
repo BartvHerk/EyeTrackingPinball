@@ -93,28 +93,10 @@ class ContExport:
 
 
 class ContRecording:
-    def __init__(self, paths:dict): # Only these info keys will be imported
+    def __init__(self, paths:dict, metadata): # Only these info keys will be imported
         self.paths = paths
         self._export = None
-        self._metadata = {}
-        self.loaded_metadata = False
-    
-
-    @property
-    def metadata(self) -> dict[str, any]:
-        if not self.loaded_metadata:
-            from IO import import_recording_metadata
-            self._metadata = import_recording_metadata(self)
-            self.loaded_metadata = True
-        return self._metadata
-
-
-    @property
-    def is_complete(self) -> bool:
-        for path in self.paths.values():
-            if path == "":
-                return False
-        return True
+        self.metadata = metadata
     
 
     @property
@@ -132,4 +114,4 @@ class ContRecording:
 
     
     def __repr__(self) -> str:
-        return f"{type(self).__name__}(dir={self.paths['Directory'].stem}, complete={self.is_complete})"
+        return f"{type(self).__name__}(dir={self.paths['Directory'].stem})"

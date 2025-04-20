@@ -25,4 +25,20 @@ def train_model():
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
 
-train_model()
+def perform_tracking():
+    model = YOLO('runs/detect/pinball_detector/weights/best.pt')  # Adjust path if needed
+
+    # Run tracking on a video
+    results = model.track(
+        source='data/recordings/Jesse11apr2/Field_converted.mp4',       # Path to your video
+        show=False,                     # Display live window (optional)
+        save=True,                     # Save the output video
+        tracker='bytetrack.yaml',      # Default tracker (you can customize it)
+        conf=0.25,                      # Confidence threshold
+        stream=True
+    )
+
+    for r in results:
+        pass
+
+perform_tracking()

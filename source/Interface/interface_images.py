@@ -55,7 +55,7 @@ class InterfaceImages:
             self.videoWorld.destroy()
         self.active_recording = recording
         self.videoWorld = Video(recording.paths['VideoWorld'])
-        self.videoField = Video(recording.paths['VideoField'], 1)
+        self.videoField = Video(recording.paths['VideoField'])
         self.reference_image = recording.export.reference.image
         self.w, self.h = recording.export.reference_dimensions
         self.field = resources.fields[recording.export.reference.field]

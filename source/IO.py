@@ -113,16 +113,15 @@ def import_recordings() -> list[ContRecording]:
         # Locate relevant files from recording
         paths['Export'] = next((entry.path for entry in os.scandir(dir_path) if entry.name.endswith('.csv')), "")
         paths['Metadata'] = dir_path / 'metadata.json'
-        paths['VideoWorld'] = next((entry.path for entry in os.scandir(dir_path) if entry.name == 'World.mp4'), "")
-        paths['VideoField'] = next((entry.path for entry in os.scandir(dir_path) if entry.name == 'Field.mp4'), "")
+        metadata = load_dictionary(paths['Metadata'])
+        path_world = metadata.get('video_world', "World")
+        path_field = metadata.get('video_field', "Field")
+        paths['VideoWorld'] = next((entry.path for entry in os.scandir(dir_path) if entry.name == f"{path_world}.mp4"), "")
+        paths['VideoField'] = next((entry.path for entry in os.scandir(dir_path) if entry.name == f"{path_field}.mp4"), "")
 
         # Create recording container
-        recordings.append(ContRecording(paths))
+        recordings.append(ContRecording(paths, metadata))
     return recordings
-
-
-def import_recording_metadata(recording:ContRecording):
-    return load_dictionary(recording.paths['Metadata'])
 
 
 def save_recording_metadata(recording:ContRecording):
