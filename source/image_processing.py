@@ -28,12 +28,17 @@ def resize_image_to_fit(img:np.ndarray, max_size:tuple[int, int]=None):
     return new_img, scale_factor
 
 
-def draw_gaze_circle(img:np.ndarray, position:tuple[float, float]): 
+def draw_circle(img:np.ndarray, position:tuple[float, float], radius:int, color:tuple[int, int, int], outline:bool=False): 
     height, width = img.shape[:2]
     x, y = tuple(map(int, position))
     if x >= 0 and x < width and y >= 0 and y < height:
-        cv2.circle(img, (x, y), 25, (0, 0, 0), 3, cv2.LINE_AA)
-        cv2.circle(img, (x, y), 25, (0, 255, 255), 2, cv2.LINE_AA)
+        if outline:
+            cv2.circle(img, (x, y), radius, (0, 0, 0), 3, cv2.LINE_AA)
+        cv2.circle(img, (x, y), radius, color, 2, cv2.LINE_AA)
+
+
+def draw_gaze_circle(img:np.ndarray, position:tuple[float, float]):
+    draw_circle(img, position, 25, (0, 255, 255), True)
 
 
 def draw_line(img:np.ndarray, pos1:tuple[float, float], pos2:tuple[float, float], thickness:int=2):

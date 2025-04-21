@@ -27,18 +27,53 @@ def train_model():
 
 def perform_tracking():
     model = YOLO('runs/detect/pinball_detector/weights/best.pt')  # Adjust path if needed
+    detections = []
 
     # Run tracking on a video
     results = model.track(
-        source='data/recordings/Jesse11apr2/Field_converted.mp4',       # Path to your video
-        show=False,                     # Display live window (optional)
-        save=True,                     # Save the output video
-        tracker='bytetrack.yaml',      # Default tracker (you can customize it)
-        conf=0.25,                      # Confidence threshold
+        source='data/recordings/Jesse11apr2/Field_converted.mp4',
+        show=False,
+        save=False,
+        save_txt=False,
+        save_conf=False,
+        tracker='bytetrack.yaml',
+        conf=0.15, # Confidence threshold
         stream=True
     )
 
+    # Extract relevant data
+    frame_index = 0
     for r in results:
-        pass
+        if r.boxes is None:
+            frame_index += 1
+            continue
+
+        # Get all boxes, confidences, and IDs if present
+        boxes = r.boxes.xyxy
+        confs = r.boxes.conf
+        ids = r.boxes.id if r.boxes.id is not None else [None] * len(boxes)
+
+        for i, (box, conf, track_id) in enumerate(zip(boxes, confs, ids)):
+            x1, y1, x2, y2 = box.tolist()
+            cx = (x1 + x2) / 2
+            cy = (y1 + y2) / 2
+            radius = ((x2 - x1) + (y2 - y1)) / 4
+
+            conf = float(conf)
+            track_id = int(track_id) if track_id is not None else -1
+
+            # Format: frame_index, track_id, confidence, center_x, center_y, radius
+            detections.append([frame_index, track_id, conf, cx, cy, radius])
+
+        frame_index += 1
+    
+    # Save data
+    output_path = 'data/recordings/Jesse11apr2/tracking_data.txt'
+    with open(output_path, "w") as f:
+        for det in detections:
+            f.write(" ".join(str(x) for x in det) + "\n")
+
+    print(f"Saved {len(detections)} detections to {output_path}")
+
 
 perform_tracking()

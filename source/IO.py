@@ -118,6 +118,7 @@ def import_recordings() -> list[ContRecording]:
         path_field = metadata.get('video_field', "Field")
         paths['VideoWorld'] = next((entry.path for entry in os.scandir(dir_path) if entry.name == f"{path_world}.mp4"), "")
         paths['VideoField'] = next((entry.path for entry in os.scandir(dir_path) if entry.name == f"{path_field}.mp4"), "")
+        paths['Tracking data'] = next((entry.path for entry in os.scandir(dir_path) if entry.name.endswith('.txt')), "")
 
         # Create recording container
         recordings.append(ContRecording(paths, metadata))
@@ -194,6 +195,24 @@ def import_export_csv(path, references:dict[str, ContReference]) -> ContExport:
             container.data.append(container_row)
     process_data(container)
     return container
+
+
+def load_tracking_data(path):
+    detections = []
+    if os.path.exists(path):
+        with open(path, "r") as f:
+            for line in f:
+                parts = line.strip().split()
+                detection = {
+                    'frame_index':int(parts[0]),
+                    'track_id':int(parts[1]),
+                    'confidence':float(parts[2]),
+                    'cx': float(parts[3]),
+                    'cy': float(parts[4]),
+                    'radius': float(parts[5])
+                }
+                detections.append(detection)
+    return detections
 
 
 def load_dataset_frames_for_recording(recording:ContRecording) -> list[int]:

@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 from containers import ContRecording
-from image_processing import cvimage_to_tkimage, resize_image_to_fit, draw_gaze_circle
+from image_processing import cvimage_to_tkimage, draw_circle, resize_image_to_fit, draw_gaze_circle, scale_position
 from video import Video
 from resources import Resources
 from homography import perspective_map
@@ -62,6 +62,9 @@ class InterfaceImages:
         self.field_image = self.field.image
         self.image_static = None
         self.data = recording.export.data
+        self.tracking_data = recording.tracking_data
+        self.index_tracking_data = 0
+        self.frame_index_tracking_data = 0
         self.calculate_aspect()
 
 
@@ -130,7 +133,29 @@ class InterfaceImages:
                 self.frame_static_scaled, self.frame_static_scale_factor = resize_image_to_fit(self.frame_static, (self.scale * self.static_aspect, self.scale))
                 frame_static_scaled_changed = True
             if (frame_static_scaled_changed or timestamp_changed):
-                # TODO: Add ball locations
+                # Get tracking data for frame
+                frame_detections = []
+                try:
+                    self.frame_index_tracking_data = self.tracking_data[self.index_tracking_data]['frame_index']
+                    if self.frame_index_tracking_data > index_static:
+                        self.index_tracking_data = 0
+                    while self.frame_index_tracking_data < index_static:
+                        self.index_tracking_data += 1
+                        self.frame_index_tracking_data = self.tracking_data[self.index_tracking_data]['frame_index']
+                    i = 0
+                    while self.tracking_data[self.index_tracking_data + i]['frame_index'] == index_static:
+                        detection = self.tracking_data[self.index_tracking_data + i]
+                        if detection['confidence'] > 0.2: # TODO: Control confidence elsewhere
+                            frame_detections.append(detection)
+                        i += 1
+                except:
+                    pass
+
+                # Render frame
+                for detection in frame_detections:
+                    position = scale_position((detection['cx'], detection['cy']), self.frame_static_scale_factor)
+                    radius = int(detection['radius'] * self.frame_static_scale_factor)
+                    draw_circle(self.frame_static_scaled, position, radius, (255, 0, 0))
                 self.image_static = cvimage_to_tkimage(self.frame_static_scaled)
         
         # Perspective image

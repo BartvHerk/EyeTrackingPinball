@@ -12,6 +12,10 @@ def process_data(export:ContExport):
     generate_perspective_mapped_data(export)
 
 
+def process_tracking_data(tracking_data): # TODO: Add processing
+    return tracking_data
+
+
 def convert_to_numerics(export:ContExport):
     for row in export.data:
         row['Timestamp'] = int(row['Timestamp']) # Timestamp can always convert

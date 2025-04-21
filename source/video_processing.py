@@ -76,10 +76,6 @@ def convert_video(path, path_output, rotation=0, fps=60, scale=None): # Rotation
     if not os.path.exists(path):
         return
 
-    if path_output is None: # TODO: Move elsewhere
-        base, ext = os.path.splitext(path)
-        path_output = f"{base}_converted{ext}"
-
     # Rotate
     transpose_map = {
         90: "transpose=1",          # clockwise
@@ -108,6 +104,3 @@ def convert_video(path, path_output, rotation=0, fps=60, scale=None): # Rotation
         path_output
     ]
     subprocess.run(cmd)
-
-
-# convert_video("data/recordings/Jesse11apr2/Field.mp4", None, 180)

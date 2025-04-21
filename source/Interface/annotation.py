@@ -16,7 +16,7 @@ def start_annotation(recording:ContRecording):
 
     def OK_action():
         try:
-            video = Video(recording.paths['VideoField'], 1)
+            video = Video(recording.paths['VideoField'])
             frames_left = (int)(count_input.get("1.0", tk.END).strip())
             popup.destroy()
             annotate_random_frame(recording, video, frames_left)
@@ -70,7 +70,7 @@ def annotate_random_frame(recording:ContRecording, video:Video, frames_left:int)
         nonlocal display_label, frame_text, offset_total, frame, frame_scaled
 
         # Image
-        frame = video.get_frame_at_index(index) # TODO: Set rotation to false?
+        frame = video.get_frame_at_index(index)
         frame_scaled, _ = resize_image_to_fit(frame)
         update_frame()
 

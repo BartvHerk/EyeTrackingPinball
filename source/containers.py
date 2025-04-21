@@ -97,21 +97,28 @@ class ContRecording:
         self.paths = paths
         self._export = None
         self.metadata = metadata
+        self._tracking_data = None
     
 
     @property
     def export(self) -> ContExport:
         if self._export is None:
-            self.generate_export()
+            from IO import import_export_csv
+            from resources import Resources
+            resources = Resources()
+            self._export = import_export_csv(self.paths['Export'], resources.references)
         return self._export
     
 
-    def generate_export(self):
-        from IO import import_export_csv
-        from resources import Resources
-        resources = Resources()
-        self._export = import_export_csv(self.paths['Export'], resources.references)
-
+    @property
+    def tracking_data(self):
+        if self._tracking_data is None:
+            from IO import load_tracking_data
+            from processing import process_tracking_data
+            tracking_data = load_tracking_data(self.paths['Tracking data'])
+            self._tracking_data = process_tracking_data(tracking_data)
+        return self._tracking_data
     
+
     def __repr__(self) -> str:
         return f"{type(self).__name__}(dir={self.paths['Directory'].stem})"
