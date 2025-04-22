@@ -12,10 +12,6 @@ def process_data(export:ContExport):
     generate_perspective_mapped_data(export)
 
 
-def process_tracking_data(tracking_data): # TODO: Add processing
-    return tracking_data
-
-
 def convert_to_numerics(export:ContExport):
     for row in export.data:
         row['Timestamp'] = int(row['Timestamp']) # Timestamp can always convert
@@ -69,3 +65,15 @@ def generate_perspective_mapped_data(export:ContExport):
 
 def has_mapped_gaze(row) -> bool:
     return (row['Mapped Gaze X'] is not None) and (row['Mapped Gaze Y'] is not None)
+
+
+def process_tracking_data(tracking_data): # TODO: Add more processing
+    return tracking_data
+
+
+def interpolate_mising_frames(tracking_data, max_gap_frames):
+    last_frame_spotted = {} # Dictionary of the last frame each id was seen
+    i = 0
+    while i < len(tracking_data):
+
+        i += 1

@@ -3,10 +3,17 @@ import cv2
 import numpy as np
 
 from containers import ContRecording
-from image_processing import cvimage_to_tkimage, draw_circle, resize_image_to_fit, draw_gaze_circle, scale_position
+from image_processing import cvimage_to_tkimage, draw_circle, draw_crosshair, resize_image_to_fit, draw_gaze_circle, scale_position
 from video import Video
 from resources import Resources
 from homography import perspective_map
+
+
+COLORS = [(223, 255, 0), (255, 191, 0), (255, 127, 80),
+          (222, 49, 99), (159, 226, 191), (64, 224, 208),
+          (100, 149, 237), (204, 204, 255), (255, 255, 255),
+          (239, 136, 190), (176, 176, 176), (63, 72, 204),
+          (163, 73, 164), (176, 97, 49), (34, 177, 76)]
 
 
 class InterfaceImages:
@@ -63,8 +70,6 @@ class InterfaceImages:
         self.image_static = None
         self.data = recording.export.data
         self.tracking_data = recording.tracking_data
-        self.index_tracking_data = 0
-        self.frame_index_tracking_data = 0
         self.calculate_aspect()
 
 
@@ -134,28 +139,14 @@ class InterfaceImages:
                 frame_static_scaled_changed = True
             if (frame_static_scaled_changed or timestamp_changed):
                 # Get tracking data for frame
-                frame_detections = []
-                try:
-                    self.frame_index_tracking_data = self.tracking_data[self.index_tracking_data]['frame_index']
-                    if self.frame_index_tracking_data > index_static:
-                        self.index_tracking_data = 0
-                    while self.frame_index_tracking_data < index_static:
-                        self.index_tracking_data += 1
-                        self.frame_index_tracking_data = self.tracking_data[self.index_tracking_data]['frame_index']
-                    i = 0
-                    while self.tracking_data[self.index_tracking_data + i]['frame_index'] == index_static:
-                        detection = self.tracking_data[self.index_tracking_data + i]
-                        if detection['confidence'] > 0.2: # TODO: Control confidence elsewhere
-                            frame_detections.append(detection)
-                        i += 1
-                except:
-                    pass
+                frame_detections = [d for d in self.tracking_data.get(index_static, []) if d['confidence'] > 0] # TODO: Control confidence elsewhere
 
                 # Render frame
                 for detection in frame_detections:
                     position = scale_position((detection['cx'], detection['cy']), self.frame_static_scale_factor)
-                    radius = int(detection['radius'] * self.frame_static_scale_factor)
-                    draw_circle(self.frame_static_scaled, position, radius, (255, 0, 0))
+                    color = COLORS[detection['track_id'] % len(COLORS)]
+                    # radius = int(detection['radius'] * self.frame_static_scale_factor)
+                    draw_crosshair(self.frame_static_scaled, position, color)
                 self.image_static = cvimage_to_tkimage(self.frame_static_scaled)
         
         # Perspective image

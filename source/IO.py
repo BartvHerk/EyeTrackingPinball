@@ -198,21 +198,28 @@ def import_export_csv(path, references:dict[str, ContReference]) -> ContExport:
 
 
 def load_tracking_data(path):
-    detections = []
+    detections_by_frame = {}
     if os.path.exists(path):
         with open(path, "r") as f:
-            for line in f:
-                parts = line.strip().split()
-                detection = {
-                    'frame_index':int(parts[0]),
-                    'track_id':int(parts[1]),
-                    'confidence':float(parts[2]),
-                    'cx': float(parts[3]),
-                    'cy': float(parts[4]),
-                    'radius': float(parts[5])
-                }
-                detections.append(detection)
-    return detections
+            while True:
+                header = f.readline()
+                if not header:
+                    break  # End of file
+                frame_index, num_detections = map(int, header.strip().split())
+                detections = []
+                for _ in range(num_detections):
+                    line = f.readline()
+                    parts = line.strip().split()
+                    detection = {
+                        'track_id': int(parts[0]),
+                        'confidence': float(parts[1]),
+                        'cx': float(parts[2]),
+                        'cy': float(parts[3]),
+                        'radius': float(parts[4])
+                    }
+                    detections.append(detection)
+                detections_by_frame[frame_index] = detections
+    return detections_by_frame
 
 
 def load_dataset_frames_for_recording(recording:ContRecording) -> list[int]:

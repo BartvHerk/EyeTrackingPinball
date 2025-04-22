@@ -27,7 +27,7 @@ def train_model():
 
 def perform_tracking():
     model = YOLO('runs/detect/pinball_detector/weights/best.pt')  # Adjust path if needed
-    detections = []
+    detections_total = []
 
     # Run tracking on a video
     results = model.track(
@@ -63,17 +63,28 @@ def perform_tracking():
             track_id = int(track_id) if track_id is not None else -1
 
             # Format: frame_index, track_id, confidence, center_x, center_y, radius
-            detections.append([frame_index, track_id, conf, cx, cy, radius])
+            detections_total.append([frame_index, track_id, conf, cx, cy, radius])
 
         frame_index += 1
+    
+    # Group by frame
+    detections_by_frame = {}
+    for detection in detections_total:
+        frame = detection[0]
+        if frame not in detections_by_frame:
+            detections_by_frame[frame] = []
+        detections_by_frame[frame].append(detection[1:])
     
     # Save data
     output_path = 'data/recordings/Jesse11apr2/tracking_data.txt'
     with open(output_path, "w") as f:
-        for det in detections:
-            f.write(" ".join(str(x) for x in det) + "\n")
+        for frame_idx in sorted(detections_by_frame.keys()):
+            detections = detections_by_frame[frame_idx]
+            f.write(f"{frame_idx} {len(detections)}\n")
+            for det in detections:
+                f.write(" ".join(str(x) for x in det) + "\n")
 
-    print(f"Saved {len(detections)} detections to {output_path}")
+    print(f"Saved {len(detections_total)} detections to {output_path}")
 
 
 perform_tracking()

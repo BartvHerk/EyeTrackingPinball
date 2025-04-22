@@ -6,6 +6,8 @@ from resources import Resources
 
 
 GRID_CELL_SIZE = 10
+IN = 8
+OUT = 25
 
 
 def cvimage_to_tkimage(img:np.ndarray):
@@ -41,10 +43,24 @@ def draw_gaze_circle(img:np.ndarray, position:tuple[float, float]):
     draw_circle(img, position, 25, (0, 255, 255), True)
 
 
-def draw_line(img:np.ndarray, pos1:tuple[float, float], pos2:tuple[float, float], thickness:int=2):
+def draw_crosshair(img:np.ndarray, position:tuple[float, float], color:tuple[int, int, int]):
+     x, y = tuple(map(int, position))
+     r, g, b = color
+     draw_line_outline(img, (x + IN, y + IN), (x + OUT, y + OUT), 3, (b, g, r))
+     draw_line_outline(img, (x + IN, y - IN), (x + OUT, y - OUT), 3, (b, g, r))
+     draw_line_outline(img, (x - IN, y - IN), (x - OUT, y - OUT), 3, (b, g, r))
+     draw_line_outline(img, (x - IN, y + IN), (x - OUT, y + OUT), 3, (b, g, r))
+
+
+def draw_line(img:np.ndarray, pos1:tuple[float, float], pos2:tuple[float, float], thickness:int=2, color:tuple[int, int, int]=(0, 255, 255)):
     pt1 = tuple(map(int, pos1))
     pt2 = tuple(map(int, pos2))
-    cv2.line(img, pt1, pt2, (0, 255, 255), thickness, cv2.LINE_AA)
+    cv2.line(img, pt1, pt2, color, thickness, cv2.LINE_AA)
+
+
+def draw_line_outline(img:np.ndarray, pos1:tuple[float, float], pos2:tuple[float, float], thickness:int=2, color:tuple[int, int, int]=(0, 255, 255)):
+     draw_line(img, pos1, pos2, thickness + 2, (0, 0, 0))
+     draw_line(img, pos1, pos2, thickness, color)
 
 
 def draw_polygon(img:np.ndarray, points:list[tuple[float, float]], thickness:int=2):
