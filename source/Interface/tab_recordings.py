@@ -6,6 +6,7 @@ from interface.interface_custom import Tab, list_layout, set_start_widget, updat
 from containers import ContRecording
 from IO import save_recording_metadata
 from interface.annotation import start_annotation
+from tracking_video import render_tracking_video
 from video_processing import process_video
 from stopwatch import Stopwatch
 from interface.interface_images import InterfaceImages
@@ -131,8 +132,11 @@ class TabRecordings(Tab):
         self.button_annotate = ttk.Button(action_button_frame, text="Annotate frames", command=lambda: start_annotation(self.active_recording))
         self.button_annotate.pack(side="left")
 
-        self.button_process_videos = ttk.Button(action_button_frame, text="Process videos", command=self.start_video_processing)
+        self.button_process_videos = ttk.Button(action_button_frame, text="Preprocess videos", command=self.start_video_processing)
         self.button_process_videos.pack(side="left", padx=(5, 0))
+
+        self.button_render_tracking = ttk.Button(action_button_frame, text="Render tracking video", command=lambda: render_tracking_video(self.active_recording))
+        self.button_render_tracking.pack(side="left", padx=(5, 0))
 
         # Add recordings to interface
         for recording in self.resources.recordings:

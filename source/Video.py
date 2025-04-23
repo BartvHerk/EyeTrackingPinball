@@ -5,7 +5,7 @@ BUFFER_SIZE = 32
 
 
 class Video:
-    def __init__(self, path, rotate=0): # 1 = 90, -1 = -90, 2 = 180
+    def __init__(self, path):
         self.ok = False
         if path == "":
             return
@@ -19,21 +19,8 @@ class Video:
         self.frame_duration = 1000 / self.fps
         self.frame_count = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
         self.duration = (self.frame_count / self.fps) * 1000
-        flip_aspect = rotate % 2 == 1
-        w, h = cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT
-        if flip_aspect:
-            w, h = h, w
-        self.width = int(self.cap.get(w))
-        self.height = int(self.cap.get(h))
-        match rotate:
-            case 1:
-                self.rotation = cv2.ROTATE_90_COUNTERCLOCKWISE
-            case -1:
-                self.rotation = cv2.ROTATE_90_CLOCKWISE
-            case 2:
-                self.rotation = cv2.ROTATE_180
-            case _:
-                self.rotation = None
+        self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        self.height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     
 
     def get_index_at_timestamp(self, timestamp:int):
@@ -52,8 +39,6 @@ class Video:
         success, frame = self.cap.read()
         if not success:
             return self.get_frame_at_index(index - 1)
-        if self.rotation is not None and enable_rotation:
-            frame = cv2.rotate(frame, self.rotation)
         return frame
     
 

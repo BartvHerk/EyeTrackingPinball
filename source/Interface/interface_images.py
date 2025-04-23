@@ -3,17 +3,10 @@ import cv2
 import numpy as np
 
 from containers import ContRecording
-from image_processing import cvimage_to_tkimage, draw_circle, draw_crosshair, resize_image_to_fit, draw_gaze_circle, scale_position
+from image_processing import cvimage_to_tkimage, draw_circle, draw_crosshair, resize_image_to_fit, draw_gaze_circle, scale_position, COLORS
 from video import Video
 from resources import Resources
 from homography import perspective_map
-
-
-COLORS = [(223, 255, 0), (255, 191, 0), (255, 127, 80),
-          (222, 49, 99), (159, 226, 191), (64, 224, 208),
-          (100, 149, 237), (204, 204, 255), (255, 255, 255),
-          (239, 136, 190), (176, 176, 176), (63, 72, 204),
-          (163, 73, 164), (176, 97, 49), (34, 177, 76)]
 
 
 class InterfaceImages:
@@ -60,6 +53,7 @@ class InterfaceImages:
         self.size_current = (-1, -1)
         if (self.active_recording is not None):
             self.videoWorld.destroy()
+            self.videoField.destroy()
         self.active_recording = recording
         self.videoWorld = Video(recording.paths['VideoWorld'])
         self.videoField = Video(recording.paths['VideoField'])
@@ -139,7 +133,7 @@ class InterfaceImages:
                 frame_static_scaled_changed = True
             if (frame_static_scaled_changed or timestamp_changed):
                 # Get tracking data for frame
-                frame_detections = [d for d in self.tracking_data.get(index_static, []) if d['confidence'] > 0] # TODO: Control confidence elsewhere
+                frame_detections = [d for d in self.tracking_data.get(index_static, [])]
 
                 # Render frame
                 for detection in frame_detections:

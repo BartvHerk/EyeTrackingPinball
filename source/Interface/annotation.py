@@ -44,6 +44,7 @@ def start_annotation(recording:ContRecording):
 
 def annotate_random_frame(recording:ContRecording, video:Video, frames_left:int):
     if (frames_left <= 0):
+        video.destroy()
         return
     
     resources = Resources()

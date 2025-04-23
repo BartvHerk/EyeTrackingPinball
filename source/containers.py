@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 
 
@@ -97,6 +98,7 @@ class ContRecording:
         self.paths = paths
         self._export = None
         self.metadata = metadata
+        self._tracking_data_raw = None
         self._tracking_data = None
     
 
@@ -111,12 +113,19 @@ class ContRecording:
     
 
     @property
+    def tracking_data_raw(self):
+        if self._tracking_data_raw is None:
+            from IO import load_tracking_data
+            from processing import remove_low_confidence
+            self._tracking_data_raw = remove_low_confidence(load_tracking_data(self.paths['Tracking data']), 0.2)
+        return self._tracking_data_raw
+    
+
+    @property
     def tracking_data(self):
         if self._tracking_data is None:
-            from IO import load_tracking_data
             from processing import process_tracking_data
-            tracking_data = load_tracking_data(self.paths['Tracking data'])
-            self._tracking_data = process_tracking_data(tracking_data)
+            self._tracking_data = process_tracking_data(copy.deepcopy(self.tracking_data_raw))
         return self._tracking_data
     
 

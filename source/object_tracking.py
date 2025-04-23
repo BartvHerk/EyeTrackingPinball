@@ -31,7 +31,7 @@ def perform_tracking():
 
     # Run tracking on a video
     results = model.track(
-        source='data/recordings/Jesse11apr2/Field_converted.mp4',
+        source='data/recordings/Jesse11apr3/Field_converted.mp4',
         show=False,
         save=False,
         save_txt=False,
@@ -76,7 +76,7 @@ def perform_tracking():
         detections_by_frame[frame].append(detection[1:])
     
     # Save data
-    output_path = 'data/recordings/Jesse11apr2/tracking_data.txt'
+    output_path = 'data/recordings/Jesse11apr3/tracking_data.txt'
     with open(output_path, "w") as f:
         for frame_idx in sorted(detections_by_frame.keys()):
             detections = detections_by_frame[frame_idx]

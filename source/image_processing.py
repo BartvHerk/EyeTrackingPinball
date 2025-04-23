@@ -8,6 +8,11 @@ from resources import Resources
 GRID_CELL_SIZE = 10
 IN = 8
 OUT = 25
+COLORS = [(223, 255, 0), (255, 191, 0), (255, 127, 80),
+          (222, 49, 99), (159, 226, 191), (64, 224, 208),
+          (100, 149, 237), (204, 204, 255), (255, 255, 255),
+          (239, 136, 190), (176, 176, 176), (63, 72, 204),
+          (163, 73, 164), (176, 97, 49), (34, 177, 76)]
 
 
 def cvimage_to_tkimage(img:np.ndarray):
@@ -43,13 +48,13 @@ def draw_gaze_circle(img:np.ndarray, position:tuple[float, float]):
     draw_circle(img, position, 25, (0, 255, 255), True)
 
 
-def draw_crosshair(img:np.ndarray, position:tuple[float, float], color:tuple[int, int, int]):
+def draw_crosshair(img:np.ndarray, position:tuple[float, float], color:tuple[int, int, int], scale:int=1):
      x, y = tuple(map(int, position))
      r, g, b = color
-     draw_line_outline(img, (x + IN, y + IN), (x + OUT, y + OUT), 3, (b, g, r))
-     draw_line_outline(img, (x + IN, y - IN), (x + OUT, y - OUT), 3, (b, g, r))
-     draw_line_outline(img, (x - IN, y - IN), (x - OUT, y - OUT), 3, (b, g, r))
-     draw_line_outline(img, (x - IN, y + IN), (x - OUT, y + OUT), 3, (b, g, r))
+     draw_line_outline(img, (x + IN * scale, y + IN * scale), (x + OUT * scale, y + OUT * scale), 4 * scale, (b, g, r), 2 * scale)
+     draw_line_outline(img, (x + IN * scale, y - IN * scale), (x + OUT * scale, y - OUT * scale), 4 * scale, (b, g, r), 2 * scale)
+     draw_line_outline(img, (x - IN * scale, y - IN * scale), (x - OUT * scale, y - OUT * scale), 4 * scale, (b, g, r), 2 * scale)
+     draw_line_outline(img, (x - IN * scale, y + IN * scale), (x - OUT * scale, y + OUT * scale), 4 * scale, (b, g, r), 2 * scale)
 
 
 def draw_line(img:np.ndarray, pos1:tuple[float, float], pos2:tuple[float, float], thickness:int=2, color:tuple[int, int, int]=(0, 255, 255)):
@@ -58,8 +63,8 @@ def draw_line(img:np.ndarray, pos1:tuple[float, float], pos2:tuple[float, float]
     cv2.line(img, pt1, pt2, color, thickness, cv2.LINE_AA)
 
 
-def draw_line_outline(img:np.ndarray, pos1:tuple[float, float], pos2:tuple[float, float], thickness:int=2, color:tuple[int, int, int]=(0, 255, 255)):
-     draw_line(img, pos1, pos2, thickness + 2, (0, 0, 0))
+def draw_line_outline(img:np.ndarray, pos1:tuple[float, float], pos2:tuple[float, float], thickness:int=2, color:tuple[int, int, int]=(0, 255, 255), outline:int=2):
+     draw_line(img, pos1, pos2, thickness + outline, (0, 0, 0))
      draw_line(img, pos1, pos2, thickness, color)
 
 
