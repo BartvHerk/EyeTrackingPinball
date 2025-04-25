@@ -1,11 +1,13 @@
+import copy
 import tkinter as tk
 from tkinter import ttk
 
 from resources import Resources
 from interface.interface_custom import Tab, list_layout, set_start_widget, update_text_widget
 from containers import ContRecording
-from IO import save_recording_metadata
+from IO import save_recording_metadata, save_tracking_data
 from interface.annotation import start_annotation
+from processing import process_tracking_data
 from tracking_video import render_tracking_video
 from video_processing import process_video
 from stopwatch import Stopwatch
@@ -41,6 +43,8 @@ class TabRecordings(Tab):
         self.selected_recording_frame.grid_rowconfigure(4, weight=0)
         self.selected_recording_frame.grid_rowconfigure(5, weight=0, minsize=10)
         self.selected_recording_frame.grid_rowconfigure(6, weight=0)
+        self.selected_recording_frame.grid_rowconfigure(7, weight=0, minsize=5)
+        self.selected_recording_frame.grid_rowconfigure(8, weight=0)
 
         # Displays
         self.selected_recording_displays_frame = ttk.Frame(self.selected_recording_frame, relief="groove", borderwidth=1, padding=10)
@@ -126,16 +130,24 @@ class TabRecordings(Tab):
         self.text_widget = tk.Text(self.text_frame, height=3, wrap="word", state="disabled", bg='gray94', borderwidth=0)
         self.text_widget.pack(fill="both", expand=True)
 
-        # Action buttons
-        action_button_frame = ttk.Frame(self.selected_recording_frame)
-        action_button_frame.grid(row=6, column=0, sticky="nsew")
-        self.button_annotate = ttk.Button(action_button_frame, text="Annotate frames", command=lambda: start_annotation(self.active_recording))
-        self.button_annotate.pack(side="left")
+        # Action buttons row 1
+        action_button_frame1 = ttk.Frame(self.selected_recording_frame)
+        action_button_frame1.grid(row=6, column=0, sticky="nsew")
 
-        self.button_process_videos = ttk.Button(action_button_frame, text="Preprocess videos", command=self.start_video_processing)
-        self.button_process_videos.pack(side="left", padx=(5, 0))
+        self.button_process_videos = ttk.Button(action_button_frame1, text="Preprocess videos", command=self.start_video_processing)
+        self.button_process_videos.pack(side="left")
 
-        self.button_render_tracking = ttk.Button(action_button_frame, text="Render tracking video", command=lambda: render_tracking_video(self.active_recording))
+        self.button_annotate = ttk.Button(action_button_frame1, text="Annotate frames", command=lambda: start_annotation(self.active_recording))
+        self.button_annotate.pack(side="left", padx=(5, 0))
+
+        # Action buttons row 2
+        action_button_frame2 = ttk.Frame(self.selected_recording_frame)
+        action_button_frame2.grid(row=8, column=0, sticky="nsew")
+
+        self.button_post_tracking = ttk.Button(action_button_frame2, text="Post-process tracking", command=self.post_process_tracking)
+        self.button_post_tracking.pack(side="left")
+
+        self.button_render_tracking = ttk.Button(action_button_frame2, text="Render tracking video", command=lambda: render_tracking_video(self.active_recording))
         self.button_render_tracking.pack(side="left", padx=(5, 0))
 
         # Add recordings to interface
@@ -267,6 +279,15 @@ class TabRecordings(Tab):
 
     def start_video_processing(self):
         process_video(self.active_recording)
+
+    
+    def post_process_tracking(self):
+        tracking_data = process_tracking_data(copy.deepcopy(self.active_recording.tracking_data_raw))
+        self.active_recording.tracking_data = tracking_data
+        save_tracking_data(self.active_recording.paths['Directory'] / "tracking_data_post.txt", tracking_data)
+
+        self.active_recording.metadata['post_processed_tracking'] = "tracking_data_post"
+        save_recording_metadata(self.active_recording)
 
 
     def update_images_loop(self):

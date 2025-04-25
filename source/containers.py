@@ -94,12 +94,12 @@ class ContExport:
 
 
 class ContRecording:
-    def __init__(self, paths:dict, metadata): # Only these info keys will be imported
+    def __init__(self, paths:dict, metadata, tracking_data_raw, tracking_data): # Only these info keys will be imported
         self.paths = paths
         self._export = None
         self.metadata = metadata
-        self._tracking_data_raw = None
-        self._tracking_data = None
+        self.tracking_data_raw = tracking_data_raw
+        self.tracking_data = tracking_data
     
 
     @property
@@ -110,23 +110,6 @@ class ContRecording:
             resources = Resources()
             self._export = import_export_csv(self.paths['Export'], resources.references)
         return self._export
-    
-
-    @property
-    def tracking_data_raw(self):
-        if self._tracking_data_raw is None:
-            from IO import load_tracking_data
-            from processing import remove_low_confidence
-            self._tracking_data_raw = remove_low_confidence(load_tracking_data(self.paths['Tracking data']), 0.2)
-        return self._tracking_data_raw
-    
-
-    @property
-    def tracking_data(self):
-        if self._tracking_data is None:
-            from processing import process_tracking_data
-            self._tracking_data = process_tracking_data(copy.deepcopy(self.tracking_data_raw))
-        return self._tracking_data
     
 
     def __repr__(self) -> str:

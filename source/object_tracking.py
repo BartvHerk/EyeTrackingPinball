@@ -2,6 +2,8 @@ from ultralytics import YOLO
 import yaml, os
 import tempfile
 
+from source.IO import save_tracking_data
+
 
 def train_model():
     # Load and adjust the YAML dynamically
@@ -77,13 +79,7 @@ def perform_tracking():
     
     # Save data
     output_path = 'data/recordings/Jesse11apr3/tracking_data.txt'
-    with open(output_path, "w") as f:
-        for frame_idx in sorted(detections_by_frame.keys()):
-            detections = detections_by_frame[frame_idx]
-            f.write(f"{frame_idx} {len(detections)}\n")
-            for det in detections:
-                f.write(" ".join(str(x) for x in det) + "\n")
-
+    save_tracking_data(output_path, detections_by_frame)
     print(f"Saved {len(detections_total)} detections to {output_path}")
 
 

@@ -1,5 +1,8 @@
 import math
+import statistics
 import numpy as np
+from collections import defaultdict
+import bisect
 
 from containers import ContExport
 
@@ -69,9 +72,14 @@ def has_mapped_gaze(row) -> bool:
 
 
 def process_tracking_data(tracking_data): # TODO: Add more processing
+    if not tracking_data:
+        return tracking_data
+    
+    print("Post-processing...")
     tracking_data = interpolate_missing_frames(tracking_data, 5) # Interpolate gaps of at most five frames
-    tracking_data = merge_lost_tracks(tracking_data, 5, 200) # Merge detections with different IDs if they belong to the same object
-    tracking_data = interpolate_missing_frames(tracking_data, 5) # Interpolate again now that merges have occured
+    tracking_data = merge_lost_tracks(tracking_data, 5, 20) # Merge detections with different IDs if they belong to the same object
+    tracking_data = interpolate_missing_frames(tracking_data, 10) # Interpolate again now that merges have occured
+    print("Finished post-processing")
     return tracking_data
 
 
@@ -130,92 +138,97 @@ def interpolate_missing_frames(tracking_data, max_gap_frames):
 
 
 def merge_lost_tracks(tracking_data, max_difference_frames, max_merge_distance):
-    last_detected = {} # track_id : frame
-    starts = {} # track_id : frame
-    
-    for frame in sorted(tracking_data):
-        # Find last detected and starts
-        detections = tracking_data[frame]
-        for detection in detections:
-            last = last_detected.get(detection['track_id'], -max_difference_frames)
-            if last <= frame - max_difference_frames: # Start found
-                starts[detection['track_id']] = frame
-            last_detected[detection['track_id']] = frame
-        
-        # Only keep recent starts
-        starts = {k: v for k, v in starts.items() if v >= frame - max_difference_frames * 2}
-        
-        # Find ends
-        for id in last_detected.keys():
-            if last_detected[id] <= frame - max_difference_frames: # End found
-                candidates = {} # track_id : distance
-                for id_start in starts.keys():
-                    if id_start == id:
+    print("Merging tracks...")
+
+    frames_total = max(tracking_data)
+    last_detected = {}
+    starts = {}
+    track_detections = defaultdict(lambda: {'frames': [], 'detections': []})
+
+    # Organize and sort detections by track_id
+    for frame_idx, detections in tracking_data.items():
+        for det in detections:
+            track_detections[det['track_id']]['frames'].append(frame_idx)
+            track_detections[det['track_id']]['detections'].append(det)
+
+    # Sort the frames and detections in sync
+    for data in track_detections.values():
+        paired = sorted(zip(data['frames'], data['detections']), key=lambda x: x[0])
+        data['frames'], data['detections'] = zip(*paired)
+
+    def interpolate_position(track_id, frame):
+        data = track_detections.get(track_id)
+        if not data or len(data['frames']) < 2:
+            return None
+
+        frames = data['frames']
+        detections = data['detections']
+
+        idx = bisect.bisect_left(frames, frame)
+
+        if idx == 0:
+            f1, f2 = frames[0], frames[1]
+            d1, d2 = detections[0], detections[1]
+        elif idx >= len(frames):
+            f1, f2 = frames[-2], frames[-1]
+            d1, d2 = detections[-2], detections[-1]
+        else:
+            f1, f2 = frames[idx - 1], frames[idx]
+            d1, d2 = detections[idx - 1], detections[idx]
+
+        alpha = (frame - f1) / (f2 - f1) if f2 != f1 else 0
+        x = d1['cx'] * (1 - alpha) + d2['cx'] * alpha
+        y = d1['cy'] * (1 - alpha) + d2['cy'] * alpha
+        return (x, y)
+
+    for frame in range(frames_total + 1):
+        detections = tracking_data.get(frame, [])
+        for det in detections:
+            last = last_detected.get(det['track_id'], -max_difference_frames)
+            if last <= frame - max_difference_frames:
+                starts[det['track_id']] = frame
+            last_detected[det['track_id']] = frame
+
+        starts = {k: v for k, v in starts.items() if v >= frame - 2 * max_difference_frames}
+
+        for id_end in list(last_detected):
+            if last_detected[id_end] <= frame - max_difference_frames:
+                candidates = {}
+                for id_start, start_frame in starts.items():
+                    if id_start == id_end:
                         continue
 
-                    # Merging candidate found (id and id_start)
-                    frame_swap = (last_detected[id] + starts[id_start]) / 2 # Doesn't have to be an int
-                    pos_end = track_position(tracking_data, id, frame_swap)
-                    pos_start = track_position(tracking_data, id_start, frame_swap)
-                    if (pos_end is None or pos_start is None):
+                    frame_swap = (last_detected[id_end] + start_frame) / 2
+                    pos_end = interpolate_position(id_end, frame_swap)
+                    pos_start = interpolate_position(id_start, frame_swap)
+                    if pos_end is None or pos_start is None:
                         continue
-                    candidates[id_start] = math.dist(pos_end, pos_start)
-                if not candidates:
-                    continue
-                closest_id = min(candidates, key=candidates.get)
-                if candidates[closest_id] <= max_merge_distance:
-                    # Merge (id_start becomes id)
-                    print(f"Merged {id} and {id_start} (around frame {frame_swap}) with distance {candidates[closest_id]}")
-                    for detections in tracking_data.values():
-                        for det in detections:
-                            if det['track_id'] == id_start:
-                                det['track_id'] = id
-                    last_detected[id] = max(last_detected[id], starts[id_start])
-                    starts.pop(id_start)
+                    distance = math.dist(pos_end, pos_start)
+                    candidates[id_start] = distance
 
+                if candidates:
+                    closest_id = min(candidates, key=candidates.get)
+                    if candidates[closest_id] <= max_merge_distance:
+                        # Merge closest_id into id_end
+                        frames_to_merge = track_detections.pop(closest_id)
+                        track_detections[id_end]['frames'] += frames_to_merge['frames']
+                        track_detections[id_end]['detections'] += frames_to_merge['detections']
+
+                        # Sort merged data
+                        paired = sorted(zip(track_detections[id_end]['frames'], track_detections[id_end]['detections']), key=lambda x: x[0])
+                        track_detections[id_end]['frames'], track_detections[id_end]['detections'] = zip(*paired)
+
+                        # Update detections in original tracking_data
+                        for f, det in zip(frames_to_merge['frames'], frames_to_merge['detections']):
+                            for d in tracking_data[f]:
+                                if d is det:
+                                    d['track_id'] = id_end
+                                    break
+
+                        last_detected[id_end] = max(last_detected[id_end], starts[closest_id])
+                        starts.pop(closest_id, None)
+
+        print(f"{frame + 1}/{frames_total + 1}", end='\r', flush=True)
+
+    print("Finished merging tracks")
     return tracking_data
-
-
-def track_position(tracking_data, track_id, frame):
-    # Collect all detections for the given track_id
-    detections = []
-    for frame_idx in tracking_data:
-        for det in tracking_data[frame_idx]:
-            if det['track_id'] == track_id:
-                detections.append((frame_idx, det))
-    detections.sort(key=lambda x: x[0])
-    if not detections:
-        return None
-    if len(detections) == 1:
-        return (detections[0][1]['cx'], detections[0][1]['cy'])
-
-    # If an exact match exists, return directly
-    for frame_idx, det in detections:
-        if frame_idx == frame:
-            return (det['cx'], det['cy'])
-
-    # Find two detections closest to the target frame for interpolation or extrapolation
-    before, after = None, None
-    for i in range(len(detections) - 1):
-        f1, d1 = detections[i]
-        f2, d2 = detections[i + 1]
-        if f1 <= frame <= f2:
-            before = (f1, d1)
-            after = (f2, d2)
-            break
-
-    # If frame is outside the detection range, use the two nearest endpoints
-    if before is None or after is None:
-        if frame < detections[0][0]:
-            before, after = detections[0], detections[1]
-        elif frame > detections[-1][0]:
-            before, after = detections[-2], detections[-1]
-
-    f1, d1 = before
-    f2, d2 = after
-    alpha = (frame - f1) / (f2 - f1)
-
-    x = d1['cx'] * (1 - alpha) + d2['cx'] * alpha
-    y = d1['cy'] * (1 - alpha) + d2['cy'] * alpha
-
-    return (x, y)

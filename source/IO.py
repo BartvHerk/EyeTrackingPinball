@@ -9,7 +9,7 @@ import numpy as np
 
 from pathlib import Path
 from containers import ContReference, ContField, ContRecording, ContExport
-from processing import process_data
+from processing import process_data, remove_low_confidence
 
 
 SENSOR_NAME = 'Pupil_Invisible_Glasses'
@@ -118,10 +118,14 @@ def import_recordings() -> list[ContRecording]:
         path_field = metadata.get('video_field', "Field")
         paths['VideoWorld'] = next((entry.path for entry in os.scandir(dir_path) if entry.name == f"{path_world}.mp4"), "")
         paths['VideoField'] = next((entry.path for entry in os.scandir(dir_path) if entry.name == f"{path_field}.mp4"), "")
-        paths['Tracking data'] = next((entry.path for entry in os.scandir(dir_path) if entry.name.endswith('.txt')), "")
+        path_tracking_data_raw = next((entry.path for entry in os.scandir(dir_path) if entry.name == "tracking_data.txt"), "")
+        path_tracking_data_name = metadata.get('post_processed_tracking', "")
+        path_tracking_data = next((entry.path for entry in os.scandir(dir_path) if entry.name == f"{path_tracking_data_name}.txt"), "")
+        tracking_data_raw = remove_low_confidence(load_tracking_data(path_tracking_data_raw), 0.2)
+        tracking_data = load_tracking_data(path_tracking_data) if path_tracking_data else tracking_data_raw
 
         # Create recording container
-        recordings.append(ContRecording(paths, metadata))
+        recordings.append(ContRecording(paths, metadata, tracking_data_raw, tracking_data))
     return recordings
 
 
@@ -195,6 +199,15 @@ def import_export_csv(path, references:dict[str, ContReference]) -> ContExport:
             container.data.append(container_row)
     process_data(container)
     return container
+
+
+def save_tracking_data(path, tracking_data):
+    with open(path, "w") as f:
+        for frame_idx in sorted(tracking_data.keys()):
+            detections:list[dict] = tracking_data[frame_idx]
+            f.write(f"{frame_idx} {len(detections)}\n")
+            for det in detections:
+                f.write(" ".join(str(x) for x in det.values()) + "\n")
 
 
 def load_tracking_data(path):
