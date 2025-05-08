@@ -75,7 +75,14 @@ def perform_tracking(path, output_path):
         frame = detection[0]
         if frame not in detections_by_frame:
             detections_by_frame[frame] = []
-        detections_by_frame[frame].append(detection[1:])
+        detection_dict = {
+                        'track_id': detection[1],
+                        'confidence': detection[2],
+                        'cx': detection[3],
+                        'cy': detection[4],
+                        'radius': detection[5]
+                    }
+        detections_by_frame[frame].append(detection_dict)
     
     # Save data
     save_tracking_data(output_path, detections_by_frame)
