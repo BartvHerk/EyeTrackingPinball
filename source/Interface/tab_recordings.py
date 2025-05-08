@@ -5,7 +5,7 @@ from tkinter import ttk
 from resources import Resources
 from interface.interface_custom import Tab, list_layout, set_start_widget, update_text_widget
 from containers import ContRecording
-from IO import save_recording_metadata, save_tracking_data
+from IO import load_dataset_frames_for_recording, save_recording_metadata, save_tracking_data
 from interface.annotation import start_annotation
 from processing import process_tracking_data
 from tracking_video import render_tracking_video
@@ -127,7 +127,7 @@ class TabRecordings(Tab):
         self.text_frame = ttk.Frame(self.selected_recording_frame)
         self.text_frame.grid(row=4, column=0, sticky="nsew")
 
-        self.text_widget = tk.Text(self.text_frame, height=3, wrap="word", state="disabled", bg='gray94', borderwidth=0)
+        self.text_widget = tk.Text(self.text_frame, height=5, wrap="word", state="disabled", bg='gray94', borderwidth=0)
         self.text_widget.pack(fill="both", expand=True)
 
         # Action buttons row 1
@@ -258,11 +258,15 @@ class TabRecordings(Tab):
     def update_information(self):
         # Get information
         export = self.active_recording.export
-        video = self.interface_images.videoWorld
+        videoWorld = self.interface_images.videoWorld
+        videoField = self.interface_images.videoField
+        preprocessed = "True" if (self.active_recording.metadata.get('video_world', "") and self.active_recording.metadata.get('video_field', "")) else "False"
 
         text = (
             f"Export:  Path = {self.active_recording.paths['Directory']},  Duration = {self.format_duration(export.data[len(export.data) - 1]['Timestamp'])},  Date = {export.info['Recording time']},  Reference = {export.reference.name}\n"
-            f"World video:  Duration = {self.format_duration(video.duration)}\n"
+            f"World video:  Duration = {self.format_duration(videoWorld.duration)}\n"
+            f"Field video:  Duration = {self.format_duration(videoField.duration)}\n"
+            f"Metadata: Preprocessed = {preprocessed}, Annotations = {len(load_dataset_frames_for_recording(self.active_recording))}\n"
             f"Respondent:  Name = {export.info['Respondent Name']},  Age = {export.info['Respondent Age']},  Gender = {export.info['Respondent Gender']}"
         )
 

@@ -49,6 +49,7 @@ class InterfaceImages:
     def set_recording(self, recording:ContRecording, resources:Resources):
         self.timestamp_current = -1
         self.index = 0
+        self.index_raw_current = -1
         self.index_static_current = -1
         self.size_current = (-1, -1)
         if (self.active_recording is not None):
