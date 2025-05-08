@@ -8,6 +8,7 @@ from containers import ContRecording
 from IO import load_dataset_frames_for_recording, save_recording_metadata, save_tracking_data
 from interface.annotation import start_annotation
 from processing import process_tracking_data
+from object_tracking import perform_tracking
 from tracking_video import render_tracking_video
 from video_processing import process_video
 from stopwatch import Stopwatch
@@ -144,8 +145,11 @@ class TabRecordings(Tab):
         action_button_frame2 = ttk.Frame(self.selected_recording_frame)
         action_button_frame2.grid(row=8, column=0, sticky="nsew")
 
+        self.button_track = ttk.Button(action_button_frame2, text="Perform tracking", command=self.start_perform_tracking)
+        self.button_track.pack(side="left")
+
         self.button_post_tracking = ttk.Button(action_button_frame2, text="Post-process tracking", command=self.post_process_tracking)
-        self.button_post_tracking.pack(side="left")
+        self.button_post_tracking.pack(side="left", padx=(5, 0))
 
         self.button_render_tracking = ttk.Button(action_button_frame2, text="Render tracking video", command=lambda: render_tracking_video(self.active_recording))
         self.button_render_tracking.pack(side="left", padx=(5, 0))
@@ -283,6 +287,12 @@ class TabRecordings(Tab):
 
     def start_video_processing(self):
         process_video(self.active_recording)
+
+    
+    def start_perform_tracking(self):
+        path = self.active_recording.paths['VideoField']
+        output_path = self.active_recording.paths['Directory'] / "tracking_data.txt"
+        perform_tracking(path, output_path)
 
     
     def post_process_tracking(self):

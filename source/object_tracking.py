@@ -2,7 +2,7 @@ from ultralytics import YOLO
 import yaml, os
 import tempfile
 
-from source.IO import save_tracking_data
+from IO import save_tracking_data
 
 
 def train_model():
@@ -21,19 +21,19 @@ def train_model():
     try:
         # Train the model
         model = YOLO('yolov8n.pt')
-        model.train(data=tmp_path, epochs=50, imgsz=960, batch=16, name='pinball_detector')
+        model.train(data=tmp_path, epochs=50, imgsz=960, batch=16, name='pinball_detector_25apr')
     finally:
         # Auto-delete the temp YAML file after training
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
 
-def perform_tracking():
-    model = YOLO('runs/detect/pinball_detector/weights/best.pt')  # Adjust path if needed
+def perform_tracking(path, output_path):
+    model = YOLO('runs/detect/pinball_detector_25apr/weights/best.pt')  # Adjust path if needed
     detections_total = []
 
     # Run tracking on a video
     results = model.track(
-        source='data/recordings/Jesse11apr3/Field_converted.mp4',
+        source=path,
         show=False,
         save=False,
         save_txt=False,
@@ -78,9 +78,5 @@ def perform_tracking():
         detections_by_frame[frame].append(detection[1:])
     
     # Save data
-    output_path = 'data/recordings/Jesse11apr3/tracking_data.txt'
     save_tracking_data(output_path, detections_by_frame)
     print(f"Saved {len(detections_total)} detections to {output_path}")
-
-
-perform_tracking()

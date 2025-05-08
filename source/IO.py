@@ -204,10 +204,10 @@ def import_export_csv(path, references:dict[str, ContReference]) -> ContExport:
 def save_tracking_data(path, tracking_data):
     with open(path, "w") as f:
         for frame_idx in sorted(tracking_data.keys()):
-            detections:list[dict] = tracking_data[frame_idx]
+            detections:list[list] = tracking_data[frame_idx]
             f.write(f"{frame_idx} {len(detections)}\n")
             for det in detections:
-                f.write(" ".join(str(x) for x in det.values()) + "\n")
+                f.write(" ".join(str(x) for x in det) + "\n")
 
 
 def load_tracking_data(path):
