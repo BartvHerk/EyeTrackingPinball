@@ -23,6 +23,8 @@ DEFAULT_SETTINGS = {
     "show_plane": True
 }
 
+TRACKING_DATA_CONFIDENCE = 0.3
+
 
 def load_settings():
     if not os.path.exists(FILE_SETTINGS):
@@ -121,7 +123,7 @@ def import_recordings() -> list[ContRecording]:
         path_tracking_data_raw = next((entry.path for entry in os.scandir(dir_path) if entry.name == "tracking_data.txt"), "")
         path_tracking_data_name = metadata.get('post_processed_tracking', "")
         path_tracking_data = next((entry.path for entry in os.scandir(dir_path) if entry.name == f"{path_tracking_data_name}.txt"), "")
-        tracking_data_raw = remove_low_confidence(load_tracking_data(path_tracking_data_raw), 0.2)
+        tracking_data_raw = remove_low_confidence(load_tracking_data(path_tracking_data_raw), TRACKING_DATA_CONFIDENCE)
         tracking_data = load_tracking_data(path_tracking_data) if path_tracking_data else tracking_data_raw
 
         # Create recording container

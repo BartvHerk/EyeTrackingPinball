@@ -148,7 +148,7 @@ class TabRecordings(Tab):
         self.button_track = ttk.Button(action_button_frame2, text="Perform tracking", command=self.start_perform_tracking)
         self.button_track.pack(side="left")
 
-        self.button_post_tracking = ttk.Button(action_button_frame2, text="Post-process tracking", command=self.post_process_tracking)
+        self.button_post_tracking = ttk.Button(action_button_frame2, text="Postprocess tracking", command=self.post_process_tracking)
         self.button_post_tracking.pack(side="left", padx=(5, 0))
 
         self.button_render_tracking = ttk.Button(action_button_frame2, text="Render tracking video", command=lambda: render_tracking_video(self.active_recording))
@@ -264,13 +264,15 @@ class TabRecordings(Tab):
         export = self.active_recording.export
         videoWorld = self.interface_images.videoWorld
         videoField = self.interface_images.videoField
-        preprocessed = "True" if (self.active_recording.metadata.get('video_world', "") and self.active_recording.metadata.get('video_field', "")) else "False"
+        has_preprocessed = "True" if (self.active_recording.metadata.get('video_world', "") and self.active_recording.metadata.get('video_field', "")) else "False"
+        has_tracking_data = "True" if (self.active_recording.tracking_data_raw) else "False"
+        has_tracking_data_post = "True" if (self.active_recording.metadata.get('post_processed_tracking', "")) else "False"
 
         text = (
             f"Export:  Path = {self.active_recording.paths['Directory']},  Duration = {self.format_duration(export.data[len(export.data) - 1]['Timestamp'])},  Date = {export.info['Recording time']},  Reference = {export.reference.name}\n"
             f"World video:  Duration = {self.format_duration(videoWorld.duration)}\n"
             f"Field video:  Duration = {self.format_duration(videoField.duration)}\n"
-            f"Metadata: Preprocessed = {preprocessed}, Annotations = {len(load_dataset_frames_for_recording(self.active_recording))}\n"
+            f"Metadata: Preprocessed = {has_preprocessed}, Annotations = {len(load_dataset_frames_for_recording(self.active_recording))}, Tracked = {has_tracking_data}, Postprocessed = {has_tracking_data_post}\n"
             f"Respondent:  Name = {export.info['Respondent Name']},  Age = {export.info['Respondent Age']},  Gender = {export.info['Respondent Gender']}"
         )
 

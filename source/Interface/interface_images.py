@@ -140,6 +140,7 @@ class InterfaceImages:
                 for detection in frame_detections:
                     position = scale_position((detection['cx'], detection['cy']), self.frame_static_scale_factor)
                     color = COLORS[detection['track_id'] % len(COLORS)]
+                    color = COLORS[0 if detection.get('interpolated', False) else 3]
                     # radius = int(detection['radius'] * self.frame_static_scale_factor)
                     draw_crosshair(self.frame_static_scaled, position, color)
                 self.image_static = cvimage_to_tkimage(self.frame_static_scaled)

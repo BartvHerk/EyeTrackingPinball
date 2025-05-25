@@ -2,6 +2,7 @@ import math
 import statistics
 import numpy as np
 from collections import defaultdict
+from scipy.interpolate import CubicSpline, interp1d
 import bisect
 
 from containers import ContExport
@@ -75,11 +76,113 @@ def process_tracking_data(tracking_data): # TODO: Add more processing
     if not tracking_data:
         return tracking_data
     
-    print("Post-processing...")
-    tracking_data = interpolate_missing_frames(tracking_data, 5) # Interpolate gaps of at most five frames
-    tracking_data = merge_lost_tracks(tracking_data, 5, 20) # Merge detections with different IDs if they belong to the same object
-    tracking_data = interpolate_missing_frames(tracking_data, 10) # Interpolate again now that merges have occured
-    print("Finished post-processing")
+    tracking_data = split_tracks(tracking_data, 10)
+    tracking_data = interpolate_gaps(tracking_data)
+    
+    # print("Postprocessing...")
+    # tracking_data = interpolate_missing_frames(tracking_data, 5) # Interpolate gaps of at most five frames
+    # tracking_data = merge_lost_tracks(tracking_data, 5, 20) # Merge detections with different IDs if they belong to the same object
+    # tracking_data = interpolate_missing_frames(tracking_data, 10) # Interpolate again now that merges have occured
+    # print("Finished postprocessing")
+
+    return tracking_data
+
+
+def split_tracks(tracking_data, max_gap):
+    from collections import defaultdict
+    print("Splitting tracks... ", end='', flush=True)
+
+    # Collect track_ids and group detections
+    used_ids = set()
+    for detections in tracking_data.values():
+        for det in detections:
+            used_ids.add(det['track_id'])
+    track_detections = defaultdict(list)
+    for frame_idx, detections in tracking_data.items():
+        for det in detections:
+            track_detections[det['track_id']].append((frame_idx, det))
+    for det_list in track_detections.values():
+        det_list.sort(key=lambda x: x[0])
+
+    # Process each track
+    next_unused_id = max(used_ids) + 1 if used_ids else 0
+    new_tracking_data = defaultdict(list)
+    for old_id, dets in track_detections.items():
+        current_id = old_id
+        last_frame = None
+        for frame_idx, det in dets:
+            if last_frame is not None and frame_idx - last_frame > max_gap:
+                current_id = next_unused_id
+                # print(f"Split: original ID {old_id} → new ID {current_id} at frame {frame_idx} (gap: {frame_idx - last_frame})")
+                next_unused_id += 1
+            det['track_id'] = current_id
+            new_tracking_data[frame_idx].append(det)
+            last_frame = frame_idx
+
+    print("Done")
+    return new_tracking_data
+
+
+def interpolate_gaps(tracking_data):
+    print("Interpolating tracks... ", end='', flush=True)
+
+    # Group detections by track_id
+    track_detections = defaultdict(list)
+    for frame_idx, detections in tracking_data.items():
+        for det in detections:
+            track_detections[det['track_id']].append((frame_idx, det))
+
+    for track_id, dets in track_detections.items():
+        if len(dets) < 3:
+            continue  # Not enough data to interpolate smoothly
+
+        # Sort detections by frame
+        dets.sort(key=lambda x: x[0])
+
+        # Filter out duplicate frames (keep only first per frame)
+        unique_dets = {}
+        for f, d in dets:
+            if f not in unique_dets:
+                unique_dets[f] = d
+        if len(unique_dets) < 2:
+            continue
+
+        sorted_unique = sorted(unique_dets.items())
+        frames = [f for f, _ in sorted_unique]
+        cxs = [d['cx'] for _, d in sorted_unique]
+        cys = [d['cy'] for _, d in sorted_unique]
+        radii = [d.get('radius', 0.0) for _, d in sorted_unique]
+        confs = [d.get('confidence', 1.0) for _, d in sorted_unique]
+
+        existing_frames = set(frames)
+        frame_range = range(frames[0], frames[-1] + 1)
+
+        # Interpolators
+        spline_x = CubicSpline(frames, cxs, bc_type='natural')
+        spline_y = CubicSpline(frames, cys, bc_type='natural')
+        linear_radius = interp1d(frames, radii, kind='linear', fill_value="extrapolate")
+        linear_conf = interp1d(frames, confs, kind='linear', fill_value="extrapolate")
+
+        for f in frame_range:
+            if f not in existing_frames:
+                cx = float(spline_x(f))
+                cy = float(spline_y(f))
+                radius = float(linear_radius(f))
+                conf = float(linear_conf(f))
+
+                interpolated_det = {
+                    'track_id': track_id,
+                    'cx': cx,
+                    'cy': cy,
+                    'radius': radius,
+                    'confidence': conf,
+                    'interpolated': True
+                }
+                if f not in tracking_data:
+                    tracking_data[f] = []
+                tracking_data[f].append(interpolated_det)
+
+    print("Done")
     return tracking_data
 
 
@@ -232,3 +335,32 @@ def merge_lost_tracks(tracking_data, max_difference_frames, max_merge_distance):
 
     print("Finished merging tracks")
     return tracking_data
+
+    from collections import defaultdict
+
+    def frame_to_timestamp(frame, fps):
+        total_seconds = frame / fps
+        minutes = int(total_seconds // 60)
+        seconds = int(total_seconds % 60)
+        milliseconds = int((total_seconds % 1) * 1000)
+        return f"{minutes}:{seconds:02}:{milliseconds:03}"
+
+    # Step 1: Collect first and last detection frames for each track_id
+    track_ranges = defaultdict(lambda: [float('inf'), float('-inf')])  # [start, end]
+
+    for frame_idx, detections in tracking_data.items():
+        for det in detections:
+            track_id = det['track_id']
+            track_ranges[track_id][0] = min(track_ranges[track_id][0], frame_idx)
+            track_ranges[track_id][1] = max(track_ranges[track_id][1], frame_idx)
+
+    # Step 2: Sort track_ids by start frame
+    sorted_tracks = sorted(track_ranges.items(), key=lambda x: x[1][0])  # sort by start frame
+
+    # Step 3: Calculate and print gap sizes with timestamp
+    for i in range(len(sorted_tracks) - 1):
+        current_id, (start1, end1) = sorted_tracks[i]
+        next_id, (start2, end2) = sorted_tracks[i + 1]
+        gap = start2 - end1 - 1
+        timestamp = frame_to_timestamp(start1, fps)
+        print(f"id: {current_id}, gap: {gap}, time: {timestamp}")
