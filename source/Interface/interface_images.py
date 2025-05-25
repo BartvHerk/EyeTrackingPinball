@@ -47,6 +47,7 @@ class InterfaceImages:
     
 
     def set_recording(self, recording:ContRecording, resources:Resources):
+        self.frame_detections = []
         self.timestamp_current = -1
         self.index = 0
         self.index_raw_current = -1
@@ -134,22 +135,33 @@ class InterfaceImages:
                 frame_static_scaled_changed = True
             if (frame_static_scaled_changed or timestamp_changed):
                 # Get tracking data for frame
-                frame_detections = [d for d in self.tracking_data.get(index_static, [])]
+                self.frame_detections = [d for d in self.tracking_data.get(index_static, [])]
 
                 # Render frame
-                for detection in frame_detections:
-                    position = scale_position((detection['cx'], detection['cy']), self.frame_static_scale_factor)
-                    color = COLORS[detection['track_id'] % len(COLORS)]
-                    color = COLORS[0 if detection.get('interpolated', False) else 3]
-                    # radius = int(detection['radius'] * self.frame_static_scale_factor)
-                    draw_crosshair(self.frame_static_scaled, position, color)
+                if self.active_recording.H_inv is not None:
+                    for detection in self.frame_detections:
+                        position = perspective_map(self.active_recording.H_inv, (detection['cx'], detection['cy']))
+                        position_scaled = scale_position(position, self.frame_static_scale_factor)
+                        #color = COLORS[detection['track_id'] % len(COLORS)]
+                        #color = COLORS[0 if detection.get('interpolated', False) else 3]
+                        # radius = int(detection['radius'] * self.frame_static_scale_factor)
+                        draw_crosshair(self.frame_static_scaled, position_scaled, COLORS[6])
                 self.image_static = cvimage_to_tkimage(self.frame_static_scaled)
         
         # Perspective image
         if (timestamp_changed or size_changed):
             field_image_scaled, self.field_image_scale_factor = resize_image_to_fit(self.field_image, (self.scale, self.scale))
+
+            # Gaze
             position = self.get_export_position('Perspective Gaze X', 'Perspective Gaze Y')
             field_image_final = self.add_gaze_circle(field_image_scaled, position, self.map_to_field)
+
+            # Detections
+            for detection in self.frame_detections:
+                position = self.map_to_field((detection['cx'], detection['cy']))
+                draw_crosshair(field_image_final, position, COLORS[6])
+
+
             self.image_perspective = cvimage_to_tkimage(field_image_final)
 
         return (self.image_raw, self.image_gazemapped, self.image_perspective, self.image_static)

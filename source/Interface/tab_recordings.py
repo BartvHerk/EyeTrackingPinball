@@ -9,6 +9,7 @@ from IO import load_dataset_frames_for_recording, save_recording_metadata, save_
 from interface.annotation import start_annotation
 from processing import process_tracking_data
 from object_tracking import perform_tracking
+from interface.static_plane import set_plane_static
 from tracking_video import render_tracking_video
 from video_processing import process_video
 from stopwatch import Stopwatch
@@ -131,28 +132,25 @@ class TabRecordings(Tab):
         self.text_widget = tk.Text(self.text_frame, height=5, wrap="word", state="disabled", bg='gray94', borderwidth=0)
         self.text_widget.pack(fill="both", expand=True)
 
-        # Action buttons row 1
-        action_button_frame1 = ttk.Frame(self.selected_recording_frame)
-        action_button_frame1.grid(row=6, column=0, sticky="nsew")
+        # Action buttons
+        action_button_frame = ttk.Frame(self.selected_recording_frame)
+        action_button_frame.grid(row=6, column=0, sticky="nsew")
 
-        self.button_process_videos = ttk.Button(action_button_frame1, text="Preprocess videos", command=self.start_video_processing)
-        self.button_process_videos.pack(side="left")
+        prep_btn = ttk.Menubutton(action_button_frame, text="Preparation")
+        prep_menu = tk.Menu(prep_btn, tearoff=0)
+        prep_menu.add_command(label="Preprocess videos", command=self.start_video_processing)
+        prep_menu.add_command(label="Annotate frames", command=lambda: start_annotation(self.active_recording))
+        prep_menu.add_command(label="Set plane", command=self.set_plane)
+        prep_btn["menu"] = prep_menu
+        prep_btn.pack(side="left")
 
-        self.button_annotate = ttk.Button(action_button_frame1, text="Annotate frames", command=lambda: start_annotation(self.active_recording))
-        self.button_annotate.pack(side="left", padx=(5, 0))
-
-        # Action buttons row 2
-        action_button_frame2 = ttk.Frame(self.selected_recording_frame)
-        action_button_frame2.grid(row=8, column=0, sticky="nsew")
-
-        self.button_track = ttk.Button(action_button_frame2, text="Perform tracking", command=self.start_perform_tracking)
-        self.button_track.pack(side="left")
-
-        self.button_post_tracking = ttk.Button(action_button_frame2, text="Postprocess tracking", command=self.post_process_tracking)
-        self.button_post_tracking.pack(side="left", padx=(5, 0))
-
-        self.button_render_tracking = ttk.Button(action_button_frame2, text="Render tracking video", command=lambda: render_tracking_video(self.active_recording))
-        self.button_render_tracking.pack(side="left", padx=(5, 0))
+        track_btn = ttk.Menubutton(action_button_frame, text="Tracking")
+        track_menu = tk.Menu(track_btn, tearoff=0)
+        track_menu.add_command(label="Perform tracking", command=self.start_perform_tracking)
+        track_menu.add_command(label="Postprocess tracking", command=self.post_process_tracking)
+        track_menu.add_command(label="Render tracking video", command=lambda: render_tracking_video(self.active_recording))
+        track_btn["menu"] = track_menu
+        track_btn.pack(side="left", padx=(5, 0))
 
         # Add recordings to interface
         for recording in self.resources.recordings:
@@ -298,12 +296,16 @@ class TabRecordings(Tab):
 
     
     def post_process_tracking(self):
-        tracking_data = process_tracking_data(copy.deepcopy(self.active_recording.tracking_data_raw))
+        tracking_data = process_tracking_data(copy.deepcopy(self.active_recording.tracking_data_raw), self.active_recording)
         self.active_recording.tracking_data = tracking_data
         save_tracking_data(self.active_recording.paths['Directory'] / "tracking_data_post.txt", tracking_data)
 
         self.active_recording.metadata['post_processed_tracking'] = "tracking_data_post"
         save_recording_metadata(self.active_recording)
+    
+
+    def set_plane(self):
+        set_plane_static(self.active_recording)
 
 
     def update_images_loop(self):

@@ -51,7 +51,7 @@ class TabReferences(Tab):
         self.text_widget.grid(row=0, column=0, sticky="w")
 
         # Field dropdown
-        self.dropdown = ttk.Combobox(self.text_frame, values=list(self.resources.fields.keys()), width=40)
+        self.dropdown = ttk.Combobox(self.text_frame, values=list(self.resources.fields.keys()), width=40, state="readonly")
         self.dropdown.bind("<<ComboboxSelected>>", self.on_dropdown_select)
         self.dropdown.set("No fields")  # Default text
         self.dropdown.grid(row=1, column=0, sticky="w")

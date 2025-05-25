@@ -5,7 +5,8 @@ from collections import defaultdict
 from scipy.interpolate import CubicSpline, interp1d
 import bisect
 
-from containers import ContExport
+from containers import ContExport, ContRecording
+from homography import perspective_map
 
 
 MAX_GAP_DURATION = 100
@@ -72,12 +73,13 @@ def has_mapped_gaze(row) -> bool:
     return (row['Mapped Gaze X'] is not None) and (row['Mapped Gaze Y'] is not None)
 
 
-def process_tracking_data(tracking_data): # TODO: Add more processing
+def process_tracking_data(tracking_data, recording:ContRecording): # TODO: Add more processing
     if not tracking_data:
         return tracking_data
     
+    tracking_data = perspective_map_tracking(tracking_data, recording.H)
     tracking_data = split_tracks(tracking_data, 10)
-    tracking_data = interpolate_gaps(tracking_data)
+    tracking_data = interpolate_missing_frames(tracking_data, 20)
     
     # print("Postprocessing...")
     # tracking_data = interpolate_missing_frames(tracking_data, 5) # Interpolate gaps of at most five frames
@@ -123,69 +125,6 @@ def split_tracks(tracking_data, max_gap):
     return new_tracking_data
 
 
-def interpolate_gaps(tracking_data):
-    print("Interpolating tracks... ", end='', flush=True)
-
-    # Group detections by track_id
-    track_detections = defaultdict(list)
-    for frame_idx, detections in tracking_data.items():
-        for det in detections:
-            track_detections[det['track_id']].append((frame_idx, det))
-
-    for track_id, dets in track_detections.items():
-        if len(dets) < 3:
-            continue  # Not enough data to interpolate smoothly
-
-        # Sort detections by frame
-        dets.sort(key=lambda x: x[0])
-
-        # Filter out duplicate frames (keep only first per frame)
-        unique_dets = {}
-        for f, d in dets:
-            if f not in unique_dets:
-                unique_dets[f] = d
-        if len(unique_dets) < 2:
-            continue
-
-        sorted_unique = sorted(unique_dets.items())
-        frames = [f for f, _ in sorted_unique]
-        cxs = [d['cx'] for _, d in sorted_unique]
-        cys = [d['cy'] for _, d in sorted_unique]
-        radii = [d.get('radius', 0.0) for _, d in sorted_unique]
-        confs = [d.get('confidence', 1.0) for _, d in sorted_unique]
-
-        existing_frames = set(frames)
-        frame_range = range(frames[0], frames[-1] + 1)
-
-        # Interpolators
-        spline_x = CubicSpline(frames, cxs, bc_type='natural')
-        spline_y = CubicSpline(frames, cys, bc_type='natural')
-        linear_radius = interp1d(frames, radii, kind='linear', fill_value="extrapolate")
-        linear_conf = interp1d(frames, confs, kind='linear', fill_value="extrapolate")
-
-        for f in frame_range:
-            if f not in existing_frames:
-                cx = float(spline_x(f))
-                cy = float(spline_y(f))
-                radius = float(linear_radius(f))
-                conf = float(linear_conf(f))
-
-                interpolated_det = {
-                    'track_id': track_id,
-                    'cx': cx,
-                    'cy': cy,
-                    'radius': radius,
-                    'confidence': conf,
-                    'interpolated': True
-                }
-                if f not in tracking_data:
-                    tracking_data[f] = []
-                tracking_data[f].append(interpolated_det)
-
-    print("Done")
-    return tracking_data
-
-
 def remove_low_confidence(tracking_data, threshold):
     filtered_data = {}
 
@@ -200,6 +139,7 @@ def remove_low_confidence(tracking_data, threshold):
 
 def interpolate_missing_frames(tracking_data, max_gap_frames):
     from collections import defaultdict
+    print("Interpolating gaps... ", end='', flush=True)
 
     # Gather all detections by track_id
     tracks = defaultdict(list)
@@ -231,13 +171,29 @@ def interpolate_missing_frames(tracking_data, max_gap_frames):
                         'cx': det1['cx'] * (1 - alpha) + det2['cx'] * alpha,
                         'cy': det1['cy'] * (1 - alpha) + det2['cy'] * alpha,
                         'radius': det1['radius'] * (1 - alpha) + det2['radius'] * alpha,
+                        'interpolated': True
                     }
 
                     if interp_frame not in output_data:
                         output_data[interp_frame] = []
                     output_data[interp_frame].append(interp_det)
 
+    print("Done")
     return output_data
+
+
+def perspective_map_tracking(tracking_data, H):
+    print("Perspective mapping... ", end='', flush=True)
+
+    def map_position(cx, cy):
+        return perspective_map(H, (cx, cy))
+
+    for frame_idx, detections in tracking_data.items():
+        for det in detections:
+            det['cx'], det['cy'] = map_position(det['cx'], det['cy'])
+
+    print("Done")
+    return tracking_data
 
 
 def merge_lost_tracks(tracking_data, max_difference_frames, max_merge_distance):

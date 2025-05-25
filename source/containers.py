@@ -100,6 +100,35 @@ class ContRecording:
         self.metadata = metadata
         self.tracking_data_raw = tracking_data_raw
         self.tracking_data = tracking_data
+        self._H = None
+        self._H_inv = None
+        self.H_computed = False
+    
+
+    @property
+    def H(self) -> np.ndarray:
+        if not self.H_computed:
+            points = self.metadata.get('points', None)
+            if points is None:
+                self._H = np.eye(3, dtype=np.float32)
+            else:
+                from homography import compute_perspective_mapping, perspective_mapping_inverse
+                from resources import Resources
+                resources = Resources()
+                self._H = compute_perspective_mapping(points, resources.fields[self.export.reference.field].field_dimensions)
+            try:
+                self._H_inv = perspective_mapping_inverse(self._H)
+            except:
+                self._H_inv = None
+            self.H_computed = True
+        return self._H
+    
+
+    @property
+    def H_inv(self) -> np.ndarray:
+        if not self.H_computed:
+            self.H
+        return self._H_inv
     
 
     @property

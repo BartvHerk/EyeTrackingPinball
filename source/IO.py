@@ -124,7 +124,7 @@ def import_recordings() -> list[ContRecording]:
         path_tracking_data_name = metadata.get('post_processed_tracking', "")
         path_tracking_data = next((entry.path for entry in os.scandir(dir_path) if entry.name == f"{path_tracking_data_name}.txt"), "")
         tracking_data_raw = remove_low_confidence(load_tracking_data(path_tracking_data_raw), TRACKING_DATA_CONFIDENCE)
-        tracking_data = load_tracking_data(path_tracking_data) if path_tracking_data else tracking_data_raw
+        tracking_data = load_tracking_data(path_tracking_data) if path_tracking_data else {}
 
         # Create recording container
         recordings.append(ContRecording(paths, metadata, tracking_data_raw, tracking_data))

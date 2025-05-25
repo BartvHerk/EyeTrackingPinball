@@ -124,7 +124,7 @@ def update_text_widget(text_widget:tk.Text, text:str):
     text_widget.config(state=state)
 
 
-def create_toplevel(root:tk.Tk, title:str, ok_action=None):
+def create_toplevel(root:tk.Tk, title:str, ok_action=None, resizable=False):
     toplevel = tk.Toplevel(root)
 
     # Frame and OK button
@@ -145,17 +145,20 @@ def create_toplevel(root:tk.Tk, title:str, ok_action=None):
     
     # Settings
     toplevel.title(title)
-    toplevel.resizable(False, False)
+    toplevel.resizable(resizable, resizable)
     return toplevel, content_frame
 
 
 
-def ready_toplevel(toplevel:tk.Toplevel, root:tk.Tk):
+def ready_toplevel(toplevel:tk.Toplevel, root:tk.Tk, size=None):
     # Size and position
     root.update_idletasks()
     parent_x, parent_y = root.winfo_x(), root.winfo_y()
     parent_w, parent_h = root.winfo_width(), root.winfo_height()
-    w, h = toplevel.toplevel_frame.winfo_reqwidth(), toplevel.toplevel_frame.winfo_reqheight()
+    if size == None:
+        w, h = toplevel.toplevel_frame.winfo_reqwidth(), toplevel.toplevel_frame.winfo_reqheight()
+    else:
+        w, h = size
     x, y = parent_x + (parent_w - w) // 2, parent_y + (parent_h - h) // 2
 
     # Create window
