@@ -47,9 +47,9 @@ def set_plane_static(recording:ContRecording):
             dropdown_recording.config(state="readonly")
 
     # Create content
-    dropdown = ttk.Combobox(content_frame, values=["Copy existing", "Custom"], width=40, state="readonly")
+    dropdown = ttk.Combobox(content_frame, values=["Custom", "Copy existing"], width=40, state="readonly")
     dropdown.bind("<<ComboboxSelected>>", on_dropdown_select)
-    dropdown.set("Copy existing")  # Default text
+    dropdown.set("Custom")  # Default text
     dropdown.pack()
 
     recordings = {}
@@ -59,6 +59,7 @@ def set_plane_static(recording:ContRecording):
     dropdown_recording = ttk.Combobox(content_frame, values=list(recordings.keys()), width=40, state="readonly")
     dropdown_recording.bind("<<ComboboxSelected>>", on_dropdown_select)
     dropdown_recording.set(next(iter(recordings)) if len(recordings) > 0 else "None available")  # Default text
+    dropdown_recording.config(state="disabled")
     dropdown_recording.pack(pady=(10, 0))
 
 
@@ -111,4 +112,4 @@ def custom_plane(recording:ContRecording):
     grid_editor.pack(fill="both", expand=True)
 
 
-    ready_toplevel(popup, resources.root, (400, 700))
+    ready_toplevel(popup, resources.root, (700, 1200))

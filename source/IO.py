@@ -128,7 +128,18 @@ def import_recordings() -> list[ContRecording]:
 
         # Create recording container
         recordings.append(ContRecording(paths, metadata, tracking_data_raw, tracking_data))
+    recordings.sort(key=lambda recording: sorting_key(recording.paths['Directory']))
     return recordings
+
+
+# Used to sort filenames
+def sorting_key(s):
+    path = Path(s)
+    file = path.stem
+    match = re.match(r'(\d+)', file)
+    if match:
+        return (0, int(match.group(1)))
+    return (1, s)
 
 
 def save_recording_metadata(recording:ContRecording):

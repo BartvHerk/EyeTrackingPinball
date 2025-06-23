@@ -1,4 +1,5 @@
 import copy
+import os
 import tkinter as tk
 from tkinter import ttk
 
@@ -10,7 +11,7 @@ from interface.annotation import start_annotation
 from processing import process_tracking_data
 from object_tracking import perform_tracking
 from interface.static_plane import set_plane_static
-from tracking_video import render_tracking_video
+from tracking_video import render_tracking_video, render_video_full
 from video_processing import process_video
 from stopwatch import Stopwatch
 from interface.interface_images import InterfaceImages
@@ -146,9 +147,11 @@ class TabRecordings(Tab):
 
         track_btn = ttk.Menubutton(action_button_frame, text="Tracking")
         track_menu = tk.Menu(track_btn, tearoff=0)
-        track_menu.add_command(label="Perform tracking", command=self.start_perform_tracking)
+        track_menu.add_command(label="Perform tracking (all)", command=self.start_perform_tracking_all)
+        track_menu.add_command(label="Perform tracking", command=lambda: self.start_perform_tracking(self.active_recording))
         track_menu.add_command(label="Postprocess tracking", command=self.post_process_tracking)
         track_menu.add_command(label="Render tracking video", command=lambda: render_tracking_video(self.active_recording))
+        track_menu.add_command(label="Render full video", command=lambda: render_video_full(self.active_recording))
         track_btn["menu"] = track_menu
         track_btn.pack(side="left", padx=(5, 0))
 
@@ -180,21 +183,13 @@ class TabRecordings(Tab):
     def start_recording(self):
         self.interface_images.set_recording(self.active_recording, self.resources)
         self.update_information()
-        self.recalculate_offset_and_duration()
-        update_text_widget(self.entry_set_start_raw, f"{float(self.start_world / 1000):.3f}")
-        update_text_widget(self.entry_set_start_ball, f"{float(self.start_field / 1000):.3f}")
-        self.stopwatch.set_time(0)
-        self.stopwatch.play() if self.playing else self.stopwatch.pause()
-    
-
-    def recalculate_offset_and_duration(self):
         self.start_world = self.active_recording.metadata.get('start_world', 0)
         self.start_field = self.active_recording.metadata.get('start_field', 0)
-        self.interface_images.start_time_video_raw = self.start_world
-        self.interface_images.start_time_video_static = self.start_field
-        self.interface_images.timestamp_current = -1
-        self.duration = self.interface_images.videoWorld.duration - self.start_world
-        self.stopwatch.limit = self.duration
+        update_text_widget(self.entry_set_start_raw, f"{float(self.start_world / 1000):.3f}")
+        update_text_widget(self.entry_set_start_ball, f"{float(self.start_field / 1000):.3f}")
+        self.stopwatch.limit = self.interface_images.duration
+        self.stopwatch.set_time(0)
+        self.stopwatch.play() if self.playing else self.stopwatch.pause()
     
 
     def start_time_button_pressed(self, key):
@@ -204,7 +199,8 @@ class TabRecordings(Tab):
         self.active_recording.metadata[key] = current_time
         save_recording_metadata(self.active_recording)
         update_text_widget(widget, f"{(current_time / 1000):.3f}")
-        self.recalculate_offset_and_duration()
+        self.interface_images.recalculate_offset_and_duration()
+        self.stopwatch.limit = self.interface_images.duration
     
 
     def start_time_edited(self, event, key):
@@ -220,7 +216,8 @@ class TabRecordings(Tab):
             if start_time_ms != start_time_saved:
                 self.active_recording.metadata[key] = start_time_ms
                 save_recording_metadata(self.active_recording)
-                self.recalculate_offset_and_duration()
+                self.interface_images.recalculate_offset_and_duration()
+                self.stopwatch.limit = self.interface_images.duration
         except:
             pass
         widget.edit_modified(False)
@@ -243,17 +240,17 @@ class TabRecordings(Tab):
 
 
     def on_scrubber_drag(self, value):
-        timestamp = float(value) * self.duration
+        timestamp = float(value) * self.interface_images.duration
         self.update_timestamp()
         self.stopwatch.set_time(timestamp)
 
     
     def update_scrubber(self):
-        ratio = max(min(self.stopwatch.get_time() / self.duration, 1), 0)
+        ratio = max(min(self.stopwatch.get_time() / self.interface_images.duration, 1), 0)
         self.scrubber_value.set(ratio)
 
     def update_timestamp(self):
-        timestamp = (int)(self.scrubber_value.get() * self.duration)
+        timestamp = (int)(self.scrubber_value.get() * self.interface_images.duration)
         self.label_timestamp.config(text=self.format_duration(timestamp))
     
 
@@ -289,10 +286,21 @@ class TabRecordings(Tab):
         process_video(self.active_recording)
 
     
-    def start_perform_tracking(self):
-        path = self.active_recording.paths['VideoField']
-        output_path = self.active_recording.paths['Directory'] / "tracking_data.txt"
+    def start_perform_tracking(self, recording:ContRecording):
+        path = recording.paths['VideoField']
+        output_path = recording.paths['Directory'] / "tracking_data.txt"
         perform_tracking(path, output_path)
+    
+
+    def start_perform_tracking_all(self):
+        print("Performing tracking for remaining recordings...")
+        recordings_left = []
+        for recording in self.resources.recordings:
+            if not os.path.isfile(recording.paths['Directory'] / "tracking_data.txt"):
+                recordings_left.append(recording)
+        for recording in recordings_left:
+            self.start_perform_tracking(recording)
+        print("All remaining recordings have been tracked")
 
     
     def post_process_tracking(self):
@@ -323,7 +331,7 @@ class TabRecordings(Tab):
         frame_height = self.selected_recording_displays.winfo_height() - 32
 
         # Get and set interface images
-        (image_raw, image_gazemapped, image_perspective, image_static) = self.interface_images.get_images(timestamp, (frame_width, frame_height))
+        (image_raw, image_gazemapped, image_perspective, image_static) = self.interface_images.get_photo_images(timestamp, (frame_width, frame_height))
         self.display_raw.config(image=image_raw)
         self.display_gazemapped.config(image=image_gazemapped)
         self.display_final.config(image=image_perspective)

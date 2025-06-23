@@ -57,16 +57,27 @@ class InterfaceImages:
             self.videoWorld.destroy()
             self.videoField.destroy()
         self.active_recording = recording
-        self.videoWorld = Video(recording.paths['VideoWorld'])
-        self.videoField = Video(recording.paths['VideoField'])
-        self.reference_image = recording.export.reference.image
-        self.w, self.h = recording.export.reference_dimensions
-        self.field = resources.fields[recording.export.reference.field]
-        self.field_image = self.field.image
+        if recording is not None:
+            self.videoWorld = Video(recording.paths['VideoWorld'])
+            self.videoField = Video(recording.paths['VideoField'])
+            self.reference_image = recording.export.reference.image
+            self.w, self.h = recording.export.reference_dimensions
+            self.field = resources.fields[recording.export.reference.field]
+            self.field_image = self.field.image
+            self.data = recording.export.data
+            self.tracking_data = recording.tracking_data
+            self.calculate_aspect()
+            self.recalculate_offset_and_duration()
         self.image_static = None
-        self.data = recording.export.data
-        self.tracking_data = recording.tracking_data
-        self.calculate_aspect()
+    
+
+    def recalculate_offset_and_duration(self):
+        start_world = self.active_recording.metadata.get('start_world', 0)
+        start_field = self.active_recording.metadata.get('start_field', 0)
+        self.start_time_video_raw = start_world
+        self.start_time_video_static = start_field
+        self.timestamp_current = -1
+        self.duration = min(self.videoWorld.duration - start_world, self.videoField.duration - start_field)
 
 
     def get_images(self, timestamp:int, size:tuple[int, int]):
@@ -110,8 +121,7 @@ class InterfaceImages:
         if (frame_raw_scaled_changed or timestamp_changed):
             position = self.get_export_position('Interpolated Gaze X', 'Interpolated Gaze Y')
             modify_position = lambda p: (p[0] * self.frame_raw_scale_factor, p[1] * self.frame_raw_scale_factor)
-            frame_raw_final = self.add_gaze_circle(self.frame_raw_scaled.copy(), position, modify_position)
-            self.image_raw = cvimage_to_tkimage(frame_raw_final)
+            self.frame_raw_final = self.add_gaze_circle(self.frame_raw_scaled.copy(), position, modify_position)
 
         # Gazemapped image
         if (size_changed):
@@ -120,8 +130,7 @@ class InterfaceImages:
         if (timestamp_changed or size_changed):
             position = self.get_export_position('Mapped Gaze X', 'Mapped Gaze Y')
             modify_position = lambda p: (p[0] / self.w * self.reference_image_width, p[1] / self.h * self.reference_image_height)
-            reference_image_final = self.add_gaze_circle(self.reference_image_scaled.copy(), position, modify_position)
-            self.image_gazemapped = cvimage_to_tkimage(reference_image_final)
+            self.reference_image_final = self.add_gaze_circle(self.reference_image_scaled.copy(), position, modify_position)
 
         # Static video image
         if self.videoField.ok:
@@ -146,7 +155,6 @@ class InterfaceImages:
                         #color = COLORS[0 if detection.get('interpolated', False) else 3]
                         # radius = int(detection['radius'] * self.frame_static_scale_factor)
                         draw_crosshair(self.frame_static_scaled, position_scaled, COLORS[6])
-                self.image_static = cvimage_to_tkimage(self.frame_static_scaled)
         
         # Perspective image
         if (timestamp_changed or size_changed):
@@ -154,18 +162,24 @@ class InterfaceImages:
 
             # Gaze
             position = self.get_export_position('Perspective Gaze X', 'Perspective Gaze Y')
-            field_image_final = self.add_gaze_circle(field_image_scaled, position, self.map_to_field)
+            self.field_image_final = self.add_gaze_circle(field_image_scaled, position, self.map_to_field)
 
             # Detections
             for detection in self.frame_detections:
                 position = self.map_to_field((detection['cx'], detection['cy']))
-                draw_crosshair(field_image_final, position, COLORS[6])
+                draw_crosshair(self.field_image_final, position, COLORS[6])
 
-
-            self.image_perspective = cvimage_to_tkimage(field_image_final)
-
-        return (self.image_raw, self.image_gazemapped, self.image_perspective, self.image_static)
+        return (self.frame_raw_final, self.reference_image_final, self.field_image_final, self.frame_static_scaled)
     
+
+    def get_photo_images(self, timestamp:int, size:tuple[int, int]):
+        self.get_images(timestamp, size)
+        self.image_raw = cvimage_to_tkimage(self.frame_raw_final)
+        self.image_gazemapped = cvimage_to_tkimage(self.reference_image_final)
+        self.image_static = cvimage_to_tkimage(self.frame_static_scaled)
+        self.image_perspective = cvimage_to_tkimage(self.field_image_final)
+        return (self.image_raw, self.image_gazemapped, self.image_perspective, self.image_static)
+
 
     def calculate_aspect(self):
         g_height, g_width = self.reference_image.shape[:2]

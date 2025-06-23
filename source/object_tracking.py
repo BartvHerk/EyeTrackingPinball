@@ -21,14 +21,15 @@ def train_model():
     try:
         # Train the model
         model = YOLO('yolov8n.pt')
-        model.train(data=tmp_path, epochs=50, imgsz=960, batch=16, name='pinball_detector_25apr')
+        model.train(data=tmp_path, epochs=50, imgsz=960, batch=16, name='pinball_detector_final')
     finally:
         # Auto-delete the temp YAML file after training
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
 
+
 def perform_tracking(path, output_path):
-    model = YOLO('runs/detect/pinball_detector_25apr/weights/best.pt')  # Adjust path if needed
+    model = YOLO('runs/detect/pinball_detector_final/weights/best.pt')  # Adjust path if needed
     detections_total = []
 
     # Run tracking on a video
@@ -87,3 +88,5 @@ def perform_tracking(path, output_path):
     # Save data
     save_tracking_data(output_path, detections_by_frame)
     print(f"Saved {len(detections_total)} detections to {output_path}")
+
+# train_model()
