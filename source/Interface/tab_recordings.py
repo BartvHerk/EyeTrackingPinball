@@ -143,7 +143,7 @@ class TabRecordings(Tab):
         prep_menu.add_command(label="Annotate frames", command=lambda: start_annotation(self.active_recording))
         prep_menu.add_command(label="Set plane", command=self.set_plane)
         prep_btn["menu"] = prep_menu
-        prep_btn.pack(side="left")
+        prep_btn.grid(row=0, column=0, sticky="w")
 
         track_btn = ttk.Menubutton(action_button_frame, text="Tracking")
         track_menu = tk.Menu(track_btn, tearoff=0)
@@ -153,7 +153,18 @@ class TabRecordings(Tab):
         track_menu.add_command(label="Render tracking video", command=lambda: render_tracking_video(self.active_recording))
         track_menu.add_command(label="Render full video", command=lambda: render_video_full(self.active_recording))
         track_btn["menu"] = track_menu
-        track_btn.pack(side="left", padx=(5, 0))
+        track_btn.grid(row=0, column=1, padx=(5, 0), sticky="w")
+
+        # Participant dropdown
+        participant_label = tk.Text(action_button_frame, height=1, width=12, wrap='none', state="disabled", bg='gray94', borderwidth=0)
+        participant_label.grid(row=0, column=2, padx=(15, 0), sticky="w")
+        update_text_widget(participant_label, 'Participant:')
+
+        names = [d["Name"] for d in self.resources.participants]
+        self.dropdown_participant = ttk.Combobox(action_button_frame, values=names, width=40, state="readonly")
+        self.dropdown_participant.bind("<<ComboboxSelected>>", self.on_participant_select)
+        self.dropdown_participant.set("Select")  # Default text
+        self.dropdown_participant.grid(row=0, column=3, padx=(5, 0), sticky="w")
 
         # Add recordings to interface
         for recording in self.resources.recordings:
@@ -178,6 +189,8 @@ class TabRecordings(Tab):
                 self.button_left.config(state="normal")
                 self.button_right.config(state="normal")
                 self.scrubber.config(state="normal")
+                participant_default = self.active_recording.metadata.get('participant', "Select")
+                self.dropdown_participant.set(participant_default)
     
 
     def start_recording(self):
@@ -273,6 +286,12 @@ class TabRecordings(Tab):
 
         # Update text widget
         update_text_widget(self.text_widget, text)
+    
+
+    def on_participant_select(self, event):
+        selected_field = self.dropdown_participant.get()
+        self.active_recording.metadata['participant'] = selected_field
+        save_recording_metadata(self.active_recording)
     
 
     def format_duration(self, ms:int):

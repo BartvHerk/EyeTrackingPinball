@@ -22,6 +22,7 @@ DIR_DATASET = Path('data/dataset')
 DEFAULT_SETTINGS = {
     "show_plane": True
 }
+PATH_SURVEY = Path('data/survey_results.csv')
 
 TRACKING_DATA_CONFIDENCE = 0.3
 
@@ -145,6 +146,19 @@ def sorting_key(s):
 def save_recording_metadata(recording:ContRecording):
     with open(recording.paths['Metadata'], 'w') as json_file:
         json.dump(recording.metadata, json_file, indent=2)
+
+
+def import_survey_csv():
+    with open(PATH_SURVEY, 'r') as csv_file:
+        participants = []
+        csv_reader = csv.reader(csv_file)
+        headers = next(csv_reader)
+        next(csv_reader) # Skip two lines
+        next(csv_reader)
+        dict_reader = csv.DictReader(csv_file, fieldnames=headers)
+        for line in dict_reader:
+            participants.append(line)
+        return participants
 
 
 def import_export_csv(path, references:dict[str, ContReference]) -> ContExport:

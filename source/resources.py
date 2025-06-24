@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from IO import import_fields, load_settings, save_settings, import_references, import_recordings
+from IO import import_fields, import_survey_csv, load_settings, save_settings, import_references, import_recordings
 
 
 class Icons:
@@ -40,6 +40,7 @@ class Resources:
             self.references = import_references()
             self.fields = import_fields()
             self.recordings = import_recordings()
+            self.participants = import_survey_csv()
     
 
     def save_settings_changes(self):
