@@ -27,6 +27,7 @@ def convert_to_numerics(export:ContExport):
         row['Interpolated Gaze Y'] = convert(row['Interpolated Gaze Y'], float)
         row['Mapped Gaze X'] = convert(row['Mapped Gaze X'], int)
         row['Mapped Gaze Y'] = convert(row['Mapped Gaze Y'], int)
+        row['Gaze Velocity'] = convert(row['Gaze Velocity'], float)
 
 
 def convert(value: str, type):

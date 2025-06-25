@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 from containers import ContRecording
-from image_processing import cvimage_to_tkimage, draw_circle, draw_crosshair, resize_image_to_fit, draw_gaze_circle, scale_position, COLORS
+from image_processing import cvimage_to_tkimage, draw_centered_text, draw_circle, draw_crosshair, resize_image_to_fit, draw_gaze_circle, scale_position, COLORS
 from video import Video
 from resources import Resources
 from homography import perspective_map
@@ -168,6 +168,10 @@ class InterfaceImages:
             for detection in self.frame_detections:
                 position = self.map_to_field((detection['cx'], detection['cy']))
                 draw_crosshair(self.field_image_final, position, COLORS[6])
+
+            # Draw conditions text
+            condition = self.active_recording.conditions[index_static]['condition']
+            draw_centered_text(self.field_image_final, condition, (0.5, 0.05))
 
         return (self.frame_raw_final, self.reference_image_final, self.field_image_final, self.frame_static_scaled)
     

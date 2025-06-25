@@ -23,6 +23,7 @@ DEFAULT_SETTINGS = {
     "show_plane": True
 }
 PATH_SURVEY = Path('data/survey_results.csv')
+PATH_STATS = Path('data/stats.json')
 
 TRACKING_DATA_CONFIDENCE = 0.3
 
@@ -52,6 +53,20 @@ def save_dictionary_entry(key, value, path:Path):
     dict = load_dictionary(path)
     dict[key] = value
     with open(path, 'w') as json_file:
+        json.dump(dict, json_file, indent=2)
+
+
+def import_stats():
+    return load_dictionary(PATH_STATS)
+
+
+def save_stats_entry(participant, task_key, stats, global_stats):
+    dict = load_dictionary(PATH_STATS)
+    if participant not in dict:
+        dict[participant] = {}
+    dict[participant][task_key] = stats
+    dict[participant]['global'] = global_stats
+    with open(PATH_STATS, 'w') as json_file:
         json.dump(dict, json_file, indent=2)
 
 

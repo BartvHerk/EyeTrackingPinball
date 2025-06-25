@@ -74,7 +74,8 @@ class ContExport:
         'Interpolated Gaze X',
         'Interpolated Gaze Y',
         'Mapped Gaze X',
-        'Mapped Gaze Y'
+        'Mapped Gaze Y',
+        'Gaze Velocity'
     ]
     
 
@@ -87,6 +88,16 @@ class ContExport:
             'Recording time':''
         }
         self.data = []
+
+    
+    def get_val(self, param:str, index:int, t:float):
+        a_param = self.data[index][param]
+        b_param = self.data[index + 1][param]
+        if (b_param is None or t == 0):
+            return a_param
+        if (a_param is None or t == 1):
+            return b_param
+        return a_param + (b_param - a_param) * t
 
     
     def __repr__(self) -> str:
@@ -103,6 +114,7 @@ class ContRecording:
         self._H = None
         self._H_inv = None
         self.H_computed = False
+        self._conditions = None
     
 
     @property
@@ -139,7 +151,15 @@ class ContRecording:
             resources = Resources()
             self._export = import_export_csv(self.paths['Export'], resources.references)
         return self._export
-    
+
+
+    @property
+    def conditions(self) -> list[dict]:
+        if self._conditions is None:
+            from field_conditions import generate_field_conditions
+            self._conditions = generate_field_conditions(self)
+        return self._conditions
+
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}(dir={self.paths['Directory'].stem})"

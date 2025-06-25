@@ -47,16 +47,8 @@ class TabField(Tab):
         self.dimensions_input_x.bind("<<Modified>>", lambda event: self.edit_dimension(event, 0))
         self.dimensions_input_y.bind("<<Modified>>", lambda event: self.edit_dimension(event, 1))
 
-        self.remaining_info_label = tk.Text(self.information_frame, height=8, wrap="word", state="disabled", bg='gray94', borderwidth=0)
+        self.remaining_info_label = tk.Text(self.information_frame, height=7, wrap="word", state="disabled", bg='gray94', borderwidth=0)
         self.remaining_info_label.pack(anchor="w")
-
-        self.flippers_frame, self.flippers_input_x, self.flippers_input_y = x_y_input(self.information_frame, ", ")
-        self.flippers_frame.pack(anchor="w")
-        flippers = [12, 34] # TODO: Add later
-        update_text_widget(self.flippers_input_x, flippers[0])
-        update_text_widget(self.flippers_input_y, flippers[1])
-        self.flippers_input_x.bind("<<Modified>>", self.edit_flippers)
-        self.flippers_input_y.bind("<<Modified>>", self.edit_flippers)
 
         # Add fields to interface
         for field in self.resources.fields.values():
@@ -117,16 +109,6 @@ class TabField(Tab):
             reference.H_computed = False
     
 
-    def edit_flippers(self, event):
-        try:
-            flippers_x = float(self.flippers_input_x.get("1.0", tk.END).strip())
-            flippers_y = float(self.flippers_input_y.get("1.0", tk.END).strip())
-        except:
-            print("Error: Couldn't edit flippers")
-        self.flippers_input_x.edit_modified(False)
-        self.flippers_input_y.edit_modified(False)
-    
-
     def update_dimensions(self, update_x:bool=True, update_y:bool=True):
         (width, height) = (self.plane_width * self.active_field.cms_per_pixel, self.plane_height * self.active_field.cms_per_pixel)
         self.grid_editor.field_dimensions = (width, height)
@@ -146,6 +128,5 @@ class TabField(Tab):
         text = (
             f"\nImage dimensions (px): \n{image_field_w} x {image_field_h}\n\n"
             f"Pixels per cm: \n{pixels_per_cm:.1f}\n\n"
-            f"Flippers position (cm):"
         )
         update_text_widget(self.remaining_info_label, text)

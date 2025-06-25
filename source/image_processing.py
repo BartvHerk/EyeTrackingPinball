@@ -92,5 +92,17 @@ def draw_perspective_grid(img:np.ndarray, H_inv:np.ndarray, scale_factor, field_
          draw_line(img, pos1, pos2, 1)
 
 
+def draw_centered_text(img:np.array, txt:str, coords:tuple[float, float]): # Coords are percentage of img
+    height, width, _ = img.shape
+    font = cv2.FONT_HERSHEY_DUPLEX
+    font_scale, thickness = 1, 1
+    (text_width, text_height), _ = cv2.getTextSize(txt, font, font_scale, thickness)
+    center_x = int(width * coords[0])
+    center_y = int(height * coords[1])
+    text_x = center_x - text_width // 2
+    text_y = center_y + text_height // 2
+    cv2.putText(img, txt, (text_x, text_y), font, font_scale, (255, 255, 255), thickness, cv2.LINE_AA)
+
+
 def scale_position(pos:tuple[float, float], scale_factor:float) -> tuple[float, float]:
         return tuple(map(lambda x: x * scale_factor, pos))

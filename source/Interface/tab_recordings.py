@@ -11,6 +11,8 @@ from interface.annotation import start_annotation
 from processing import process_tracking_data
 from object_tracking import perform_tracking
 from interface.static_plane import set_plane_static
+from graphs import run_graphing
+from stats import generate_stats
 from tracking_video import render_tracking_video, render_video_full
 from video_processing import process_video
 from stopwatch import Stopwatch
@@ -151,20 +153,33 @@ class TabRecordings(Tab):
         track_menu.add_command(label="Perform tracking", command=lambda: self.start_perform_tracking(self.active_recording))
         track_menu.add_command(label="Postprocess tracking", command=self.post_process_tracking)
         track_menu.add_command(label="Render tracking video", command=lambda: render_tracking_video(self.active_recording))
-        track_menu.add_command(label="Render full video", command=lambda: render_video_full(self.active_recording))
         track_btn["menu"] = track_menu
         track_btn.grid(row=0, column=1, padx=(5, 0), sticky="w")
 
+        analysis_btn = ttk.Menubutton(action_button_frame, text="Analysis")
+        analysis_menu = tk.Menu(analysis_btn, tearoff=0)
+        analysis_menu.add_command(label="Generate stats (all)", command=self.generate_stats_all)
+        analysis_menu.add_command(label="Generate stats", command=lambda: generate_stats(self.active_recording))
+        analysis_menu.add_command(label="Create graphs", command=run_graphing)
+        analysis_menu.add_command(label="Render full video", command=lambda: render_video_full(self.active_recording))
+        analysis_btn["menu"] = analysis_menu
+        analysis_btn.grid(row=0, column=2, padx=(5, 0), sticky="w")
+
         # Participant dropdown
         participant_label = tk.Text(action_button_frame, height=1, width=12, wrap='none', state="disabled", bg='gray94', borderwidth=0)
-        participant_label.grid(row=0, column=2, padx=(15, 0), sticky="w")
+        participant_label.grid(row=0, column=3, padx=(25, 0), sticky="w")
         update_text_widget(participant_label, 'Participant:')
 
         names = [d["Name"] for d in self.resources.participants]
-        self.dropdown_participant = ttk.Combobox(action_button_frame, values=names, width=40, state="readonly")
+        self.dropdown_participant = ttk.Combobox(action_button_frame, values=names, width=30, state="readonly")
         self.dropdown_participant.bind("<<ComboboxSelected>>", self.on_participant_select)
         self.dropdown_participant.set("Select")  # Default text
-        self.dropdown_participant.grid(row=0, column=3, padx=(5, 0), sticky="w")
+        self.dropdown_participant.grid(row=0, column=4, padx=(5, 0), sticky="w")
+
+        # High task demand checkbutton
+        self.high_task_demand = tk.IntVar()
+        self.checkbutton = ttk.Checkbutton(action_button_frame, text='High demand', variable=self.high_task_demand, command=self.on_checkbutton_selected)
+        self.checkbutton.grid(row=0, column=5, padx=(5, 0), sticky="w")
 
         # Add recordings to interface
         for recording in self.resources.recordings:
@@ -191,6 +206,8 @@ class TabRecordings(Tab):
                 self.scrubber.config(state="normal")
                 participant_default = self.active_recording.metadata.get('participant', "Select")
                 self.dropdown_participant.set(participant_default)
+                task_key_default = 1 if self.active_recording.metadata.get('task_key', "norm") == "high" else 0
+                self.high_task_demand.set(task_key_default)
     
 
     def start_recording(self):
@@ -292,6 +309,12 @@ class TabRecordings(Tab):
         selected_field = self.dropdown_participant.get()
         self.active_recording.metadata['participant'] = selected_field
         save_recording_metadata(self.active_recording)
+
+
+    def on_checkbutton_selected(self):
+        task_key = "high" if self.high_task_demand.get() else "norm"
+        self.active_recording.metadata['task_key'] = task_key
+        save_recording_metadata(self.active_recording)
     
 
     def format_duration(self, ms:int):
@@ -320,6 +343,13 @@ class TabRecordings(Tab):
         for recording in recordings_left:
             self.start_perform_tracking(recording)
         print("All remaining recordings have been tracked")
+    
+
+    def generate_stats_all(self):
+        print("Generating stats for all recordings...")
+        for recording in self.resources.recordings:
+            generate_stats(recording)
+        print("Finished generating stats for all recordings")
 
     
     def post_process_tracking(self):
