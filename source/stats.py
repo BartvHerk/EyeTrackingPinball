@@ -1,17 +1,18 @@
 import math
 import numpy as np
-import tkinter as tk
-from tkinter import ttk
 
 from containers import ContRecording
 from IO import save_stats_entry
 from resources import Resources
-from interface.interface_custom import create_toplevel, ready_toplevel
+from pursuit import get_pursuit_data
 from video import Video
 
 
 VEL_BIN_EDGES = np.linspace(0, 200, num=201) # 200 bins
-FLIPPER_BIN_EDGES = np.linspace(0, 150, num=301) # 200 bins
+FLIPPER_BIN_EDGES = np.linspace(0, 150, num=151)
+FIX_BIN_EDGES = np.linspace(0, 300, num=301)
+SAC_BIN_EDGES = np.linspace(0, 200, num=201)
+PUR_BIN_EDGES = np.linspace(0, 1.5, num=301)
 FLIPPER_POS = [23, 97]
 
 
@@ -25,6 +26,7 @@ def generate_stats(recording:ContRecording):
 
     export = recording.export
     data = export.data
+    field_width, field_height = resources.fields[export.reference.field].field_dimensions
     print(f"Generating stats for {participant}, {task_key}... ", end='', flush=True)
 
     # Timing
@@ -35,19 +37,20 @@ def generate_stats(recording:ContRecording):
     timestamp_to_field = lambda timestamp: timestamp_to_frame(timestamp, start_field, videoField.fps)
     duration = int(min(videoWorld.duration - start_world, videoField.duration - start_field))
 
-    # Stat counter
+    # Stat counter and pursuit data
     condition_counter = {}
+    pursuit_data = get_pursuit_data(recording.tracking_data)
 
     # Iterate through recording
     frame_count = int(duration / 1000 * videoField.fps)
     export_index = 0
+    fixation_index, saccade_index = -1, -1
     for i in range(frame_count):
         timestamp = (i / frame_count) * duration
         
         # Get field condition
         frame_field = timestamp_to_field(timestamp)
         condition = recording.conditions[frame_field]['condition']
-        has_detection = recording.conditions[frame_field]['has_detection']
 
         # Find moment in export
         timestamp_export = timestamp + start_world
@@ -61,34 +64,115 @@ def generate_stats(recording:ContRecording):
         t = max(min((timestamp_export - a) / (b - a), 1), 0)
 
         # Increment counters
-        if condition_counter.get(condition, None) is None:
-            condition_counter[condition] = {'Gaze Velocity': [], 'Flipper Distance': []}
+        if condition not in condition_counter:
+            condition_counter[condition] = {
+                'Frames': 0, # Frames spent in this condition
+                'Frames Looking': 0, # Frames spent looking at field
+                'Gaze Velocity': [],
+                'Flipper Distance': [],
+                'Fixation Duration': [],
+                'Saccade Duration': [],
+                'Pursuit Duration': []
+            }
+        condition_counter[condition]['Frames'] += 1
         
+        # Velocity
         velocity = export.get_val('Gaze Velocity', export_index, t)
         if velocity is not None:
             condition_counter[condition]['Gaze Velocity'].append(velocity)
+        
+        # Flipper distance + looking at field
         gaze_x = export.get_val('Perspective Gaze X', export_index, t)
         gaze_y = export.get_val('Perspective Gaze Y', export_index, t)
         if gaze_x is not None and gaze_y is not None:
             flipper_distance = math.dist(FLIPPER_POS, [gaze_x, gaze_y])
             condition_counter[condition]['Flipper Distance'].append(flipper_distance)
+            if gaze_x >= 0 and gaze_x <= field_width and gaze_y >= 0 and gaze_y <= field_height:
+                condition_counter[condition]['Frames Looking'] += 1
+
+        # Fixations
+        fixation_index_export = export.get_val('Fixation Index', export_index, 0)
+        if fixation_index_export is not None:
+            if fixation_index_export > fixation_index:
+                fixation_index = fixation_index_export
+                fixation_duration = export.get_val('Fixation Duration', export_index, 0)
+                condition_counter[condition]['Fixation Duration'].append(fixation_duration)
+        
+        # Saccades
+        saccade_index_export = export.get_val('Saccade Index', export_index, 0)
+        if saccade_index_export is not None:
+            if saccade_index_export > saccade_index:
+                saccade_index = saccade_index_export
+                saccade_duration = export.get_val('Saccade Duration', export_index, 0)
+                condition_counter[condition]['Saccade Duration'].append(saccade_duration)
+        
+        # Pursuits
+        pursuit_current = pursuit_data.get(frame_field, None)
+        if pursuit_current is not None:
+            condition_counter[condition]['Pursuit Duration'].append(pursuit_current[0] * videoField.frame_duration / 1000)
 
     # Generate recording stats
+    frame_duration = 1 / videoField.fps
+    time_default = condition_counter['Single ball']['Frames'] * frame_duration
+    time_multiball = condition_counter['Multiball']['Frames'] * frame_duration
+    percent_looking_default = condition_counter['Single ball']['Frames Looking'] / condition_counter['Single ball']['Frames']
+    percent_looking_multiball = condition_counter['Multiball']['Frames Looking'] / condition_counter['Multiball']['Frames']
+
+    # Velocity
     counts_vel_default, _ = np.histogram(condition_counter['Single ball']['Gaze Velocity'], bins=VEL_BIN_EDGES)
     counts_vel_multiball, _ = np.histogram(condition_counter['Multiball']['Gaze Velocity'], bins=VEL_BIN_EDGES)
     counts_vel_default_normalized = counts_vel_default / counts_vel_default.sum()
     counts_vel_multiball_normalized = counts_vel_multiball / counts_vel_multiball.sum()
 
+    # Flipper distance
     counts_flip_default, _ = np.histogram(condition_counter['Single ball']['Flipper Distance'], bins=FLIPPER_BIN_EDGES)
     counts_flip_multiball, _ = np.histogram(condition_counter['Multiball']['Flipper Distance'], bins=FLIPPER_BIN_EDGES)
     counts_flip_default_normalized = counts_flip_default / counts_flip_default.sum()
     counts_flip_multiball_normalized = counts_flip_multiball / counts_flip_multiball.sum()
 
+    # Fixations
+    fixations_per_second_default = len(condition_counter['Single ball']['Fixation Duration']) / time_default
+    fixations_per_second_multiball = len(condition_counter['Multiball']['Fixation Duration']) / time_multiball
+    counts_fixations_default, _ = np.histogram(condition_counter['Single ball']['Fixation Duration'], bins=FIX_BIN_EDGES)
+    counts_fixations_multiball, _ = np.histogram(condition_counter['Multiball']['Fixation Duration'], bins=FIX_BIN_EDGES)
+    counts_fixations_default_normalized = counts_fixations_default / counts_fixations_default.sum()
+    counts_fixations_multiball_normalized = counts_fixations_multiball / counts_fixations_multiball.sum()
+
+    # Saccades
+    saccades_per_second_default = len(condition_counter['Single ball']['Saccade Duration']) / time_default
+    saccades_per_second_multiball = len(condition_counter['Multiball']['Saccade Duration']) / time_multiball
+    counts_saccades_default, _ = np.histogram(condition_counter['Single ball']['Saccade Duration'], bins=SAC_BIN_EDGES)
+    counts_saccades_multiball, _ = np.histogram(condition_counter['Multiball']['Saccade Duration'], bins=SAC_BIN_EDGES)
+    counts_saccades_default_normalized = counts_saccades_default / counts_saccades_default.sum()
+    counts_saccades_multiball_normalized = counts_saccades_multiball / counts_saccades_multiball.sum()
+
+    # Pursuits
+    pursuits_per_second_default = len(condition_counter['Single ball']['Pursuit Duration']) / time_default
+    pursuits_per_second_multiball = len(condition_counter['Multiball']['Pursuit Duration']) / time_multiball
+    counts_pursuits_default, _ = np.histogram(condition_counter['Single ball']['Pursuit Duration'], bins=PUR_BIN_EDGES)
+    counts_pursuits_multiball, _ = np.histogram(condition_counter['Multiball']['Pursuit Duration'], bins=PUR_BIN_EDGES)
+    counts_pursuits_default_normalized = counts_pursuits_default / counts_pursuits_default.sum()
+    counts_pursuits_multiball_normalized = counts_pursuits_multiball / counts_pursuits_multiball.sum()
+
     stats = {
         'vel_hist_default': counts_vel_default_normalized.tolist(),
         'vel_hist_multiball': counts_vel_multiball_normalized.tolist(),
         'flip_hist_default': counts_flip_default_normalized.tolist(),
-        'flip_hist_multiball': counts_flip_multiball_normalized.tolist()
+        'flip_hist_multiball': counts_flip_multiball_normalized.tolist(),
+        'fix_per_second_default' : fixations_per_second_default,
+        'fix_per_second_multiball': fixations_per_second_multiball,
+        'fix_hist_default': counts_fixations_default_normalized.tolist(),
+        'fix_hist_multiball': counts_fixations_multiball_normalized.tolist(),
+        'sac_per_second_default': saccades_per_second_default,
+        'sac_per_second_multiball': saccades_per_second_multiball,
+        'sac_hist_default': counts_saccades_default_normalized.tolist(),
+        'sac_hist_multiball': counts_saccades_multiball_normalized.tolist(),
+        'percent_looking_default': percent_looking_default,
+        'percent_looking_multiball': percent_looking_multiball,
+        'pur_per_second_default': pursuits_per_second_default,
+        'pur_per_second_multiball': pursuits_per_second_multiball,
+        'pur_hist_default': counts_pursuits_default_normalized.tolist(),
+        'pur_hist_multiball': counts_pursuits_multiball_normalized.tolist()
     }
 
     # Generate survey stats

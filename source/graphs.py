@@ -1,18 +1,47 @@
 import matplotlib.pyplot as plt
+from matplotlib.ticker import PercentFormatter
 import numpy as np
 
 from IO import import_stats
-from stats import VEL_BIN_EDGES, FLIPPER_BIN_EDGES
+from stats import VEL_BIN_EDGES, FLIPPER_BIN_EDGES, FIX_BIN_EDGES, SAC_BIN_EDGES, PUR_BIN_EDGES
 
 
 def run_graphing():
     stats = import_stats()
 
-    nasa_plot(stats)
-    violin_plots(stats)
+    plot_looking(stats)
+    plot_nasa(stats)
+    plots_vel_flip(stats)
+    plots_duration(stats, 'Fixations', 'fix', FIX_BIN_EDGES, (50, 250))
+    plots_duration(stats, 'Saccades', 'sac', SAC_BIN_EDGES, (0, 125))
+    plots_duration(stats, 'Ball gaze pursuits', 'pur', PUR_BIN_EDGES, (0, 1))
 
 
-def nasa_plot(stats):
+def plot_looking(stats):
+    task_keys = ["norm", "high"]
+
+    data = []
+    for condition in ["percent_looking_default", "percent_looking_multiball"]:
+        for task_key in task_keys:
+            data_current = []
+            for participant in stats:
+                data_current.append(stats[participant][task_key][condition])
+            data.append(data_current)
+    
+    plt.figure(figsize=(6, 4.5))
+    plot = plt.boxplot(data, widths=0.4, patch_artist=True, boxprops=dict(facecolor='lightskyblue'))
+    for median in plot['medians']:
+        median.set_color('black')
+    plt.xticks([1, 2, 3, 4], ["Norm, single ball", "High, single ball", "Norm, multiball", "High, multiball"])
+    plt.ylabel(f"Percentage gaze on field")
+    plt.title(f"Percentage of Time Gaze Was on Field per Condition")
+    plt.gca().yaxis.set_major_formatter(PercentFormatter(xmax=1))
+    plt.grid(True, axis='y', linestyle='--', alpha=0.5)
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_nasa(stats):
     TLX_Norm = []
     TLX_High = []
     for participant in stats:
@@ -33,7 +62,7 @@ def nasa_plot(stats):
     plt.show()
 
 
-def violin_plots(stats):
+def plots_vel_flip(stats):
     # Velocity and flipper distance
     bin_centers_vel = 0.5 * (VEL_BIN_EDGES[:-1] + VEL_BIN_EDGES[1:])
     bin_centers_flip = 0.5 * (FLIPPER_BIN_EDGES[:-1] + FLIPPER_BIN_EDGES[1:])
@@ -85,16 +114,49 @@ def violin_plots(stats):
     plt.show()
 
 
+def plots_duration(stats, name, shorthand, bin_edges, ylim):
+    task_keys = ["norm", "high"]
 
+    # Box plot
+    val_per_second_data = []
+    for condition in [f"{shorthand}_per_second_default", f"{shorthand}_per_second_multiball"]:
+        for task_key in task_keys:
+            val_per_second = []
+            for participant in stats:
+                val_per_second.append(stats[participant][task_key][condition])
+            val_per_second_data.append(val_per_second)
+    
+    plt.figure(figsize=(6, 4.5))
+    plot = plt.boxplot(val_per_second_data, widths=0.4, patch_artist=True, boxprops=dict(facecolor='lightskyblue'))
+    for median in plot['medians']:
+        median.set_color('black')
+    plt.xticks([1, 2, 3, 4], ["Norm, single ball", "High, single ball", "Norm, multiball", "High, multiball"])
+    plt.ylabel(f"{name} per second")
+    plt.title(f"{name} per Second per Condition")
+    plt.grid(True, axis='y', linestyle='--', alpha=0.5)
+    plt.tight_layout()
+    plt.show()
 
-
-# def figure_histogram(data, bin_edges):
-#     plt.figure(figsize=(10, 5))
-#     bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
-#     plt.bar(bin_centers, data, width=np.diff(bin_edges), align='center')
-#     plt.xscale('log')
-#     plt.xlabel('Value')
-#     plt.ylabel('Frequency')
-#     plt.title('Histogram with Log-Spaced Bins')
-#     plt.grid(True, which="both", ls="--")
-#     plt.show()
+    # Violin plot
+    bin_centers_val = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+    conditions_val = [f"{shorthand}_hist_default", f"{shorthand}_hist_multiball"]
+    flat_data_val = []
+    for condition in conditions_val:
+        for task_key in task_keys:
+            reconstructed = []
+            for participant in stats:
+                hist = np.array(stats[participant][task_key][condition])
+                scaled_counts = (hist * 1000).astype(int) # Scale up
+                raw_data = np.repeat(bin_centers_val, scaled_counts)
+                reconstructed.append(raw_data)
+            flat_data_val.append(np.concatenate(reconstructed))
+    
+    plt.figure(figsize=(7, 4.5))
+    plt.violinplot(flat_data_val, showmeans=True, showmedians=False, widths=0.8)
+    plt.xticks([1, 2, 3, 4], ["Norm, single ball", "High, single ball", "Norm, multiball", "High, multiball"])
+    plt.ylabel(f"{name} duration (ms)")
+    plt.title(f"{name} duration per Condition")
+    plt.grid(True, axis='y', linestyle='--', alpha=0.5)
+    plt.tight_layout()
+    plt.ylim(ylim[0], ylim[1])
+    plt.show()

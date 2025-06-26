@@ -1,3 +1,4 @@
+import copy
 import math
 import statistics
 import numpy as np
@@ -7,15 +8,20 @@ import bisect
 
 from containers import ContExport, ContRecording
 from homography import perspective_map
+from video import Video
 
 
 MAX_GAP_DURATION = 100
+VELOCITY_FRAME_WINDOW = 4
+PURSUIT_SCORE_DIST = 30
+PURSUIT_VEL_THRESHOLD = 50
 
 
 def process_data(export:ContExport):
     convert_to_numerics(export)
     interpolate_mapped_gaze_gaps(export)
     generate_perspective_mapped_data(export)
+    generate_perspective_mapped_velocity(export)
 
 
 def convert_to_numerics(export:ContExport):
@@ -28,6 +34,10 @@ def convert_to_numerics(export:ContExport):
         row['Mapped Gaze X'] = convert(row['Mapped Gaze X'], int)
         row['Mapped Gaze Y'] = convert(row['Mapped Gaze Y'], int)
         row['Gaze Velocity'] = convert(row['Gaze Velocity'], float)
+        row['Fixation Index'] = convert(row['Fixation Index'], int)
+        row['Fixation Duration'] = convert(row['Fixation Duration'], float)
+        row['Saccade Index'] = convert(row['Saccade Index'], int)
+        row['Saccade Duration'] = convert(row['Saccade Duration'], float)
 
 
 def convert(value: str, type):
@@ -70,17 +80,62 @@ def generate_perspective_mapped_data(export:ContExport):
         row['Perspective Gaze Y'] = y
 
 
+def generate_perspective_mapped_velocity(export:ContExport):
+    data = export.data
+    n = len(data)
+    
+    # Precompute valid velocity pairs
+    velocity_pairs = []
+    for i in range(n - 1):
+        v = None
+        curr = data[i]
+        next_ = data[i + 1]
+        if (curr['Perspective Gaze X'] is not None and next_['Perspective Gaze X'] is not None and
+            curr['Perspective Gaze Y'] is not None and next_['Perspective Gaze Y'] is not None):
+            dt = (next_['Timestamp'] - curr['Timestamp']) / 1000.0
+            if dt > 0:
+                dx = (next_['Perspective Gaze X'] - curr['Perspective Gaze X']) / dt
+                dy = (next_['Perspective Gaze Y'] - curr['Perspective Gaze Y']) / dt
+                v = (dx, dy)
+        velocity_pairs.append(v)
+
+    # Compute average velocity using surrounding valid velocity pairs
+    for i in range(n):
+        sum_dx = 0.0
+        sum_dy = 0.0
+        count = 0
+        for offset in range(-VELOCITY_FRAME_WINDOW, VELOCITY_FRAME_WINDOW):
+            j = i + offset
+            if 0 <= j < n - 1:
+                v = velocity_pairs[j]
+                if v is not None:
+                    sum_dx += v[0]
+                    sum_dy += v[1]
+                    count += 1
+        if count > 0:
+            data[i]['Gaze Velocity X'] = sum_dx / count
+            data[i]['Gaze Velocity Y'] = sum_dy / count
+        else:
+            data[i]['Gaze Velocity X'] = None
+            data[i]['Gaze Velocity Y'] = None
+
+
 def has_mapped_gaze(row) -> bool:
     return (row['Mapped Gaze X'] is not None) and (row['Mapped Gaze Y'] is not None)
 
 
-def process_tracking_data(tracking_data, recording:ContRecording): # TODO: Add more processing
+def process_tracking_data(tracking_data, recording:ContRecording):
     if not tracking_data:
         return tracking_data
     
     tracking_data = perspective_map_tracking(tracking_data, recording.H)
     tracking_data = split_tracks(tracking_data, 10)
     tracking_data = interpolate_missing_frames(tracking_data, 20)
+    tracking_data = remove_duplicate_detections(tracking_data)
+    tracking_data = add_velocities_to_tracking_data(tracking_data, 60)
+    tracking_data = generate_pursuit_scores(tracking_data, recording)
+    tracking_data = determine_best_pursuit(tracking_data)
+    tracking_data = smooth_pursuit_scores(tracking_data)
     
     # print("Postprocessing...")
     # tracking_data = interpolate_missing_frames(tracking_data, 5) # Interpolate gaps of at most five frames
@@ -172,7 +227,7 @@ def interpolate_missing_frames(tracking_data, max_gap_frames):
                         'cx': det1['cx'] * (1 - alpha) + det2['cx'] * alpha,
                         'cy': det1['cy'] * (1 - alpha) + det2['cy'] * alpha,
                         'radius': det1['radius'] * (1 - alpha) + det2['radius'] * alpha,
-                        'interpolated': True
+                        # 'interpolated': True
                     }
 
                     if interp_frame not in output_data:
@@ -181,6 +236,201 @@ def interpolate_missing_frames(tracking_data, max_gap_frames):
 
     print("Done")
     return output_data
+
+
+def remove_duplicate_detections(tracking_data):
+    print("Removing duplicate detections per frame... ", end='', flush=True)
+
+    for frame, detections in tracking_data.items():
+        # Group detections by track_id
+        track_groups = defaultdict(list)
+        for det in detections:
+            track_groups[det['track_id']].append(det)
+
+        # Keep only the highest-confidence detection for each track_id
+        filtered_detections = []
+        for track_id, dets in track_groups.items():
+            if len(dets) == 1:
+                filtered_detections.append(dets[0])
+            else:
+                best_det = max(dets, key=lambda d: d.get('confidence', 1.0))
+                filtered_detections.append(best_det)
+
+        tracking_data[frame] = filtered_detections
+
+    print("Done")
+    return tracking_data
+
+
+def add_velocities_to_tracking_data(tracking_data, fps):
+    print("Computing velocities... ", end='', flush=True)
+    from collections import defaultdict
+
+    track_index = defaultdict(list)
+    for frame_idx, detections in tracking_data.items():
+        for det in detections:
+            track_index[det['track_id']].append((frame_idx, det))
+
+    for _, detections in track_index.items():
+        # Sort detections by frame
+        detections.sort(key=lambda x: x[0])
+
+        frame_to_det = {frame: det for frame, det in detections}
+        frames = sorted(frame_to_det.keys())
+
+        for i, frame in enumerate(frames):
+            current = frame_to_det[frame]
+
+            prev = frame_to_det.get(frames[i - 1]) if i > 0 else None
+            next_ = frame_to_det.get(frames[i + 1]) if i < len(frames) - 1 else None
+
+            if prev and next_:
+                # Use central difference
+                dt = (frames[i + 1] - frames[i - 1]) / fps
+                vx = (next_['cx'] - prev['cx']) / dt
+                vy = (next_['cy'] - prev['cy']) / dt
+            elif prev:
+                dt = (frame - frames[i - 1]) / fps
+                vx = (current['cx'] - prev['cx']) / dt
+                vy = (current['cy'] - prev['cy']) / dt
+            elif next_:
+                dt = (frames[i + 1] - frame) / fps
+                vx = (next_['cx'] - current['cx']) / dt
+                vy = (next_['cy'] - current['cy']) / dt
+            else:
+                vx, vy = 0.0, 0.0
+
+            current['vx'] = vx
+            current['vy'] = vy
+
+    print("Done")
+    return tracking_data
+
+
+def generate_pursuit_scores(tracking_data, recording:ContRecording):
+    print("Generating pursuit scores... ", end='', flush=True)
+    export = recording.export
+    data = export.data
+    videoWorld = Video(recording.paths['VideoWorld'])
+    videoField = Video(recording.paths['VideoField'])
+    start_world = recording.metadata.get('start_world', 0)
+    start_field = recording.metadata.get('start_field', 0)
+    export_index = 0
+    for index in sorted(tracking_data.keys()):
+        timestamp = (index / videoField.frame_count) * videoField.duration - start_field
+        detections = tracking_data[index]
+        for detection in detections:
+                detection['pursuit_score'] = 0 # Default
+
+        # Find moment in export
+        timestamp_export = timestamp + start_world
+        while export_index < len(data) - 1:
+            if data[export_index + 1]['Timestamp'] > timestamp_export:
+                break
+            export_index += 1
+        export_index = min(export_index, len(data) - 2)
+        a = data[export_index]['Timestamp']
+        b = data[export_index + 1]['Timestamp']
+        t = max(min((timestamp_export - a) / (b - a), 1), 0)
+
+        # Gaze position and velocity
+        pos_gaze_x = export.get_val('Perspective Gaze X', export_index, t)
+        pos_gaze_y = export.get_val('Perspective Gaze Y', export_index, t)
+        vel_gaze_x = export.get_val('Gaze Velocity X', export_index, t)
+        vel_gaze_y = export.get_val('Gaze Velocity Y', export_index, t)
+        if pos_gaze_x is None or pos_gaze_y is None or vel_gaze_x is None or vel_gaze_y is None:
+            continue
+
+        # Calculate pursuit score
+        for detection in detections:
+            distance = math.dist([detection['cx'], detection['cy']], [pos_gaze_x, pos_gaze_y])
+            distance_score = max((PURSUIT_SCORE_DIST - distance) / PURSUIT_SCORE_DIST, 0)
+
+            vel_gaze_magnitude = math.dist([0, 0], [vel_gaze_x, vel_gaze_y])
+            vel_gaze_normalized = normalize_vector([vel_gaze_x, vel_gaze_y])
+            vel_ball_magnitude = math.dist([0, 0], [detection['vx'], detection['vy']])
+            vel_ball_normalized = normalize_vector([detection['vx'], detection['vy']])
+            dot_product = np.dot(vel_gaze_normalized, vel_ball_normalized)
+            alignment_score = (dot_product + 1) / 2
+            velocity_grace = max((PURSUIT_VEL_THRESHOLD - min(vel_gaze_magnitude, vel_ball_magnitude)) / PURSUIT_VEL_THRESHOLD, 0)
+            velocity_score = max(alignment_score, velocity_grace)
+
+            pursuit_score = distance_score * velocity_score
+            detection['pursuit_score'] = pursuit_score
+
+    # Free memory
+    videoWorld.destroy()
+    videoField.destroy()
+
+    print("Done")
+    return tracking_data
+
+
+def determine_best_pursuit(tracking_data):
+    print("Determining best pursuit per frame... ", end='', flush=True)
+
+    for _, detections in tracking_data.items():
+        if not detections:
+            continue
+
+        # Find the detection with the highest pursuit score
+        best_det = max(detections, key=lambda d: d.get('pursuit_score', 0.0))
+
+        # Set all other scores to 0, unless they match the best
+        for det in detections:
+            if det is not best_det:
+                det['pursuit_score'] = 0.0
+
+    print("Done")
+    return tracking_data
+
+
+def smooth_pursuit_scores(tracking_data, window_size=15, pursuit_threshold=0.3):
+    print("Smoothing pursuit scores... ", end='', flush=True)
+    
+    half_window = window_size // 2
+    new_tracking_data = copy.deepcopy(tracking_data)
+
+    # Group detections by track_id
+    track_detections = defaultdict(list)
+    for frame_idx, detections in tracking_data.items():
+        for det in detections:
+            track_detections[det['track_id']].append((frame_idx, det))
+
+    for track_id, detections in track_detections.items():
+        if len(detections) < 2:
+            continue
+
+        # Sort by frame
+        detections.sort(key=lambda x: x[0])
+        frames = [f for f, _ in detections]
+        det_by_frame = {f: d for f, d in detections}
+
+        for i in range(len(frames)):
+            center_frame = frames[i]
+            # Define window range
+            window_frames = frames[max(0, i - half_window):min(len(frames), i + half_window + 1)]
+
+            window_scores = [det_by_frame[f].get('pursuit_score', 0.0) for f in window_frames]
+            avg_score = sum(window_scores) / len(window_scores)
+            smoothed_score = max(window_scores) if avg_score >= pursuit_threshold else 0.0
+
+            # Update ONLY the center frame in the copy
+            if center_frame in new_tracking_data:
+                for d in new_tracking_data[center_frame]:
+                    if d['track_id'] == track_id:
+                        d['pursuit_score'] = smoothed_score
+
+    print("Done")
+    return new_tracking_data
+
+
+def normalize_vector(vector):
+    vec = np.array(vector)
+    norm = np.linalg.norm(vec)
+    if norm == 0:
+        return vec  # Avoid division by zero for a zero vector
+    return vec / norm
 
 
 def perspective_map_tracking(tracking_data, H):

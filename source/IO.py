@@ -270,8 +270,14 @@ def load_tracking_data(path):
                         'confidence': float(parts[1]),
                         'cx': float(parts[2]),
                         'cy': float(parts[3]),
-                        'radius': float(parts[4])
+                        'radius': float(parts[4]),
                     }
+                    try:
+                        detection['vx'] = float(parts[5])
+                        detection['vy'] = float(parts[6])
+                        detection['pursuit_score'] = float(parts[7])
+                    except:
+                        pass
                     detections.append(detection)
                 detections_by_frame[frame_index] = detections
     return detections_by_frame

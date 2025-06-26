@@ -1,3 +1,4 @@
+import math
 from PIL import ImageTk
 import cv2
 import numpy as np
@@ -164,10 +165,16 @@ class InterfaceImages:
             position = self.get_export_position('Perspective Gaze X', 'Perspective Gaze Y')
             self.field_image_final = self.add_gaze_circle(field_image_scaled, position, self.map_to_field)
 
+            # gaze_velocity = self.get_export_position('Gaze Velocity X', 'Gaze Velocity Y')
+            # print(gaze_velocity)
+
             # Detections
             for detection in self.frame_detections:
+                # vel_total = math.dist([0, 0], [detection['vx'], detection['vy']])
+                # print(f"Velocity: {vel_total}")
                 position = self.map_to_field((detection['cx'], detection['cy']))
-                draw_crosshair(self.field_image_final, position, COLORS[6])
+                color = COLORS[0 if detection.get('pursuit_score', 0) > 0.2 else 6]
+                draw_crosshair(self.field_image_final, position, color)
 
             # Draw conditions text
             condition = self.active_recording.conditions[index_static]['condition']

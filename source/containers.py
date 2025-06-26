@@ -75,7 +75,11 @@ class ContExport:
         'Interpolated Gaze Y',
         'Mapped Gaze X',
         'Mapped Gaze Y',
-        'Gaze Velocity'
+        'Gaze Velocity',
+        'Fixation Index',
+        'Fixation Duration',
+        'Saccade Index',
+        'Saccade Duration'
     ]
     
 
