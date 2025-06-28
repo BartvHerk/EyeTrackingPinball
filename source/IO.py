@@ -24,6 +24,7 @@ DEFAULT_SETTINGS = {
 }
 PATH_SURVEY = Path('data/survey_results.csv')
 PATH_STATS = Path('data/stats.json')
+DIR_STATS_OUTPUT = Path('data/stats_out')
 
 TRACKING_DATA_CONFIDENCE = 0.3
 
@@ -317,3 +318,19 @@ def save_dataset_frame_for_recording(recording:ContRecording, index:int, img:np.
     cv2.imwrite(file_image, img)
     with open(file_label, "w") as file:
         file.write(text)
+
+
+def save_csv(filename, headers:list, data:list):
+    path = DIR_STATS_OUTPUT / filename
+    
+    # Ensure the directory exists
+    dir = os.path.dirname(path)
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+    
+    # Write to file
+    with open(path, mode='w', newline='', encoding='utf-8') as csv_file:
+        writer = csv.writer(csv_file)
+        if headers:
+            writer.writerow(headers)
+        writer.writerows(data)

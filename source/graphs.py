@@ -3,7 +3,7 @@ from matplotlib.ticker import PercentFormatter
 import numpy as np
 
 from IO import import_stats
-from stats import VEL_BIN_EDGES, FLIPPER_BIN_EDGES, FIX_BIN_EDGES, SAC_BIN_EDGES, PUR_BIN_EDGES
+from stats import VEL_BIN_EDGES, FLIPPER_BIN_EDGES, FIX_BIN_EDGES, SAC_BIN_EDGES, PUR_BIN_EDGES, histogram_to_counts_centers
 
 
 def run_graphing():
@@ -76,8 +76,7 @@ def plots_vel_flip(stats):
             reconstructed = []
             for participant in stats:
                 hist = np.array(stats[participant][task_key][condition])
-                scaled_counts = (hist * 1000).astype(int) # Scale up
-                raw_data = np.repeat(bin_centers_vel, scaled_counts)
+                raw_data = histogram_to_counts_centers(hist, bin_centers_vel)
                 reconstructed.append(raw_data)
             flat_data_vel.append(np.concatenate(reconstructed))
         
@@ -86,8 +85,7 @@ def plots_vel_flip(stats):
             reconstructed = []
             for participant in stats:
                 hist = np.array(stats[participant][task_key][condition])
-                scaled_counts = (hist * 1000).astype(int) # Scale up
-                raw_data = np.repeat(bin_centers_flip, scaled_counts)
+                raw_data = histogram_to_counts_centers(hist, bin_centers_flip)
                 reconstructed.append(raw_data)
             flat_data_flip.append(np.concatenate(reconstructed))
 
@@ -138,7 +136,7 @@ def plots_duration(stats, name, shorthand, bin_edges, ylim):
     plt.show()
 
     # Violin plot
-    bin_centers_val = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+    bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
     conditions_val = [f"{shorthand}_hist_default", f"{shorthand}_hist_multiball"]
     flat_data_val = []
     for condition in conditions_val:
@@ -146,8 +144,7 @@ def plots_duration(stats, name, shorthand, bin_edges, ylim):
             reconstructed = []
             for participant in stats:
                 hist = np.array(stats[participant][task_key][condition])
-                scaled_counts = (hist * 1000).astype(int) # Scale up
-                raw_data = np.repeat(bin_centers_val, scaled_counts)
+                raw_data = histogram_to_counts_centers(hist, bin_centers)
                 reconstructed.append(raw_data)
             flat_data_val.append(np.concatenate(reconstructed))
     

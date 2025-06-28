@@ -405,6 +405,8 @@
         0.0,
         0.0
       ],
+      "vel_mean_default": 15.726826608505998,
+      "vel_mean_multiball": 13.512972972972973,
       "flip_hist_default": [
         0.0006625216593619407,
         0.004586688410967281,
@@ -709,6 +711,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 33.37580299785867,
+      "flip_mean_multiball": 26.951511991657977,
       "fix_per_second_default": 3.062487718608764,
       "fix_per_second_multiball": 2.6285160038797284,
       "fix_hist_default": [
@@ -1315,6 +1319,8 @@
         0.0,
         0.015151515151515152
       ],
+      "fix_mean_default": 145.16281512605042,
+      "fix_mean_multiball": 150.05050505050505,
       "sac_per_second_default": 5.108076242876793,
       "sac_per_second_multiball": 3.8700290979631427,
       "sac_hist_default": [
@@ -1721,6 +1727,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 40.22575599582899,
+      "sac_mean_multiball": 42.21897435897436,
       "percent_looking_default": 0.9430634702299077,
       "percent_looking_multiball": 0.949078564500485,
       "pur_per_second_default": 1.9276871684024368,
@@ -2328,7 +2336,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.30734472049689443,
+      "pur_mean_multiball": 0.28293610547667347
     },
     "global": {
       "TLX_High": 14.166666666666666,
@@ -2739,6 +2749,8 @@
         0.0004341219882787063,
         0.001302365964836119
       ],
+      "vel_mean_default": 25.280379041248608,
+      "vel_mean_multiball": 26.872527472527473,
       "flip_hist_default": [
         0.0006593768888400462,
         0.0015934941480301116,
@@ -3043,6 +3055,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 40.01564185544768,
+      "flip_mean_multiball": 38.27544596012592,
       "fix_per_second_default": 3.4128020901371654,
       "fix_per_second_multiball": 3.0589123867069485,
       "fix_hist_default": [
@@ -3649,6 +3663,8 @@
         0.0,
         0.008583690987124463
       ],
+      "fix_mean_default": 129.16979166666667,
+      "fix_mean_multiball": 139.00833333333333,
       "sac_per_second_default": 7.459177008491182,
       "sac_per_second_multiball": 5.4040785498489425,
       "sac_hist_default": [
@@ -4055,6 +4071,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 36.52731092436975,
+      "sac_mean_multiball": 44.63128205128205,
       "percent_looking_default": 0.9393642499455693,
       "percent_looking_multiball": 0.9274924471299094,
       "pur_per_second_default": 2.201175702155454,
@@ -4662,7 +4680,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.27738717948717956,
+      "pur_mean_multiball": 0.2770570264765785
     }
   },
   "Charl-Pierre Marais": {
@@ -5071,6 +5091,8 @@
         0.0003136762860727729,
         0.0003136762860727729
       ],
+      "vel_mean_default": 36.401234567901234,
+      "vel_mean_multiball": 32.933443344334435,
       "flip_hist_default": [
         0.0024473813020068525,
         0.004601076847772883,
@@ -5375,6 +5397,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 31.90430107526882,
+      "flip_mean_multiball": 24.312045690550363,
       "fix_per_second_default": 3.225717818381646,
       "fix_per_second_multiball": 3.588558220167582,
       "fix_hist_default": [
@@ -5981,6 +6005,8 @@
         0.0,
         0.005128205128205128
       ],
+      "fix_mean_default": 122.62085561497327,
+      "fix_mean_multiball": 129.51225740551584,
       "sac_per_second_default": 8.690754224481385,
       "sac_per_second_multiball": 8.217278243282289,
       "sac_hist_default": [
@@ -6387,6 +6413,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 39.298947368421054,
+      "sac_mean_multiball": 38.279591836734696,
       "percent_looking_default": 0.9020011906397399,
       "percent_looking_multiball": 0.9930655879803525,
       "pur_per_second_default": 2.0414892155515867,
@@ -6994,7 +7022,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.2755610134436401,
+      "pur_mean_multiball": 0.25230492813141686
     },
     "global": {
       "TLX_High": 14.333333333333334,
@@ -7405,6 +7435,8 @@
         0.0006132461161079313,
         0.0
       ],
+      "vel_mean_default": 35.45200892857143,
+      "vel_mean_multiball": 32.82929515418502,
       "flip_hist_default": [
         0.001612578109252167,
         0.004535375932271719,
@@ -7709,6 +7741,8 @@
         0.00019120458891013384,
         0.0
       ],
+      "flip_mean_default": 38.467811158798284,
+      "flip_mean_multiball": 25.885427666314676,
       "fix_per_second_default": 3.482448736408321,
       "fix_per_second_multiball": 4.0,
       "fix_hist_default": [
@@ -8315,6 +8349,8 @@
         0.0,
         0.003115264797507788
       ],
+      "fix_mean_default": 122.44033149171271,
+      "fix_mean_multiball": 125.36871794871794,
       "sac_per_second_default": 8.031378779603793,
       "sac_per_second_multiball": 7.140401146131805,
       "sac_hist_default": [
@@ -8721,6 +8757,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 41.02016985138004,
+      "sac_mean_multiball": 39.81425598335068,
       "percent_looking_default": 0.9423563874683482,
       "percent_looking_multiball": 0.9948424068767908,
       "pur_per_second_default": 2.281912516756864,
@@ -9328,7 +9366,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.2586598746081505,
+      "pur_mean_multiball": 0.25529306829765547
     }
   },
   "Beau Jonkers": {
@@ -9737,6 +9777,8 @@
         0.0,
         0.0007980845969672786
       ],
+      "vel_mean_default": 39.48876404494382,
+      "vel_mean_multiball": 37.296052631578945,
       "flip_hist_default": [
         0.0,
         0.0,
@@ -10041,6 +10083,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 46.05187165775401,
+      "flip_mean_multiball": 34.934417628541446,
       "fix_per_second_default": 2.9715136846024945,
       "fix_per_second_multiball": 3.3246135552913203,
       "fix_hist_default": [
@@ -10647,6 +10691,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 108.5456026058632,
+      "fix_mean_multiball": 112.61603375527426,
       "sac_per_second_default": 10.497114131446658,
       "sac_per_second_multiball": 10.145065398335316,
       "sac_hist_default": [
@@ -11053,6 +11099,8 @@
         0.0,
         0.0014245014245014246
       ],
+      "sac_mean_default": 34.3914223669924,
+      "sac_mean_multiball": 35.38097768331562,
       "percent_looking_default": 0.8087879352075964,
       "percent_looking_multiball": 0.8894173602853745,
       "pur_per_second_default": 1.865574380934649,
@@ -11660,7 +11708,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.2729665314401623,
+      "pur_mean_multiball": 0.2586938775510204
     },
     "global": {
       "TLX_High": 12.5,
@@ -12071,6 +12121,8 @@
         0.0,
         0.0
       ],
+      "vel_mean_default": 36.796752519596865,
+      "vel_mean_multiball": 44.086433260393875,
       "flip_hist_default": [
         0.0,
         0.00030248033877797946,
@@ -12375,6 +12427,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 39.16312433581297,
+      "flip_mean_multiball": 20.920274551214362,
       "fix_per_second_default": 3.3606465372095635,
       "fix_per_second_multiball": 3.501483679525222,
       "fix_hist_default": [
@@ -12981,6 +13035,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 119.78733264675593,
+      "fix_mean_multiball": 108.67008196721312,
       "sac_per_second_default": 9.300707150072961,
       "sac_per_second_multiball": 9.910979228486646,
       "sac_hist_default": [
@@ -13387,6 +13443,8 @@
         0.0,
         0.0030120481927710845
       ],
+      "sac_mean_default": 35.765608465608466,
+      "sac_mean_multiball": 42.94578313253012,
       "percent_looking_default": 0.884723313503199,
       "percent_looking_multiball": 0.9970326409495549,
       "pur_per_second_default": 2.276349758671007,
@@ -13994,7 +14052,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.268526557711951,
+      "pur_mean_multiball": 0.24226744186046514
     }
   },
   "Martijn Drenth": {
@@ -14403,6 +14463,8 @@
         0.0004266211604095563,
         0.0
       ],
+      "vel_mean_default": 38.32608695652174,
+      "vel_mean_multiball": 31.90110497237569,
       "flip_hist_default": [
         0.0003369596611148551,
         0.0020217579666891305,
@@ -14707,6 +14769,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 37.44186046511628,
+      "flip_mean_multiball": 29.11721991701245,
       "fix_per_second_default": 2.4439451164124875,
       "fix_per_second_multiball": 3.7073540561031084,
       "fix_hist_default": [
@@ -15313,6 +15377,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 110.30334728033473,
+      "fix_mean_multiball": 111.05122950819673,
       "sac_per_second_default": 10.977673662571114,
       "sac_per_second_multiball": 9.097801364670204,
       "sac_hist_default": [
@@ -15719,6 +15785,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 40.19174503657262,
+      "sac_mean_multiball": 39.9323499491353,
       "percent_looking_default": 0.9782951666108907,
       "percent_looking_multiball": 1.0,
       "pur_per_second_default": 2.2402830233781135,
@@ -16326,7 +16394,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.27551975051975053,
+      "pur_mean_multiball": 0.26760649087221094
     },
     "global": {
       "TLX_High": 14.0,
@@ -16737,6 +16807,8 @@
         0.0,
         0.00048567265662943174
       ],
+      "vel_mean_default": 38.65111111111111,
+      "vel_mean_multiball": 39.60526315789474,
       "flip_hist_default": [
         0.0014817085632536275,
         0.002452483139178418,
@@ -17041,6 +17113,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 39.758620689655174,
+      "flip_mean_multiball": 28.942812172088143,
       "fix_per_second_default": 2.6322151707464494,
       "fix_per_second_multiball": 2.6937738246505716,
       "fix_hist_default": [
@@ -17647,6 +17721,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 111.68201058201058,
+      "fix_mean_multiball": 103.43360572012257,
       "sac_per_second_default": 10.73436083408885,
       "sac_per_second_multiball": 10.952986022871665,
       "sac_hist_default": [
@@ -18053,6 +18129,8 @@
         0.0,
         0.004640371229698376
       ],
+      "sac_mean_default": 37.995661605206074,
+      "sac_mean_multiball": 43.21458551941238,
       "percent_looking_default": 0.9347234814143246,
       "percent_looking_multiball": 0.9813638288860652,
       "pur_per_second_default": 2.154729525536416,
@@ -18660,7 +18738,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.2954614181439,
+      "pur_mean_multiball": 0.26347236438075744
     }
   },
   "Luuk van den Hoven": {
@@ -19069,6 +19149,8 @@
         0.0,
         0.0
       ],
+      "vel_mean_default": 36.67488789237668,
+      "vel_mean_multiball": 37.56194690265487,
       "flip_hist_default": [
         0.001423559916620062,
         0.0007626213839036047,
@@ -19373,6 +19455,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 36.97588424437299,
+      "flip_mean_multiball": 21.84368530020704,
       "fix_per_second_default": 3.0175405238389503,
       "fix_per_second_multiball": 3.088384693532001,
       "fix_hist_default": [
@@ -19979,6 +20063,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 108.7691415313225,
+      "fix_mean_multiball": 108.26020942408377,
       "sac_per_second_default": 9.936778057707848,
       "sac_per_second_multiball": 10.728073145953267,
       "sac_hist_default": [
@@ -20385,6 +20471,8 @@
         0.0,
         0.0019047619047619048
       ],
+      "sac_mean_default": 35.5,
+      "sac_mean_multiball": 35.08918918918919,
       "percent_looking_default": 0.9145790749631602,
       "percent_looking_multiball": 0.9888249238062987,
       "pur_per_second_default": 1.8167989732376288,
@@ -20992,7 +21080,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.2768937823834197,
+      "pur_mean_multiball": 0.28686923076923077
     },
     "global": {
       "TLX_High": 11.166666666666666,
@@ -21403,6 +21493,8 @@
         0.0,
         0.0002981959147159684
       ],
+      "vel_mean_default": 32.61198208286674,
+      "vel_mean_multiball": 35.46582138919515,
       "flip_hist_default": [
         0.0013379553609438666,
         0.005412637596545642,
@@ -21707,6 +21799,8 @@
         0.0014994547437295529,
         0.0014994547437295529
       ],
+      "flip_mean_default": 34.882131324004305,
+      "flip_mean_multiball": 29.577894736842104,
       "fix_per_second_default": 3.324377574780584,
       "fix_per_second_multiball": 3.1664192198677283,
       "fix_hist_default": [
@@ -22313,6 +22407,8 @@
         0.0,
         0.0025974025974025974
       ],
+      "fix_mean_default": 115.14248704663213,
+      "fix_mean_multiball": 104.08872651356994,
       "sac_per_second_default": 9.729536091706969,
       "sac_per_second_multiball": 11.410446753947902,
       "sac_hist_default": [
@@ -22719,6 +22815,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 35.20514165792235,
+      "sac_mean_multiball": 34.02246603970742,
       "percent_looking_default": 0.9453101677712102,
       "percent_looking_multiball": 0.9765150492644081,
       "pur_per_second_default": 2.077735984237865,
@@ -23326,7 +23424,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.3089641744548287,
+      "pur_mean_multiball": 0.2473837209302326
     }
   },
   "Bart van Doorn": {
@@ -23735,6 +23835,8 @@
         0.0,
         0.00023212627669452182
       ],
+      "vel_mean_default": 26.64569536423841,
+      "vel_mean_multiball": 28.66030534351145,
       "flip_hist_default": [
         0.003397260273972603,
         0.002410958904109589,
@@ -24039,6 +24141,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 19.194327731092436,
+      "flip_mean_multiball": 14.513360739979445,
       "fix_per_second_default": 3.536453839516825,
       "fix_per_second_multiball": 3.575268817204301,
       "fix_hist_default": [
@@ -24645,6 +24749,8 @@
         0.0,
         0.004291845493562232
       ],
+      "fix_mean_default": 128.88659793814432,
+      "fix_mean_multiball": 128.95977011494253,
       "sac_per_second_default": 6.930543572044867,
       "sac_per_second_multiball": 7.365591397849462,
       "sac_hist_default": [
@@ -25051,6 +25157,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 29.01783783783784,
+      "sac_mean_multiball": 30.281837160751564,
       "percent_looking_default": 0.9743852459016393,
       "percent_looking_multiball": 0.9923835125448028,
       "pur_per_second_default": 1.213330457290768,
@@ -25658,7 +25766,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.29105222337125136,
+      "pur_mean_multiball": 0.275017911975435
     },
     "global": {
       "TLX_High": 6.333333333333333,
@@ -26069,6 +26179,8 @@
         0.0004274113121527283,
         0.0007123521869212138
       ],
+      "vel_mean_default": 36.27111111111111,
+      "vel_mean_multiball": 32.27689694224235,
       "flip_hist_default": [
         0.0014058370353708597,
         0.0063543833998762865,
@@ -26373,6 +26485,8 @@
         0.0002646202699126753,
         0.0
       ],
+      "flip_mean_default": 37.273462783171524,
+      "flip_mean_multiball": 26.352910052910055,
       "fix_per_second_default": 3.2365809412015794,
       "fix_per_second_multiball": 3.556025929355735,
       "fix_hist_default": [
@@ -26979,6 +27093,8 @@
         0.0,
         0.002369668246445498
       ],
+      "fix_mean_default": 119.6211498973306,
+      "fix_mean_multiball": 118.57329842931937,
       "sac_per_second_default": 8.951019101483299,
       "sac_per_second_multiball": 9.255192485778542,
       "sac_hist_default": [
@@ -27385,6 +27501,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 37.020591341077086,
+      "sac_mean_multiball": 33.034174553102,
       "percent_looking_default": 0.8948351296553196,
       "percent_looking_multiball": 0.9765842042598227,
       "pur_per_second_default": 2.100096040977484,
@@ -27992,7 +28110,9 @@
         0.0,
         0.0,
         0.0033003300330033004
-      ]
+      ],
+      "pur_mean_default": 0.2838570691434469,
+      "pur_mean_multiball": 0.28236666666666665
     }
   },
   "Lakeisha Pieters": {
@@ -28401,6 +28521,8 @@
         0.0007963368504877563,
         0.0005972526378658173
       ],
+      "vel_mean_default": 28.299778761061948,
+      "vel_mean_multiball": 26.829268292682926,
       "flip_hist_default": [
         0.001055297593921486,
         0.0019523005487547488,
@@ -28705,6 +28827,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 43.23894282632147,
+      "flip_mean_multiball": 30.02852529601722,
       "fix_per_second_default": 3.464302094480966,
       "fix_per_second_multiball": 3.7327443401435674,
       "fix_hist_default": [
@@ -29311,6 +29435,8 @@
         0.0,
         0.012578616352201259
       ],
+      "fix_mean_default": 129.40638766519822,
+      "fix_mean_multiball": 132.59680741503604,
       "sac_per_second_default": 7.3689038373337405,
       "sac_per_second_multiball": 7.476532302595252,
       "sac_hist_default": [
@@ -29717,6 +29843,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 37.3336820083682,
+      "sac_mean_multiball": 34.27466251298027,
       "percent_looking_default": 0.8940528971105336,
       "percent_looking_multiball": 0.902079882201362,
       "pur_per_second_default": 2.1036538755541967,
@@ -30324,7 +30452,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.27185991605456455,
+      "pur_mean_multiball": 0.274382229232387
     },
     "global": {
       "TLX_High": 14.666666666666666,
@@ -30735,6 +30865,8 @@
         0.0,
         0.0002748007694421544
       ],
+      "vel_mean_default": 31.159621802002224,
+      "vel_mean_multiball": 31.045154185022028,
       "flip_hist_default": [
         4.811161895597787e-05,
         4.811161895597787e-05,
@@ -31039,6 +31171,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 40.33476394849785,
+      "flip_mean_multiball": 30.89936775553214,
       "fix_per_second_default": 3.3486302322347377,
       "fix_per_second_multiball": 3.407738095238095,
       "fix_hist_default": [
@@ -31645,6 +31779,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 116.10888407367281,
+      "fix_mean_multiball": 120.06530825496343,
       "sac_per_second_default": 9.200389375608399,
       "sac_per_second_multiball": 9.151785714285714,
       "sac_hist_default": [
@@ -32051,6 +32187,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 33.940677966101696,
+      "sac_mean_multiball": 35.99531737773153,
       "percent_looking_default": 0.8775784545496685,
       "percent_looking_multiball": 0.9704861111111112,
       "pur_per_second_default": 2.127659574468085,
@@ -32658,7 +32796,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.27815762004175365,
+      "pur_mean_multiball": 0.31816326530612254
     }
   },
   "Nisha Qiao": {
@@ -33067,6 +33207,8 @@
         0.001001001001001001,
         0.001001001001001001
       ],
+      "vel_mean_default": 57.75892857142857,
+      "vel_mean_multiball": 62.47584033613445,
       "flip_hist_default": [
         0.001834001535443146,
         0.005416702209332082,
@@ -33371,6 +33513,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 30.381789137380192,
+      "flip_mean_multiball": 25.650103519668736,
       "fix_per_second_default": 1.9823788546255507,
       "fix_per_second_multiball": 1.6020025031289111,
       "fix_hist_default": [
@@ -33977,6 +34121,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 104.65928270042194,
+      "fix_mean_multiball": 102.50617919670442,
       "sac_per_second_default": 10.819213825821755,
       "sac_per_second_multiball": 10.362953692115143,
       "sac_hist_default": [
@@ -34383,6 +34529,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 43.60470085470085,
+      "sac_mean_multiball": 47.259625390218524,
       "percent_looking_default": 0.9734412063707217,
       "percent_looking_multiball": 1.0,
       "pur_per_second_default": 1.868010843781769,
@@ -34990,7 +35138,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.25940104166666667,
+      "pur_mean_multiball": 0.18634301732925584
     },
     "global": {
       "TLX_High": 12.666666666666666,
@@ -35401,6 +35551,8 @@
         0.0007471049682480389,
         0.002614867388868136
       ],
+      "vel_mean_default": 59.34222222222222,
+      "vel_mean_multiball": 57.62472160356347,
       "flip_hist_default": [
         0.001347449470644851,
         0.0032242540904716074,
@@ -35705,6 +35857,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 36.31954887218045,
+      "flip_mean_multiball": 23.63660062565172,
       "fix_per_second_default": 1.8293200131944771,
       "fix_per_second_multiball": 1.878594249201278,
       "fix_hist_default": [
@@ -36311,6 +36465,8 @@
         0.0,
         0.010416666666666666
       ],
+      "fix_mean_default": 104.71375661375662,
+      "fix_mean_multiball": 107.72006141248721,
       "sac_per_second_default": 10.9561283634136,
       "sac_per_second_multiball": 11.386581469648563,
       "sac_hist_default": [
@@ -36717,6 +36873,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 44.7823275862069,
+      "sac_mean_multiball": 44.06089743589744,
       "percent_looking_default": 0.9321898119787003,
       "percent_looking_multiball": 0.9939297124600639,
       "pur_per_second_default": 0.7266387069412374,
@@ -37324,7 +37482,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.20983779608650874,
+      "pur_mean_multiball": 0.22446048632218848
     }
   },
   "Busenur Yilmaz": {
@@ -37733,6 +37893,8 @@
         0.0017655367231638418,
         0.00211864406779661
       ],
+      "vel_mean_default": 56.985619469026545,
+      "vel_mean_multiball": 69.95575221238938,
       "flip_hist_default": [
         0.00022671881199342516,
         0.0022105084169358954,
@@ -38037,6 +38199,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 28.90168243953733,
+      "flip_mean_multiball": 17.58195020746888,
       "fix_per_second_default": 2.2297862842475307,
       "fix_per_second_multiball": 1.5004574565416287,
       "fix_hist_default": [
@@ -38643,6 +38807,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 108.66996871741398,
+      "fix_mean_multiball": 101.80839231547017,
       "sac_per_second_default": 10.385581161765526,
       "sac_per_second_multiball": 12.150045745654163,
       "sac_hist_default": [
@@ -39049,6 +39215,8 @@
         0.0,
         0.003134796238244514
       ],
+      "sac_mean_default": 44.99741468459152,
+      "sac_mean_multiball": 45.23498964803313,
       "percent_looking_default": 0.972322973048379,
       "percent_looking_multiball": 0.9975602317779811,
       "pur_per_second_default": 1.8648512917805926,
@@ -39656,7 +39824,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.25770790020790024,
+      "pur_mean_multiball": 0.3148212487411883
     },
     "global": {
       "TLX_High": 10.166666666666666,
@@ -40067,6 +40237,8 @@
         0.0017692156477295065,
         0.0011794770984863377
       ],
+      "vel_mean_default": 52.33111111111111,
+      "vel_mean_multiball": 52.34977578475336,
       "flip_hist_default": [
         5.035500276952515e-05,
         0.0011078100609295534,
@@ -40371,6 +40543,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 35.85806451612903,
+      "flip_mean_multiball": 22.50104275286757,
       "fix_per_second_default": 2.269155206286837,
       "fix_per_second_multiball": 2.408340573414422,
       "fix_hist_default": [
@@ -40977,6 +41151,8 @@
         0.0,
         0.004366812227074236
       ],
+      "fix_mean_default": 113.55005324813632,
+      "fix_mean_multiball": 112.2344398340249,
       "sac_per_second_default": 10.56188605108055,
       "sac_per_second_multiball": 11.353605560382276,
       "sac_hist_default": [
@@ -41383,6 +41559,8 @@
         0.0,
         0.0018656716417910447
       ],
+      "sac_mean_default": 41.78510182207931,
+      "sac_mean_multiball": 42.08089033659066,
       "percent_looking_default": 0.9181728880157171,
       "percent_looking_multiball": 0.9954821894005212,
       "pur_per_second_default": 1.9155206286836937,
@@ -41990,7 +42168,9 @@
         0.0,
         0.0,
         0.004219409282700422
-      ]
+      ],
+      "pur_mean_default": 0.2773238341968913,
+      "pur_mean_multiball": 0.2739696813977389
     }
   },
   "Nick Mandoeng": {
@@ -42399,6 +42579,8 @@
         0.0,
         0.0005256241787122207
       ],
+      "vel_mean_default": 31.674444444444443,
+      "vel_mean_multiball": 33.179515418502206,
       "flip_hist_default": [
         0.0,
         0.0004984768762115757,
@@ -42703,6 +42885,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 39.547159699892816,
+      "flip_mean_multiball": 25.034591194968552,
       "fix_per_second_default": 3.635578117405627,
       "fix_per_second_multiball": 3.8751814223512335,
       "fix_hist_default": [
@@ -43309,6 +43493,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 120.18661588683351,
+      "fix_mean_multiball": 120.58208955223881,
       "sac_per_second_default": 8.327482853593995,
       "sac_per_second_multiball": 8.896952104499274,
       "sac_hist_default": [
@@ -43715,6 +43901,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 36.27754459601259,
+      "sac_mean_multiball": 34.73711340206186,
       "percent_looking_default": 0.9302262785548415,
       "percent_looking_multiball": 1.0,
       "pur_per_second_default": 2.349192633795971,
@@ -44322,7 +44510,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.2732336108220604,
+      "pur_mean_multiball": 0.2530879345603272
     },
     "global": {
       "TLX_High": 6.5,
@@ -44733,6 +44923,8 @@
         0.0,
         0.001038781163434903
       ],
+      "vel_mean_default": 25.24225663716814,
+      "vel_mean_multiball": 29.349344978165938,
       "flip_hist_default": [
         0.000982943047123446,
         0.0017924255565192253,
@@ -45037,6 +45229,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 41.18824163969795,
+      "flip_mean_multiball": 22.178125,
       "fix_per_second_default": 4.064535830618893,
       "fix_per_second_multiball": 4.4884910485933505,
       "fix_hist_default": [
@@ -45643,6 +45837,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 128.65263157894736,
+      "fix_mean_multiball": 115.7398753894081,
       "sac_per_second_default": 7.5458061889250825,
       "sac_per_second_multiball": 8.267263427109974,
       "sac_hist_default": [
@@ -46049,6 +46245,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 32.808411214953274,
+      "sac_mean_multiball": 33.54205128205128,
       "percent_looking_default": 0.8407471498371335,
       "percent_looking_multiball": 1.0,
       "pur_per_second_default": 2.14678338762215,
@@ -46656,7 +46854,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.25799427679500525,
+      "pur_mean_multiball": 0.29273461939520334
     }
   },
   "Amira Bachik": {
@@ -47065,6 +47265,8 @@
         0.0008465011286681715,
         0.0
       ],
+      "vel_mean_default": 50.15072302558398,
+      "vel_mean_multiball": 48.83259423503326,
       "flip_hist_default": [
         0.0015403409996281937,
         0.0047803686195357735,
@@ -47369,6 +47571,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 35.23968253968254,
+      "flip_mean_multiball": 25.809398099260825,
       "fix_per_second_default": 2.2791519434628973,
       "fix_per_second_multiball": 2.334905660377358,
       "fix_hist_default": [
@@ -47975,6 +48179,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 121.9537540805223,
+      "fix_mean_multiball": 113.51440329218107,
       "sac_per_second_default": 8.56007067137809,
       "sac_per_second_multiball": 10.06132075471698,
       "sac_hist_default": [
@@ -48381,6 +48587,8 @@
         0.0,
         0.002898550724637681
       ],
+      "sac_mean_default": 46.59436008676789,
+      "sac_mean_multiball": 44.97464940668824,
       "percent_looking_default": 0.8860424028268551,
       "percent_looking_multiball": 0.9790094339622641,
       "pur_per_second_default": 2.075971731448763,
@@ -48988,7 +49196,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.264619170984456,
+      "pur_mean_multiball": 0.2510655737704918
     },
     "global": {
       "TLX_High": 9.333333333333334,
@@ -49399,6 +49609,8 @@
         0.0,
         0.0006538084341288003
       ],
+      "vel_mean_default": 48.0962389380531,
+      "vel_mean_multiball": 40.131991051454136,
       "flip_hist_default": [
         0.0024543223343332426,
         0.007744750477229343,
@@ -49703,6 +49915,8 @@
         0.0008685581933989577,
         0.00028951939779965256
       ],
+      "flip_mean_default": 37.03655913978495,
+      "flip_mean_multiball": 28.230360934182592,
       "fix_per_second_default": 2.570686229558307,
       "fix_per_second_multiball": 2.7769742551345096,
       "fix_hist_default": [
@@ -50309,6 +50523,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 119.47586568730325,
+      "fix_mean_multiball": 124.07069143446853,
       "sac_per_second_default": 9.43298181262418,
       "sac_per_second_multiball": 10.88226786230836,
       "sac_hist_default": [
@@ -50715,6 +50931,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 44.46,
+      "sac_mean_multiball": 38.63305613305613,
       "percent_looking_default": 0.9018798716185236,
       "percent_looking_multiball": 0.9667341625687011,
       "pur_per_second_default": 2.1335778694788323,
@@ -51322,7 +51540,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.27501043841336115,
+      "pur_mean_multiball": 0.2712167689161554
     }
   },
   "Iris Verkuil": {
@@ -51731,6 +51951,8 @@
         0.0004608294930875576,
         0.0004608294930875576
       ],
+      "vel_mean_default": 30.579152731326644,
+      "vel_mean_multiball": 24.340087623220153,
       "flip_hist_default": [
         0.0008819508753362438,
         0.0005291705252017463,
@@ -52035,6 +52257,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 35.91283422459893,
+      "flip_mean_multiball": 20.29669762641899,
       "fix_per_second_default": 3.421723610402856,
       "fix_per_second_multiball": 3.8221462163317654,
       "fix_hist_default": [
@@ -52641,6 +52865,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 122.13954802259887,
+      "fix_mean_multiball": 139.10310880829016,
       "sac_per_second_default": 7.96787353391127,
       "sac_per_second_multiball": 6.515604959384352,
       "sac_hist_default": [
@@ -53047,6 +53273,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 36.20524017467249,
+      "sac_mean_multiball": 33.79122055674518,
       "percent_looking_default": 0.9377443481217066,
       "percent_looking_multiball": 0.993587002992732,
       "pur_per_second_default": 2.0576236613972463,
@@ -53654,7 +53882,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.2689263645726056,
+      "pur_mean_multiball": 0.22353255340793488
     },
     "global": {
       "TLX_High": 10.833333333333334,
@@ -54065,6 +54295,8 @@
         0.00042802111570837496,
         0.00028534741047224997
       ],
+      "vel_mean_default": 29.264771460423635,
+      "vel_mean_multiball": 27.949717514124295,
       "flip_hist_default": [
         0.003252513305736251,
         0.004671791839148433,
@@ -54369,6 +54601,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 51.631324004305704,
+      "flip_mean_multiball": 26.378279118572927,
       "fix_per_second_default": 3.3158067696352282,
       "fix_per_second_multiball": 3.5474166121648136,
       "fix_hist_default": [
@@ -54975,6 +55209,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 124.59935897435898,
+      "fix_mean_multiball": 125.53691639522259,
       "sac_per_second_default": 7.30200460072297,
       "sac_per_second_multiball": 7.306736429038587,
       "sac_hist_default": [
@@ -55381,6 +55617,8 @@
         0.0,
         0.001075268817204301
       ],
+      "sac_mean_default": 36.02391304347826,
+      "sac_mean_multiball": 42.065625,
       "percent_looking_default": 0.8123014568956074,
       "percent_looking_multiball": 0.9938521909744932,
       "pur_per_second_default": 1.7548471902727572,
@@ -55988,7 +56226,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.2824788583509514,
+      "pur_mean_multiball": 0.24737577639751554
     }
   },
   "Sander Tiggelman": {
@@ -56397,6 +56637,8 @@
         0.0005699629524080935,
         0.0005699629524080935
       ],
+      "vel_mean_default": 38.607142857142854,
+      "vel_mean_multiball": 36.90898876404494,
       "flip_hist_default": [
         0.00011741223435481978,
         0.00023482446870963955,
@@ -56701,6 +56943,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 38.69956850053937,
+      "flip_mean_multiball": 23.805263157894736,
       "fix_per_second_default": 2.945466786355476,
       "fix_per_second_multiball": 3.277022735932935,
       "fix_hist_default": [
@@ -57307,6 +57551,8 @@
         0.0,
         0.0024154589371980675
       ],
+      "fix_mean_default": 120.22239747634069,
+      "fix_mean_multiball": 120.04791666666667,
       "sac_per_second_default": 9.519748653500898,
       "sac_per_second_multiball": 9.556712815953258,
       "sac_hist_default": [
@@ -57713,6 +57959,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 39.331236897274636,
+      "sac_mean_multiball": 38.94654088050314,
       "percent_looking_default": 0.8651256732495511,
       "percent_looking_multiball": 0.9831068207798807,
       "pur_per_second_default": 1.6494614003590664,
@@ -58320,7 +58568,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.24687244897959185,
+      "pur_mean_multiball": 0.2619969199178645
     },
     "global": {
       "TLX_High": 10.0,
@@ -58731,6 +58981,8 @@
         0.001041124414367517,
         0.0005205622071837585
       ],
+      "vel_mean_default": 38.556478405315616,
+      "vel_mean_multiball": 38.90418502202643,
       "flip_hist_default": [
         0.0,
         0.0004833252779120348,
@@ -59035,6 +59287,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 37.25212765957447,
+      "flip_mean_multiball": 24.64873417721519,
       "fix_per_second_default": 3.1348530038346825,
       "fix_per_second_multiball": 3.2141183820084334,
       "fix_hist_default": [
@@ -59641,6 +59895,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 120.91597510373444,
+      "fix_mean_multiball": 119.04074889867842,
       "sac_per_second_default": 9.043459735832979,
       "sac_per_second_multiball": 9.717320006247071,
       "sac_hist_default": [
@@ -60047,6 +60303,8 @@
         0.0,
         0.000970873786407767
       ],
+      "sac_mean_default": 41.71459227467811,
+      "sac_mean_multiball": 38.48585418933624,
       "percent_looking_default": 0.9410950149126545,
       "percent_looking_multiball": 0.9729814149617367,
       "pur_per_second_default": 2.0227950575202387,
@@ -60654,7 +60912,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.26764091858037575,
+      "pur_mean_multiball": 0.29085560123329907
     }
   },
   "Roos Oudesluijs": {
@@ -61063,6 +61323,8 @@
         0.00029824038174768865,
         0.00029824038174768865
       ],
+      "vel_mean_default": 34.502234636871506,
+      "vel_mean_multiball": 36.465669988925804,
       "flip_hist_default": [
         0.0061488513945594965,
         0.01731516552707954,
@@ -61367,6 +61629,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 34.533970276008496,
+      "flip_mean_multiball": 25.146137787056368,
       "fix_per_second_default": 3.437061956826465,
       "fix_per_second_multiball": 3.4953020134228185,
       "fix_hist_default": [
@@ -61973,6 +62237,8 @@
         0.0,
         0.014218009478672985
       ],
+      "fix_mean_default": 117.23980154355017,
+      "fix_mean_multiball": 117.56086044071354,
       "sac_per_second_default": 8.755256518082422,
       "sac_per_second_multiball": 9.358389261744966,
       "sac_hist_default": [
@@ -62379,6 +62645,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 36.51083423618635,
+      "sac_mean_multiball": 39.63038906414301,
       "percent_looking_default": 0.9091673675357443,
       "percent_looking_multiball": 0.9473825503355705,
       "pur_per_second_default": 1.984861227922624,
@@ -62986,7 +63254,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.28450104493207945,
+      "pur_mean_multiball": 0.24910184237461622
     },
     "global": {
       "TLX_High": 10.5,
@@ -63397,6 +63667,8 @@
         0.0,
         0.0
       ],
+      "vel_mean_default": 32.33726150392817,
+      "vel_mean_multiball": 29.826797385620914,
       "flip_hist_default": [
         0.0032537960954446853,
         0.012637932660567763,
@@ -63701,6 +63973,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 38.293836344314556,
+      "flip_mean_multiball": 20.556759545923633,
       "fix_per_second_default": 3.4924330616996504,
       "fix_per_second_multiball": 3.885647607934656,
       "fix_hist_default": [
@@ -64307,6 +64581,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 122.6728525980912,
+      "fix_mean_multiball": 119.17625899280576,
       "sac_per_second_default": 8.507566938300348,
       "sac_per_second_multiball": 8.646441073512252,
       "sac_hist_default": [
@@ -64713,6 +64989,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 37.393459915611814,
+      "sac_mean_multiball": 32.92424242424242,
       "percent_looking_default": 0.9566938300349244,
       "percent_looking_multiball": 1.0,
       "pur_per_second_default": 2.251920838183935,
@@ -65320,7 +65598,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.27834112149532714,
+      "pur_mean_multiball": 0.2973478701825558
     }
   },
   "Jasper Kruis": {
@@ -65729,6 +66009,8 @@
         0.00022271714922048998,
         0.00044543429844097997
       ],
+      "vel_mean_default": 30.539106145251395,
+      "vel_mean_multiball": 29.250819672131147,
       "flip_hist_default": [
         4.9478007025877e-05,
         0.0007421701053881549,
@@ -66033,6 +66315,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 45.615177610333696,
+      "flip_mean_multiball": 41.561181434599156,
       "fix_per_second_default": 3.3326954358434597,
       "fix_per_second_multiball": 3.4426229508196724,
       "fix_hist_default": [
@@ -66639,6 +66923,8 @@
         0.0,
         0.003787878787878788
       ],
+      "fix_mean_default": 119.3030303030303,
+      "fix_mean_multiball": 119.67245005257624,
       "sac_per_second_default": 9.690938666156349,
       "sac_per_second_multiball": 9.295081967213115,
       "sac_hist_default": [
@@ -67045,6 +67331,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 31.32116402116402,
+      "sac_mean_multiball": 32.69146722164412,
       "percent_looking_default": 0.882786336235767,
       "percent_looking_multiball": 0.9426229508196722,
       "pur_per_second_default": 2.307913118361879,
@@ -67652,7 +67940,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.25842323651452287,
+      "pur_mean_multiball": 0.28105087358684483
     },
     "global": {
       "TLX_High": 10.333333333333334,
@@ -68063,6 +68353,8 @@
         0.0006842285323297981,
         0.0006842285323297981
       ],
+      "vel_mean_default": 30.017857142857142,
+      "vel_mean_multiball": 32.89649507119387,
       "flip_hist_default": [
         0.003572410002748008,
         0.005935696619950536,
@@ -68367,6 +68659,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 51.707343412526996,
+      "flip_mean_multiball": 34.03870625662778,
       "fix_per_second_default": 3.456910569105691,
       "fix_per_second_multiball": 3.57131549786291,
       "fix_hist_default": [
@@ -68973,6 +69267,8 @@
         0.0,
         0.0028011204481792717
       ],
+      "fix_mean_default": 120.9543630892678,
+      "fix_mean_multiball": 114.76808510638298,
       "sac_per_second_default": 8.80650406504065,
       "sac_per_second_multiball": 9.194237771093874,
       "sac_hist_default": [
@@ -69379,6 +69675,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 34.0058949624866,
+      "sac_mean_multiball": 36.34458077709611,
       "percent_looking_default": 0.8439566395663957,
       "percent_looking_multiball": 0.9846446097831248,
       "pur_per_second_default": 2.1528455284552845,
@@ -69986,7 +70284,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.2633959835221421,
+      "pur_mean_multiball": 0.2362116564417178
     }
   },
   "Nick de Bruin": {
@@ -70395,6 +70695,8 @@
         0.0011873664212776064,
         0.0011873664212776064
       ],
+      "vel_mean_default": 56.35303867403315,
+      "vel_mean_multiball": 75.6657458563536,
       "flip_hist_default": [
         0.00010194719135487817,
         0.0006116831481292691,
@@ -70699,6 +71001,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 44.164155005382135,
+      "flip_mean_multiball": 27.062765957446807,
       "fix_per_second_default": 2.1155378486055776,
       "fix_per_second_multiball": 0.9856733524355301,
       "fix_hist_default": [
@@ -71305,6 +71609,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 107.0456475583864,
+      "fix_mean_multiball": 95.35452695829095,
       "sac_per_second_default": 10.798804780876493,
       "sac_per_second_multiball": 11.713467048710601,
       "sac_hist_default": [
@@ -71711,6 +72017,8 @@
         0.0,
         0.0031023784901758012
       ],
+      "sac_mean_default": 44.05334728033473,
+      "sac_mean_multiball": 52.34764826175869,
       "percent_looking_default": 0.9195219123505977,
       "percent_looking_multiball": 0.9516714422158549,
       "pur_per_second_default": 0.9382470119521912,
@@ -72318,7 +72626,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.20233690112130484,
+      "pur_mean_multiball": 0.16631511746680286
     },
     "global": {
       "TLX_High": 11.333333333333334,
@@ -72729,6 +73039,8 @@
         0.0007637474541751527,
         0.0015274949083503055
       ],
+      "vel_mean_default": 66.17630700778643,
+      "vel_mean_multiball": 73.29051819184123,
       "flip_hist_default": [
         0.0014068937795196463,
         0.003165511003919204,
@@ -73033,6 +73345,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 41.222878625134264,
+      "flip_mean_multiball": 29.84002111932418,
       "fix_per_second_default": 1.4420996971590636,
       "fix_per_second_multiball": 1.1815384615384616,
       "fix_hist_default": [
@@ -73639,6 +73953,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 107.26345177664975,
+      "fix_mean_multiball": 113.23538461538462,
       "sac_per_second_default": 11.095515069941836,
       "sac_per_second_multiball": 11.249230769230769,
       "sac_hist_default": [
@@ -74045,6 +74361,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 46.74025974025974,
+      "sac_mean_multiball": 50.8378947368421,
       "percent_looking_default": 0.8535788107484498,
       "percent_looking_multiball": 0.944,
       "pur_per_second_default": 1.9122241984329185,
@@ -74652,7 +74970,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.2478913491246138,
+      "pur_mean_multiball": 0.24025950668036997
     }
   },
   "Jelke de Haan": {
@@ -75061,6 +75381,8 @@
         0.0009191176470588235,
         0.0
       ],
+      "vel_mean_default": 43.55450500556174,
+      "vel_mean_multiball": 42.75692137320044,
       "flip_hist_default": [
         0.0018951358180669614,
         0.008786538792855913,
@@ -75365,6 +75687,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 30.769925611052074,
+      "flip_mean_multiball": 26.057872784150156,
       "fix_per_second_default": 2.8531958981988206,
       "fix_per_second_multiball": 3.175316714344095,
       "fix_hist_default": [
@@ -75971,6 +76295,8 @@
         0.0,
         0.003968253968253968
       ],
+      "fix_mean_default": 118.51781970649895,
+      "fix_mean_multiball": 111.11884368308351,
       "sac_per_second_default": 9.617979916051219,
       "sac_per_second_multiball": 10.089906007355946,
       "sac_hist_default": [
@@ -76377,6 +76703,8 @@
         0.0,
         0.0012285012285012285
       ],
+      "sac_mean_default": 40.44438614900315,
+      "sac_mean_multiball": 41.29875518672199,
       "percent_looking_default": 0.9026087880558951,
       "percent_looking_multiball": 0.9897834082550061,
       "pur_per_second_default": 2.0115828064396153,
@@ -76984,7 +77312,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.2724948347107438,
+      "pur_mean_multiball": 0.20461967545638948
     },
     "global": {
       "TLX_High": 9.166666666666666,
@@ -77395,6 +77725,8 @@
         0.0,
         0.00029976019184652276
       ],
+      "vel_mean_default": 31.611361079865016,
+      "vel_mean_multiball": 34.325799338478504,
       "flip_hist_default": [
         0.0011719745222929937,
         0.003363057324840764,
@@ -77699,6 +78031,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 36.200107874865154,
+      "flip_mean_multiball": 25.543386243386244,
       "fix_per_second_default": 3.1772673733804475,
       "fix_per_second_multiball": 3.0711810183950945,
       "fix_hist_default": [
@@ -78305,6 +78639,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 109.349598163031,
+      "fix_mean_multiball": 109.20703933747411,
       "sac_per_second_default": 9.337455830388691,
       "sac_per_second_multiball": 10.029325513196481,
       "sac_hist_default": [
@@ -78711,6 +79047,8 @@
         0.0,
         0.0016129032258064516
       ],
+      "sac_mean_default": 37.27608695652174,
+      "sac_mean_multiball": 40.64451476793249,
       "percent_looking_default": 0.9076855123674912,
       "percent_looking_multiball": 0.9952012796587577,
       "pur_per_second_default": 2.1054181389870434,
@@ -79318,7 +79656,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.26321205821205823,
+      "pur_mean_multiball": 0.2726504149377594
     }
   },
   "Rinse van der Meer": {
@@ -79727,6 +80067,8 @@
         0.000668985817500669,
         0.0005351886540005352
       ],
+      "vel_mean_default": 27.40909090909091,
+      "vel_mean_multiball": 29.96035242290749,
       "flip_hist_default": [
         0.0034819615049811394,
         0.008995067221201277,
@@ -80031,6 +80373,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 47.2831715210356,
+      "flip_mean_multiball": 34.20811380400421,
       "fix_per_second_default": 3.249975861736024,
       "fix_per_second_multiball": 3.4506187818490655,
       "fix_hist_default": [
@@ -80637,6 +80981,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 114.33133841131665,
+      "fix_mean_multiball": 115.32815734989649,
       "sac_per_second_default": 9.567442309549097,
       "sac_per_second_multiball": 10.140742538218879,
       "sac_hist_default": [
@@ -81043,6 +81389,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 32.02431289640592,
+      "sac_mean_multiball": 33.02570828961175,
       "percent_looking_default": 0.9535097035821184,
       "percent_looking_multiball": 0.9901722882795438,
       "pur_per_second_default": 2.0855460075311383,
@@ -81650,7 +81998,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.23932572614107886,
+      "pur_mean_multiball": 0.2557076446280992
     },
     "global": {
       "TLX_High": 10.333333333333334,
@@ -82061,6 +82411,8 @@
         0.0009593859929645027,
         0.0006395906619763352
       ],
+      "vel_mean_default": 27.397321428571427,
+      "vel_mean_multiball": 28.650055991041434,
       "flip_hist_default": [
         0.00017794385871257618,
         0.0007117754348503047,
@@ -82365,6 +82717,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 41.38266953713671,
+      "flip_mean_multiball": 34.420668058455114,
       "fix_per_second_default": 3.7913900004397347,
       "fix_per_second_multiball": 4.02555910543131,
       "fix_hist_default": [
@@ -82971,6 +83325,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 116.01310043668123,
+      "fix_mean_multiball": 125.18071654373024,
       "sac_per_second_default": 8.131568532606305,
       "sac_per_second_multiball": 7.580598315422597,
       "sac_hist_default": [
@@ -83377,6 +83733,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 35.562899786780385,
+      "sac_mean_multiball": 40.56625258799172,
       "percent_looking_default": 0.9407238028230949,
       "percent_looking_multiball": 1.0,
       "pur_per_second_default": 2.2241765973352097,
@@ -83984,7 +84342,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.25911122661122665,
+      "pur_mean_multiball": 0.24976006191950462
     }
   },
   "Tobias Wagner": {
@@ -84393,6 +84753,8 @@
         0.0005064756529918241,
         0.0004341219882787063
       ],
+      "vel_mean_default": 29.22160356347439,
+      "vel_mean_multiball": 29.842633928571427,
       "flip_hist_default": [
         0.0,
         0.0009973641091401296,
@@ -84697,6 +85059,8 @@
         0.0018085605197936902,
         0.0018085605197936902
       ],
+      "flip_mean_default": 56.3051948051948,
+      "flip_mean_multiball": 33.73585912486659,
       "fix_per_second_default": 3.264361737290937,
       "fix_per_second_multiball": 3.6422102638141487,
       "fix_hist_default": [
@@ -85303,6 +85667,8 @@
         0.0,
         0.001141552511415525
       ],
+      "fix_mean_default": 128.04910242872228,
+      "fix_mean_multiball": 123.01991614255765,
       "sac_per_second_default": 7.913003239241092,
       "sac_per_second_multiball": 8.46567791048694,
       "sac_hist_default": [
@@ -85709,6 +86075,8 @@
         0.0,
         0.00046685340802987864
       ],
+      "sac_mean_default": 40.27089783281734,
+      "sac_mean_multiball": 36.65271966527197,
       "percent_looking_default": 0.7511733985588682,
       "percent_looking_multiball": 0.9507809423808898,
       "pur_per_second_default": 1.2057909697891187,
@@ -86316,7 +86684,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.2801560900716479,
+      "pur_mean_multiball": 0.24120582120582124
     },
     "global": {
       "TLX_High": 11.666666666666666,
@@ -86727,6 +87097,8 @@
         0.0006938555238609205,
         0.00038547529103384473
       ],
+      "vel_mean_default": 26.975717439293597,
+      "vel_mean_multiball": 29.78996692392503,
       "flip_hist_default": [
         0.0014005602240896359,
         0.004551820728291317,
@@ -87031,6 +87403,8 @@
         0.0004918839153959665,
         0.0004918839153959665
       ],
+      "flip_mean_default": 68.32683982683983,
+      "flip_mean_multiball": 38.607296137339056,
       "fix_per_second_default": 3.361195682258511,
       "fix_per_second_multiball": 3.61952861952862,
       "fix_hist_default": [
@@ -87637,6 +88011,8 @@
         0.0,
         0.0024752475247524753
       ],
+      "fix_mean_default": 127.68380062305296,
+      "fix_mean_multiball": 119.12065331928346,
       "sac_per_second_default": 8.226958206476613,
       "sac_per_second_multiball": 9.124579124579125,
       "sac_hist_default": [
@@ -88043,6 +88419,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 34.29101358411703,
+      "sac_mean_multiball": 34.34391259105099,
       "percent_looking_default": 0.6512593412676446,
       "percent_looking_multiball": 0.9572109988776656,
       "pur_per_second_default": 1.228895654580681,
@@ -88650,7 +89028,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.2605587023686921,
+      "pur_mean_multiball": 0.26046335078534033
     }
   },
   "Ruby Roskam": {
@@ -89059,6 +89439,8 @@
         0.00016589250165892502,
         0.00024883875248838755
       ],
+      "vel_mean_default": 28.178290213723283,
+      "vel_mean_multiball": 31.998338870431894,
       "flip_hist_default": [
         0.0032416028691633907,
         0.005034829988275053,
@@ -89363,6 +89745,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 53.95922746781116,
+      "flip_mean_multiball": 34.95338983050848,
       "fix_per_second_default": 3.1915305661351754,
       "fix_per_second_multiball": 3.588298034435472,
       "fix_hist_default": [
@@ -89969,6 +90353,8 @@
         0.0,
         0.0013404825737265416
       ],
+      "fix_mean_default": 127.7778947368421,
+      "fix_mean_multiball": 119.74579831932773,
       "sac_per_second_default": 7.548899360919243,
       "sac_per_second_multiball": 8.99588602773122,
       "sac_hist_default": [
@@ -90375,6 +90761,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 36.69581151832461,
+      "sac_mean_multiball": 36.332644628099175,
       "percent_looking_default": 0.7568265444451617,
       "percent_looking_multiball": 0.9680024379094926,
       "pur_per_second_default": 1.5957652830675877,
@@ -90982,7 +91370,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.26490454076367387,
+      "pur_mean_multiball": 0.24509105098855358
     },
     "global": {
       "TLX_High": 6.833333333333333,
@@ -91393,6 +91783,8 @@
         0.0001984126984126984,
         0.0
       ],
+      "vel_mean_default": 30.86859688195991,
+      "vel_mean_multiball": 29.10488346281909,
       "flip_hist_default": [
         0.0005121784657409515,
         0.0011950830867288869,
@@ -91697,6 +92089,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 51.08702702702703,
+      "flip_mean_multiball": 33.20550847457627,
       "fix_per_second_default": 3.388757777301008,
       "fix_per_second_multiball": 3.7832840236686396,
       "fix_hist_default": [
@@ -92303,6 +92697,8 @@
         0.0,
         0.0
       ],
+      "fix_mean_default": 125.57297019527235,
+      "fix_mean_multiball": 119.32226762002043,
       "sac_per_second_default": 8.415576056640205,
       "sac_per_second_multiball": 9.241863905325445,
       "sac_hist_default": [
@@ -92709,6 +93105,8 @@
         0.0,
         0.001201923076923077
       ],
+      "sac_mean_default": 35.693074501573975,
+      "sac_mean_multiball": 32.93558282208589,
       "percent_looking_default": 0.7758528212829865,
       "percent_looking_multiball": 0.9604289940828402,
       "pur_per_second_default": 1.78609740399056,
@@ -93316,7 +93714,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.2566090146750524,
+      "pur_mean_multiball": 0.24051530612244895
     }
   },
   "Zeno Christian van Ditzhuijzen": {
@@ -93725,6 +94125,8 @@
         0.0003455624028105742,
         0.00040315613661233657
       ],
+      "vel_mean_default": 25.670731707317074,
+      "vel_mean_multiball": 29.307134894091416,
       "flip_hist_default": [
         0.0,
         0.0014184397163120568,
@@ -94029,6 +94431,8 @@
         0.0005101462419226845,
         0.0005101462419226845
       ],
+      "flip_mean_default": 49.38304721030043,
+      "flip_mean_multiball": 36.610871905274486,
       "fix_per_second_default": 2.9091239879923587,
       "fix_per_second_multiball": 3.1598706851600795,
       "fix_hist_default": [
@@ -94635,6 +95039,8 @@
         0.0,
         0.005246589716684155
       ],
+      "fix_mean_default": 124.98710010319917,
+      "fix_mean_multiball": 123.1231884057971,
       "sac_per_second_default": 8.099699808969344,
       "sac_per_second_multiball": 9.517155073521744,
       "sac_hist_default": [
@@ -95041,6 +95447,8 @@
         0.0,
         0.0006682258603407952
       ],
+      "sac_mean_default": 32.443808532778355,
+      "sac_mean_multiball": 32.14270833333333,
       "percent_looking_default": 0.9061220776858001,
       "percent_looking_multiball": 0.8801752007508603,
       "pur_per_second_default": 1.8939325025015918,
@@ -95648,7 +96056,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.2442082035306335,
+      "pur_mean_multiball": 0.2690005192107996
     },
     "global": {
       "TLX_High": 7.5,
@@ -96059,6 +96469,8 @@
         0.0002983293556085919,
         0.0002983293556085919
       ],
+      "vel_mean_default": 25.167403314917127,
+      "vel_mean_multiball": 26.371651785714285,
       "flip_hist_default": [
         0.0022926093514328808,
         0.006093514328808446,
@@ -96363,6 +96775,8 @@
         0.0,
         0.0
       ],
+      "flip_mean_default": 52.162689804772235,
+      "flip_mean_multiball": 34.88559322033898,
       "fix_per_second_default": 3.067860508953817,
       "fix_per_second_multiball": 3.695273061037173,
       "fix_hist_default": [
@@ -96969,6 +97383,8 @@
         0.0,
         0.007974481658692184
       ],
+      "fix_mean_default": 123.21855010660981,
+      "fix_mean_multiball": 120.78025477707007,
       "sac_per_second_default": 8.221017907634307,
       "sac_per_second_multiball": 8.739788893988068,
       "sac_hist_default": [
@@ -97375,6 +97791,8 @@
         0.0,
         0.0
       ],
+      "sac_mean_default": 31.21474358974359,
+      "sac_mean_multiball": 31.489395546129373,
       "percent_looking_default": 0.8386545711592837,
       "percent_looking_multiball": 0.9432767324460761,
       "pur_per_second_default": 1.9227144203581528,
@@ -97982,7 +98400,9 @@
         0.0,
         0.0,
         0.0
-      ]
+      ],
+      "pur_mean_default": 0.24563674321503132,
+      "pur_mean_multiball": 0.21735200845665964
     }
   }
 }

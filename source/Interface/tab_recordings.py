@@ -12,7 +12,7 @@ from processing import process_tracking_data
 from object_tracking import perform_tracking
 from interface.static_plane import set_plane_static
 from graphs import run_graphing
-from stats import generate_stats
+from stats import export_stats, generate_stats
 from tracking_video import render_tracking_video, render_video_full
 from video_processing import process_video
 from stopwatch import Stopwatch
@@ -160,6 +160,7 @@ class TabRecordings(Tab):
         analysis_menu = tk.Menu(analysis_btn, tearoff=0)
         analysis_menu.add_command(label="Generate stats (all)", command=self.generate_stats_all)
         analysis_menu.add_command(label="Generate stats", command=lambda: generate_stats(self.active_recording))
+        analysis_menu.add_command(label="Export stats", command=export_stats)
         analysis_menu.add_command(label="Create graphs", command=run_graphing)
         analysis_menu.add_command(label="Render full video", command=lambda: render_video_full(self.active_recording))
         analysis_btn["menu"] = analysis_menu

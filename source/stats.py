@@ -2,7 +2,7 @@ import math
 import numpy as np
 
 from containers import ContRecording
-from IO import save_stats_entry
+from IO import save_csv, save_stats_entry, import_stats
 from resources import Resources
 from pursuit import get_pursuit_data
 from video import Video
@@ -123,12 +123,16 @@ def generate_stats(recording:ContRecording):
     counts_vel_multiball, _ = np.histogram(condition_counter['Multiball']['Gaze Velocity'], bins=VEL_BIN_EDGES)
     counts_vel_default_normalized = counts_vel_default / counts_vel_default.sum()
     counts_vel_multiball_normalized = counts_vel_multiball / counts_vel_multiball.sum()
+    mean_vel_default = np.mean(histogram_to_counts_edges(counts_vel_default_normalized, VEL_BIN_EDGES))
+    mean_vel_multiball = np.mean(histogram_to_counts_edges(counts_vel_multiball_normalized, VEL_BIN_EDGES))
 
     # Flipper distance
     counts_flip_default, _ = np.histogram(condition_counter['Single ball']['Flipper Distance'], bins=FLIPPER_BIN_EDGES)
     counts_flip_multiball, _ = np.histogram(condition_counter['Multiball']['Flipper Distance'], bins=FLIPPER_BIN_EDGES)
     counts_flip_default_normalized = counts_flip_default / counts_flip_default.sum()
     counts_flip_multiball_normalized = counts_flip_multiball / counts_flip_multiball.sum()
+    mean_flip_default = np.mean(histogram_to_counts_edges(counts_flip_default_normalized, FLIPPER_BIN_EDGES))
+    mean_flip_multiball = np.mean(histogram_to_counts_edges(counts_flip_multiball_normalized, FLIPPER_BIN_EDGES))
 
     # Fixations
     fixations_per_second_default = len(condition_counter['Single ball']['Fixation Duration']) / time_default
@@ -137,6 +141,8 @@ def generate_stats(recording:ContRecording):
     counts_fixations_multiball, _ = np.histogram(condition_counter['Multiball']['Fixation Duration'], bins=FIX_BIN_EDGES)
     counts_fixations_default_normalized = counts_fixations_default / counts_fixations_default.sum()
     counts_fixations_multiball_normalized = counts_fixations_multiball / counts_fixations_multiball.sum()
+    mean_fix_default = np.mean(histogram_to_counts_edges(counts_fixations_default_normalized, FIX_BIN_EDGES))
+    mean_fix_multiball = np.mean(histogram_to_counts_edges(counts_fixations_multiball_normalized, FIX_BIN_EDGES))
 
     # Saccades
     saccades_per_second_default = len(condition_counter['Single ball']['Saccade Duration']) / time_default
@@ -145,6 +151,8 @@ def generate_stats(recording:ContRecording):
     counts_saccades_multiball, _ = np.histogram(condition_counter['Multiball']['Saccade Duration'], bins=SAC_BIN_EDGES)
     counts_saccades_default_normalized = counts_saccades_default / counts_saccades_default.sum()
     counts_saccades_multiball_normalized = counts_saccades_multiball / counts_saccades_multiball.sum()
+    mean_sac_default = np.mean(histogram_to_counts_edges(counts_saccades_default_normalized, SAC_BIN_EDGES))
+    mean_sac_multiball = np.mean(histogram_to_counts_edges(counts_saccades_multiball_normalized, SAC_BIN_EDGES))
 
     # Pursuits
     pursuits_per_second_default = len(condition_counter['Single ball']['Pursuit Duration']) / time_default
@@ -153,26 +161,38 @@ def generate_stats(recording:ContRecording):
     counts_pursuits_multiball, _ = np.histogram(condition_counter['Multiball']['Pursuit Duration'], bins=PUR_BIN_EDGES)
     counts_pursuits_default_normalized = counts_pursuits_default / counts_pursuits_default.sum()
     counts_pursuits_multiball_normalized = counts_pursuits_multiball / counts_pursuits_multiball.sum()
+    mean_pur_default = np.mean(histogram_to_counts_edges(counts_pursuits_default_normalized, PUR_BIN_EDGES))
+    mean_pur_multiball = np.mean(histogram_to_counts_edges(counts_pursuits_multiball_normalized, PUR_BIN_EDGES))
 
     stats = {
         'vel_hist_default': counts_vel_default_normalized.tolist(),
         'vel_hist_multiball': counts_vel_multiball_normalized.tolist(),
+        'vel_mean_default': mean_vel_default,
+        'vel_mean_multiball': mean_vel_multiball,
         'flip_hist_default': counts_flip_default_normalized.tolist(),
         'flip_hist_multiball': counts_flip_multiball_normalized.tolist(),
+        'flip_mean_default': mean_flip_default,
+        'flip_mean_multiball': mean_flip_multiball,
         'fix_per_second_default' : fixations_per_second_default,
         'fix_per_second_multiball': fixations_per_second_multiball,
         'fix_hist_default': counts_fixations_default_normalized.tolist(),
         'fix_hist_multiball': counts_fixations_multiball_normalized.tolist(),
+        'fix_mean_default': mean_fix_default,
+        'fix_mean_multiball': mean_fix_multiball,
         'sac_per_second_default': saccades_per_second_default,
         'sac_per_second_multiball': saccades_per_second_multiball,
         'sac_hist_default': counts_saccades_default_normalized.tolist(),
         'sac_hist_multiball': counts_saccades_multiball_normalized.tolist(),
+        'sac_mean_default': mean_sac_default,
+        'sac_mean_multiball': mean_sac_multiball,
         'percent_looking_default': percent_looking_default,
         'percent_looking_multiball': percent_looking_multiball,
         'pur_per_second_default': pursuits_per_second_default,
         'pur_per_second_multiball': pursuits_per_second_multiball,
         'pur_hist_default': counts_pursuits_default_normalized.tolist(),
-        'pur_hist_multiball': counts_pursuits_multiball_normalized.tolist()
+        'pur_hist_multiball': counts_pursuits_multiball_normalized.tolist(),
+        'pur_mean_default': mean_pur_default,
+        'pur_mean_multiball': mean_pur_multiball
     }
 
     # Generate survey stats
@@ -217,3 +237,63 @@ def get_survey_value(participant_survey:dict, key:str, default):
         return int(participant_survey[key])
     except:
         return default
+
+
+def histogram_to_counts_edges(histogram, bin_edges):
+    bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+    return histogram_to_counts_centers(histogram, bin_centers)
+
+def histogram_to_counts_centers(histogram, bin_centers):
+    hist = np.array(histogram)
+    scaled_counts = (hist * 1000).astype(int) # Scale up
+    raw_data = np.repeat(bin_centers, scaled_counts)
+    return raw_data
+
+
+def export_stats():
+    stats = import_stats()
+
+    # NASA-TLX
+    TLX_data = []
+    for participant in stats:
+        TLX_data.append(["Norm", stats[participant]['global']['TLX_Norm']])
+        TLX_data.append(["High", stats[participant]['global']['TLX_High']])
+    save_csv("stats_TLX.csv", ['Session', 'TLX'], TLX_data)
+
+    # Four conditions
+    task_keys = ["norm", "high"]
+    conditions = ["default", "multiball"]
+
+    data = []
+    for participant in stats:
+        for condition in conditions:
+            for task_key in task_keys:
+                condition_name = "Single ball" if condition == "default" else "Multiball"
+                entry = [task_key.capitalize(), condition_name]
+
+                # Values
+                entry.append(stats[participant][task_key][f"percent_looking_{condition}"]) # Look %
+                entry.append(stats[participant][task_key][f"vel_mean_{condition}"]) # Velocity mean
+                entry.append(stats[participant][task_key][f"flip_mean_{condition}"]) # Flipper distance mean
+                entry.append(stats[participant][task_key][f"fix_mean_{condition}"]) # Fixations mean
+                entry.append(stats[participant][task_key][f"fix_per_second_{condition}"]) # Fixations per second
+                entry.append(stats[participant][task_key][f"sac_mean_{condition}"]) # Saccades mean
+                entry.append(stats[participant][task_key][f"sac_per_second_{condition}"]) # Saccades per second
+                entry.append(stats[participant][task_key][f"pur_mean_{condition}"]) # Pursuits mean
+                entry.append(stats[participant][task_key][f"pur_per_second_{condition}"]) # Pursuits per second
+
+                data.append(entry)
+    
+    # Export
+    value_headers = [
+        "Look %",
+        "Velocity mean",
+        "Flipper dist mean",
+        "Fixations mean",
+        "Fixations per second",
+        "Saccades mean",
+        "Saccades per second",
+        "Pursuits mean",
+        "Pursuits per second"
+    ]
+    save_csv("stats_conditions.csv", ['Session', 'Ball #'] + value_headers, data)
