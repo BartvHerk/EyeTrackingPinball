@@ -2342,7 +2342,8 @@
     },
     "global": {
       "TLX_High": 14.166666666666666,
-      "TLX_Norm": 9.833333333333334
+      "TLX_Norm": 9.833333333333334,
+      "Mistakes": 6
     },
     "norm": {
       "vel_hist_default": [
@@ -7028,7 +7029,8 @@
     },
     "global": {
       "TLX_High": 14.333333333333334,
-      "TLX_Norm": 4.833333333333333
+      "TLX_Norm": 4.833333333333333,
+      "Mistakes": 8
     },
     "norm": {
       "vel_hist_default": [
@@ -11714,7 +11716,8 @@
     },
     "global": {
       "TLX_High": 12.5,
-      "TLX_Norm": 4.5
+      "TLX_Norm": 4.5,
+      "Mistakes": 13
     },
     "norm": {
       "vel_hist_default": [
@@ -16400,7 +16403,8 @@
     },
     "global": {
       "TLX_High": 14.0,
-      "TLX_Norm": 9.166666666666666
+      "TLX_Norm": 9.166666666666666,
+      "Mistakes": 1
     },
     "norm": {
       "vel_hist_default": [
@@ -21086,7 +21090,8 @@
     },
     "global": {
       "TLX_High": 11.166666666666666,
-      "TLX_Norm": 5.166666666666667
+      "TLX_Norm": 5.166666666666667,
+      "Mistakes": 0
     },
     "norm": {
       "vel_hist_default": [
@@ -25772,7 +25777,8 @@
     },
     "global": {
       "TLX_High": 6.333333333333333,
-      "TLX_Norm": 1.6666666666666667
+      "TLX_Norm": 1.6666666666666667,
+      "Mistakes": 3
     },
     "norm": {
       "vel_hist_default": [
@@ -30458,7 +30464,8 @@
     },
     "global": {
       "TLX_High": 14.666666666666666,
-      "TLX_Norm": 6.333333333333333
+      "TLX_Norm": 6.333333333333333,
+      "Mistakes": 12
     },
     "norm": {
       "vel_hist_default": [
@@ -35144,7 +35151,8 @@
     },
     "global": {
       "TLX_High": 12.666666666666666,
-      "TLX_Norm": 10.666666666666666
+      "TLX_Norm": 10.666666666666666,
+      "Mistakes": 7
     },
     "norm": {
       "vel_hist_default": [
@@ -39830,7 +39838,8 @@
     },
     "global": {
       "TLX_High": 10.166666666666666,
-      "TLX_Norm": 5.833333333333333
+      "TLX_Norm": 5.833333333333333,
+      "Mistakes": 6
     },
     "norm": {
       "vel_hist_default": [
@@ -44516,7 +44525,8 @@
     },
     "global": {
       "TLX_High": 6.5,
-      "TLX_Norm": 3.5
+      "TLX_Norm": 3.5,
+      "Mistakes": 2
     },
     "norm": {
       "vel_hist_default": [
@@ -49202,7 +49212,8 @@
     },
     "global": {
       "TLX_High": 9.333333333333334,
-      "TLX_Norm": 7.0
+      "TLX_Norm": 7.0,
+      "Mistakes": 4
     },
     "norm": {
       "vel_hist_default": [
@@ -53888,7 +53899,8 @@
     },
     "global": {
       "TLX_High": 10.833333333333334,
-      "TLX_Norm": 8.0
+      "TLX_Norm": 8.0,
+      "Mistakes": 1
     },
     "norm": {
       "vel_hist_default": [
@@ -58574,7 +58586,8 @@
     },
     "global": {
       "TLX_High": 10.0,
-      "TLX_Norm": 6.5
+      "TLX_Norm": 6.5,
+      "Mistakes": 3
     },
     "norm": {
       "vel_hist_default": [
@@ -63260,7 +63273,8 @@
     },
     "global": {
       "TLX_High": 10.5,
-      "TLX_Norm": 7.833333333333333
+      "TLX_Norm": 7.833333333333333,
+      "Mistakes": 1
     },
     "norm": {
       "vel_hist_default": [
@@ -67946,7 +67960,8 @@
     },
     "global": {
       "TLX_High": 10.333333333333334,
-      "TLX_Norm": 6.666666666666667
+      "TLX_Norm": 6.666666666666667,
+      "Mistakes": 8
     },
     "norm": {
       "vel_hist_default": [
@@ -72632,7 +72647,8 @@
     },
     "global": {
       "TLX_High": 11.333333333333334,
-      "TLX_Norm": 8.5
+      "TLX_Norm": 8.5,
+      "Mistakes": 4
     },
     "norm": {
       "vel_hist_default": [
@@ -77318,7 +77334,8 @@
     },
     "global": {
       "TLX_High": 9.166666666666666,
-      "TLX_Norm": 7.833333333333333
+      "TLX_Norm": 7.833333333333333,
+      "Mistakes": 3
     },
     "norm": {
       "vel_hist_default": [
@@ -82004,7 +82021,8 @@
     },
     "global": {
       "TLX_High": 10.333333333333334,
-      "TLX_Norm": 8.666666666666666
+      "TLX_Norm": 8.666666666666666,
+      "Mistakes": 1
     },
     "norm": {
       "vel_hist_default": [
@@ -86690,7 +86708,8 @@
     },
     "global": {
       "TLX_High": 11.666666666666666,
-      "TLX_Norm": 10.0
+      "TLX_Norm": 10.0,
+      "Mistakes": 7
     },
     "norm": {
       "vel_hist_default": [
@@ -91376,7 +91395,8 @@
     },
     "global": {
       "TLX_High": 6.833333333333333,
-      "TLX_Norm": 5.833333333333333
+      "TLX_Norm": 5.833333333333333,
+      "Mistakes": 2
     },
     "norm": {
       "vel_hist_default": [
@@ -96062,7 +96082,8 @@
     },
     "global": {
       "TLX_High": 7.5,
-      "TLX_Norm": 3.3333333333333335
+      "TLX_Norm": 3.3333333333333335,
+      "Mistakes": 4
     },
     "norm": {
       "vel_hist_default": [

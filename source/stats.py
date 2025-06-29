@@ -202,6 +202,7 @@ def generate_stats(recording:ContRecording):
             participant_survey = p
             break
     
+    # NASA-TLX
     high_first = True if participant_survey["High_First"] == "Yes" else False
     TLX_1_properties = ["Mental demand 1_1", "Physical demand 1_1", "Temporal demand 1_1", "Performance 1_1", "Effort 1_1", "Frustration 1_1"]
     TLX_2_properties = ["Q23_1", "Q24_1", "Q25_1", "Q26_1", "Q27_1", "Q28_1"]
@@ -214,9 +215,14 @@ def generate_stats(recording:ContRecording):
     TLX_2_average = np.mean(TLX_2_values)
     TLX_High, TLX_Norm = (TLX_1_average, TLX_2_average) if high_first else (TLX_2_average, TLX_1_average)
 
+    # Mistakes
+    mistakes = get_survey_value(participant_survey, "Mistakes", 0)
+    print(f"{participant}: {mistakes}")
+
     global_stats = {
         'TLX_High': TLX_High,
-        'TLX_Norm': TLX_Norm
+        'TLX_Norm': TLX_Norm,
+        'Mistakes': mistakes
     }
 
     # Free memory
@@ -255,21 +261,27 @@ def export_stats():
 
     # NASA-TLX
     TLX_data = []
-    for participant in stats:
-        TLX_data.append(["Norm", stats[participant]['global']['TLX_Norm']])
-        TLX_data.append(["High", stats[participant]['global']['TLX_High']])
-    save_csv("stats_TLX.csv", ['Session', 'TLX'], TLX_data)
+    for i, participant in enumerate(stats):
+        TLX_data.append([i, "Norm", stats[participant]['global']['TLX_Norm']])
+        TLX_data.append([i, "High", stats[participant]['global']['TLX_High']])
+    save_csv("stats_TLX.csv", ['Participant', 'Session', 'TLX'], TLX_data)
+
+    # Alt
+    TLX_data = []
+    for i, participant in enumerate(stats):
+        TLX_data.append([i, stats[participant]['global']['TLX_Norm'], stats[participant]['global']['TLX_High']])
+    save_csv("stats_TLX_alt.csv", ['Participant', 'Norm', 'High'], TLX_data)
 
     # Four conditions
     task_keys = ["norm", "high"]
     conditions = ["default", "multiball"]
 
     data = []
-    for participant in stats:
+    for i, participant in enumerate(stats):
         for condition in conditions:
             for task_key in task_keys:
                 condition_name = "Single ball" if condition == "default" else "Multiball"
-                entry = [task_key.capitalize(), condition_name]
+                entry = [i, task_key.capitalize(), condition_name]
 
                 # Values
                 entry.append(stats[participant][task_key][f"percent_looking_{condition}"]) # Look %
@@ -296,4 +308,5 @@ def export_stats():
         "Pursuits mean",
         "Pursuits per second"
     ]
-    save_csv("stats_conditions.csv", ['Session', 'Ball #'] + value_headers, data)
+    save_csv("stats_conditions.csv", ['Participant', 'Session', 'Ball #'] + value_headers, data)
+    print(f"Exported stats for {len(stats)} participants")

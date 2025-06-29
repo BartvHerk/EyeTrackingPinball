@@ -9,12 +9,46 @@ from stats import VEL_BIN_EDGES, FLIPPER_BIN_EDGES, FIX_BIN_EDGES, SAC_BIN_EDGES
 def run_graphing():
     stats = import_stats()
 
-    plot_looking(stats)
-    plot_nasa(stats)
-    plots_vel_flip(stats)
-    plots_duration(stats, 'Fixations', 'fix', FIX_BIN_EDGES, (50, 250))
-    plots_duration(stats, 'Saccades', 'sac', SAC_BIN_EDGES, (0, 125))
-    plots_duration(stats, 'Ball gaze pursuits', 'pur', PUR_BIN_EDGES, (0, 1))
+    plot_mistakes(stats)
+    # plot_looking(stats)
+    # plot_nasa(stats)
+    # plots_vel_flip(stats)
+    # plots_duration(stats, 'Fixations', 'fix', FIX_BIN_EDGES, (50, 250))
+    # plots_duration(stats, 'Saccades', 'sac', SAC_BIN_EDGES, (0, 125))
+    # plots_duration(stats, 'Ball gaze pursuits', 'pur', PUR_BIN_EDGES, (0, 1))
+
+
+def plot_mistakes(stats):
+    TLX_Norm, TLX_High = get_TLX_scores(stats)
+    mistakes = []
+    for participant in stats:
+        mistakes.append(stats[participant]['global']['Mistakes'])
+    # TLX_Difference = np.array(TLX_High) - np.array(TLX_Norm)
+
+    # Regression line
+    slope, intercept = np.polyfit(TLX_High, mistakes, 1)
+    x_vals = np.linspace(min(TLX_High), max(TLX_High), 100)
+    y_vals = intercept + slope * x_vals
+
+    # Plot
+    plt.figure(figsize=(7, 4.5))
+    plt.scatter(TLX_High, mistakes)
+    plt.plot(x_vals, y_vals, color='red', label='Regression line')
+    plt.xlabel("High demand TLX")
+    plt.ylabel("Mistakes #")
+    plt.legend()
+    plt.title("Relation Between High Demand TLX and Number of Mistakes Made")
+    # plt.grid(True, axis='y', linestyle='--', alpha=0.5)
+    plt.tight_layout()
+    plt.xlim(0, 21)
+    plt.show()
+
+    # Test
+    # import statsmodels.api as sm
+    # x_with_const = sm.add_constant(TLX_High)
+    # model = sm.OLS(mistakes, x_with_const)
+    # results = model.fit()
+    # print(results.summary())
 
 
 def plot_looking(stats):
@@ -42,11 +76,7 @@ def plot_looking(stats):
 
 
 def plot_nasa(stats):
-    TLX_Norm = []
-    TLX_High = []
-    for participant in stats:
-        TLX_Norm.append(stats[participant]['global']['TLX_Norm'])
-        TLX_High.append(stats[participant]['global']['TLX_High'])
+    TLX_Norm, TLX_High = get_TLX_scores(stats)
     
     # Plot
     plt.figure(figsize=(5, 4.5))
@@ -157,3 +187,12 @@ def plots_duration(stats, name, shorthand, bin_edges, ylim):
     plt.tight_layout()
     plt.ylim(ylim[0], ylim[1])
     plt.show()
+
+
+def get_TLX_scores(stats):
+    TLX_Norm = []
+    TLX_High = []
+    for participant in stats:
+        TLX_Norm.append(stats[participant]['global']['TLX_Norm'])
+        TLX_High.append(stats[participant]['global']['TLX_High'])
+    return TLX_Norm, TLX_High
