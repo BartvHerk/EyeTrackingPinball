@@ -9,9 +9,9 @@ from stats import VEL_BIN_EDGES, FLIPPER_BIN_EDGES, FIX_BIN_EDGES, SAC_BIN_EDGES
 def run_graphing():
     stats = import_stats()
 
-    plot_mistakes(stats)
+    # plot_mistakes(stats)
     # plot_looking(stats)
-    # plot_nasa(stats)
+    plot_nasa(stats)
     # plots_vel_flip(stats)
     # plots_duration(stats, 'Fixations', 'fix', FIX_BIN_EDGES, (50, 250))
     # plots_duration(stats, 'Saccades', 'sac', SAC_BIN_EDGES, (0, 125))
@@ -19,7 +19,7 @@ def run_graphing():
 
 
 def plot_mistakes(stats):
-    TLX_Norm, TLX_High = get_TLX_scores(stats)
+    TLX_Norm, TLX_High, _, _ = get_TLX_scores(stats)
     mistakes = []
     for participant in stats:
         mistakes.append(stats[participant]['global']['Mistakes'])
@@ -76,7 +76,7 @@ def plot_looking(stats):
 
 
 def plot_nasa(stats):
-    TLX_Norm, TLX_High = get_TLX_scores(stats)
+    TLX_Norm, TLX_High, TLX_First, TLX_Second = get_TLX_scores(stats)
     
     # Plot
     plt.figure(figsize=(5, 4.5))
@@ -86,6 +86,18 @@ def plot_nasa(stats):
     plt.xticks([1, 2], ["Normal", "High demand"])
     plt.ylabel("Task load index")
     plt.title("Task Load Index per Session Condition")
+    plt.grid(True, axis='y', linestyle='--', alpha=0.5)
+    plt.tight_layout()
+    plt.ylim(0, 21)
+    plt.show()
+
+    plt.figure(figsize=(5, 4.5))
+    plot = plt.boxplot([TLX_First, TLX_Second], widths=0.4, patch_artist=True, boxprops=dict(facecolor='lightskyblue'))
+    for median in plot['medians']:
+        median.set_color('black')
+    plt.xticks([1, 2], ["First session", "Second session"])
+    plt.ylabel("Task load index")
+    plt.title("Task Load Index per Session")
     plt.grid(True, axis='y', linestyle='--', alpha=0.5)
     plt.tight_layout()
     plt.ylim(0, 21)
@@ -192,7 +204,11 @@ def plots_duration(stats, name, shorthand, bin_edges, ylim):
 def get_TLX_scores(stats):
     TLX_Norm = []
     TLX_High = []
+    TLX_First = []
+    TLX_Second = []
     for participant in stats:
         TLX_Norm.append(stats[participant]['global']['TLX_Norm'])
         TLX_High.append(stats[participant]['global']['TLX_High'])
-    return TLX_Norm, TLX_High
+        TLX_First.append(stats[participant]['global']['TLX_First'])
+        TLX_Second.append(stats[participant]['global']['TLX_Second'])
+    return TLX_Norm, TLX_High, TLX_First, TLX_Second

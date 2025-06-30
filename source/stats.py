@@ -217,11 +217,12 @@ def generate_stats(recording:ContRecording):
 
     # Mistakes
     mistakes = get_survey_value(participant_survey, "Mistakes", 0)
-    print(f"{participant}: {mistakes}")
 
     global_stats = {
         'TLX_High': TLX_High,
         'TLX_Norm': TLX_Norm,
+        'TLX_First': TLX_1_average,
+        'TLX_Second': TLX_2_average,
         'Mistakes': mistakes
     }
 

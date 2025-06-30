@@ -2343,6 +2343,8 @@
     "global": {
       "TLX_High": 14.166666666666666,
       "TLX_Norm": 9.833333333333334,
+      "TLX_First": 9.833333333333334,
+      "TLX_Second": 14.166666666666666,
       "Mistakes": 6
     },
     "norm": {
@@ -7030,6 +7032,8 @@
     "global": {
       "TLX_High": 14.333333333333334,
       "TLX_Norm": 4.833333333333333,
+      "TLX_First": 14.333333333333334,
+      "TLX_Second": 4.833333333333333,
       "Mistakes": 8
     },
     "norm": {
@@ -11717,6 +11721,8 @@
     "global": {
       "TLX_High": 12.5,
       "TLX_Norm": 4.5,
+      "TLX_First": 4.5,
+      "TLX_Second": 12.5,
       "Mistakes": 13
     },
     "norm": {
@@ -16404,6 +16410,8 @@
     "global": {
       "TLX_High": 14.0,
       "TLX_Norm": 9.166666666666666,
+      "TLX_First": 14.0,
+      "TLX_Second": 9.166666666666666,
       "Mistakes": 1
     },
     "norm": {
@@ -21091,6 +21099,8 @@
     "global": {
       "TLX_High": 11.166666666666666,
       "TLX_Norm": 5.166666666666667,
+      "TLX_First": 5.166666666666667,
+      "TLX_Second": 11.166666666666666,
       "Mistakes": 0
     },
     "norm": {
@@ -25778,6 +25788,8 @@
     "global": {
       "TLX_High": 6.333333333333333,
       "TLX_Norm": 1.6666666666666667,
+      "TLX_First": 6.333333333333333,
+      "TLX_Second": 1.6666666666666667,
       "Mistakes": 3
     },
     "norm": {
@@ -30465,6 +30477,8 @@
     "global": {
       "TLX_High": 14.666666666666666,
       "TLX_Norm": 6.333333333333333,
+      "TLX_First": 14.666666666666666,
+      "TLX_Second": 6.333333333333333,
       "Mistakes": 12
     },
     "norm": {
@@ -35152,6 +35166,8 @@
     "global": {
       "TLX_High": 12.666666666666666,
       "TLX_Norm": 10.666666666666666,
+      "TLX_First": 12.666666666666666,
+      "TLX_Second": 10.666666666666666,
       "Mistakes": 7
     },
     "norm": {
@@ -39839,6 +39855,8 @@
     "global": {
       "TLX_High": 10.166666666666666,
       "TLX_Norm": 5.833333333333333,
+      "TLX_First": 5.833333333333333,
+      "TLX_Second": 10.166666666666666,
       "Mistakes": 6
     },
     "norm": {
@@ -44526,6 +44544,8 @@
     "global": {
       "TLX_High": 6.5,
       "TLX_Norm": 3.5,
+      "TLX_First": 3.5,
+      "TLX_Second": 6.5,
       "Mistakes": 2
     },
     "norm": {
@@ -49213,6 +49233,8 @@
     "global": {
       "TLX_High": 9.333333333333334,
       "TLX_Norm": 7.0,
+      "TLX_First": 9.333333333333334,
+      "TLX_Second": 7.0,
       "Mistakes": 4
     },
     "norm": {
@@ -53900,6 +53922,8 @@
     "global": {
       "TLX_High": 10.833333333333334,
       "TLX_Norm": 8.0,
+      "TLX_First": 8.0,
+      "TLX_Second": 10.833333333333334,
       "Mistakes": 1
     },
     "norm": {
@@ -58587,6 +58611,8 @@
     "global": {
       "TLX_High": 10.0,
       "TLX_Norm": 6.5,
+      "TLX_First": 10.0,
+      "TLX_Second": 6.5,
       "Mistakes": 3
     },
     "norm": {
@@ -63274,6 +63300,8 @@
     "global": {
       "TLX_High": 10.5,
       "TLX_Norm": 7.833333333333333,
+      "TLX_First": 7.833333333333333,
+      "TLX_Second": 10.5,
       "Mistakes": 1
     },
     "norm": {
@@ -67961,6 +67989,8 @@
     "global": {
       "TLX_High": 10.333333333333334,
       "TLX_Norm": 6.666666666666667,
+      "TLX_First": 6.666666666666667,
+      "TLX_Second": 10.333333333333334,
       "Mistakes": 8
     },
     "norm": {
@@ -72648,6 +72678,8 @@
     "global": {
       "TLX_High": 11.333333333333334,
       "TLX_Norm": 8.5,
+      "TLX_First": 11.333333333333334,
+      "TLX_Second": 8.5,
       "Mistakes": 4
     },
     "norm": {
@@ -77335,6 +77367,8 @@
     "global": {
       "TLX_High": 9.166666666666666,
       "TLX_Norm": 7.833333333333333,
+      "TLX_First": 7.833333333333333,
+      "TLX_Second": 9.166666666666666,
       "Mistakes": 3
     },
     "norm": {
@@ -82022,6 +82056,8 @@
     "global": {
       "TLX_High": 10.333333333333334,
       "TLX_Norm": 8.666666666666666,
+      "TLX_First": 8.666666666666666,
+      "TLX_Second": 10.333333333333334,
       "Mistakes": 1
     },
     "norm": {
@@ -86709,6 +86745,8 @@
     "global": {
       "TLX_High": 11.666666666666666,
       "TLX_Norm": 10.0,
+      "TLX_First": 11.666666666666666,
+      "TLX_Second": 10.0,
       "Mistakes": 7
     },
     "norm": {
@@ -91396,6 +91434,8 @@
     "global": {
       "TLX_High": 6.833333333333333,
       "TLX_Norm": 5.833333333333333,
+      "TLX_First": 6.833333333333333,
+      "TLX_Second": 5.833333333333333,
       "Mistakes": 2
     },
     "norm": {
@@ -96083,6 +96123,8 @@
     "global": {
       "TLX_High": 7.5,
       "TLX_Norm": 3.3333333333333335,
+      "TLX_First": 3.3333333333333335,
+      "TLX_Second": 7.5,
       "Mistakes": 4
     },
     "norm": {
