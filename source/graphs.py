@@ -10,8 +10,9 @@ def run_graphing():
     stats = import_stats()
 
     # plot_mistakes(stats)
+    plot_skill(stats)
     # plot_looking(stats)
-    plot_nasa(stats)
+    # plot_nasa(stats)
     # plots_vel_flip(stats)
     # plots_duration(stats, 'Fixations', 'fix', FIX_BIN_EDGES, (50, 250))
     # plots_duration(stats, 'Saccades', 'sac', SAC_BIN_EDGES, (0, 125))
@@ -49,6 +50,45 @@ def plot_mistakes(stats):
     # model = sm.OLS(mistakes, x_with_const)
     # results = model.fit()
     # print(results.summary())
+
+
+def plot_skill(stats):
+    reflexes, experience_pinball = [], []
+    for participant in stats:
+        reflexes.append(stats[participant]['global']['Reflexes'])
+        experience_pinball.append(stats[participant]['global']['Exp_Pinball'])
+    
+    # Experience
+    scores = np.array(experience_pinball)
+    bins = np.arange(0, 6) - 0.5 # -0.5 to 4.5
+    counts, _ = np.histogram(scores, bins=bins)
+
+    plt.figure(figsize=(5, 4))
+    plt.bar(range(5), counts, width=0.6, color='skyblue', edgecolor='black')
+    plt.xticks(range(5))
+    plt.xlabel("Experience score")
+    plt.ylabel("Number of Participants")
+    plt.title("Self-Reported Experience Scores")
+    plt.grid(axis='y', linestyle='--', alpha=0.5)
+    plt.tight_layout()
+    plt.ylim(0, 12)
+    plt.show()
+
+    # Reflexes
+    scores = np.array(reflexes)
+    bins = np.arange(0, 8) - 0.5 # -0.5 to 6.5
+    counts, _ = np.histogram(scores, bins=bins)
+
+    plt.figure(figsize=(5, 4))
+    plt.bar(range(7), counts, width=0.6, color='skyblue', edgecolor='black')
+    plt.xticks(range(7))
+    plt.xlabel("Reflex score")
+    plt.ylabel("Number of Participants")
+    plt.title("Self-Reported Reflex Scores")
+    plt.grid(axis='y', linestyle='--', alpha=0.5)
+    plt.tight_layout()
+    plt.show()
+
 
 
 def plot_looking(stats):

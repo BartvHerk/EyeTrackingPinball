@@ -1,5 +1,6 @@
 import copy
 import os
+import random
 import tkinter as tk
 from tkinter import ttk
 
@@ -182,6 +183,10 @@ class TabRecordings(Tab):
         self.checkbutton = ttk.Checkbutton(action_button_frame, text='High demand', variable=self.high_task_demand, command=self.on_checkbutton_selected)
         self.checkbutton.grid(row=0, column=5, padx=(5, 0), sticky="w")
 
+        # Random frame button
+        self.button_rng = ttk.Button(action_button_frame, text="Random frame", command=self.on_button_rng_click)
+        self.button_rng.grid(row=0, column=6, padx=(5, 0), sticky="w")
+
         # Add recordings to interface
         for recording in self.resources.recordings:
             item_id = self.treeview.insert("", "end", values=(f"{recording.paths['Directory']}",))
@@ -262,6 +267,14 @@ class TabRecordings(Tab):
         self.playing = not self.playing
         self.button_play.config(image=(self.icons.icon_pause if self.playing else self.icons.icon_play))
         self.stopwatch.play() if self.playing else self.stopwatch.pause()
+    
+
+    def on_button_rng_click(self):
+        value = random.uniform(0, 1)
+        self.scrubber_value.set(value)
+        timestamp = float(value) * self.interface_images.duration
+        self.update_timestamp()
+        self.stopwatch.set_time(timestamp)
 
     
     def scrub_frame(self, offset):
@@ -280,10 +293,11 @@ class TabRecordings(Tab):
         ratio = max(min(self.stopwatch.get_time() / self.interface_images.duration, 1), 0)
         self.scrubber_value.set(ratio)
 
+
     def update_timestamp(self):
         timestamp = (int)(self.scrubber_value.get() * self.interface_images.duration)
         self.label_timestamp.config(text=self.format_duration(timestamp))
-    
+
 
     def update_information(self):
         # Get information

@@ -2345,7 +2345,10 @@
       "TLX_Norm": 9.833333333333334,
       "TLX_First": 9.833333333333334,
       "TLX_Second": 14.166666666666666,
-      "Mistakes": 6
+      "Mistakes": 6,
+      "Reflexes": 4,
+      "Exp_Pinball": 1,
+      "Glasses": "No"
     },
     "norm": {
       "vel_hist_default": [
@@ -7034,7 +7037,10 @@
       "TLX_Norm": 4.833333333333333,
       "TLX_First": 14.333333333333334,
       "TLX_Second": 4.833333333333333,
-      "Mistakes": 8
+      "Mistakes": 8,
+      "Reflexes": 4,
+      "Exp_Pinball": 3,
+      "Glasses": "No"
     },
     "norm": {
       "vel_hist_default": [
@@ -11723,7 +11729,10 @@
       "TLX_Norm": 4.5,
       "TLX_First": 4.5,
       "TLX_Second": 12.5,
-      "Mistakes": 13
+      "Mistakes": 13,
+      "Reflexes": 3,
+      "Exp_Pinball": 1,
+      "Glasses": "No"
     },
     "norm": {
       "vel_hist_default": [
@@ -16412,7 +16421,10 @@
       "TLX_Norm": 9.166666666666666,
       "TLX_First": 14.0,
       "TLX_Second": 9.166666666666666,
-      "Mistakes": 1
+      "Mistakes": 1,
+      "Reflexes": 3,
+      "Exp_Pinball": 2,
+      "Glasses": "No"
     },
     "norm": {
       "vel_hist_default": [
@@ -21101,7 +21113,10 @@
       "TLX_Norm": 5.166666666666667,
       "TLX_First": 5.166666666666667,
       "TLX_Second": 11.166666666666666,
-      "Mistakes": 0
+      "Mistakes": 0,
+      "Reflexes": 4,
+      "Exp_Pinball": 1,
+      "Glasses": "No"
     },
     "norm": {
       "vel_hist_default": [
@@ -25790,7 +25805,10 @@
       "TLX_Norm": 1.6666666666666667,
       "TLX_First": 6.333333333333333,
       "TLX_Second": 1.6666666666666667,
-      "Mistakes": 3
+      "Mistakes": 3,
+      "Reflexes": 4,
+      "Exp_Pinball": 1,
+      "Glasses": "Yes"
     },
     "norm": {
       "vel_hist_default": [
@@ -30479,7 +30497,10 @@
       "TLX_Norm": 6.333333333333333,
       "TLX_First": 14.666666666666666,
       "TLX_Second": 6.333333333333333,
-      "Mistakes": 12
+      "Mistakes": 12,
+      "Reflexes": 3,
+      "Exp_Pinball": 4,
+      "Glasses": "No"
     },
     "norm": {
       "vel_hist_default": [
@@ -35168,7 +35189,10 @@
       "TLX_Norm": 10.666666666666666,
       "TLX_First": 12.666666666666666,
       "TLX_Second": 10.666666666666666,
-      "Mistakes": 7
+      "Mistakes": 7,
+      "Reflexes": 3,
+      "Exp_Pinball": 1,
+      "Glasses": "No"
     },
     "norm": {
       "vel_hist_default": [
@@ -39857,7 +39881,10 @@
       "TLX_Norm": 5.833333333333333,
       "TLX_First": 5.833333333333333,
       "TLX_Second": 10.166666666666666,
-      "Mistakes": 6
+      "Mistakes": 6,
+      "Reflexes": 3,
+      "Exp_Pinball": 2,
+      "Glasses": "No"
     },
     "norm": {
       "vel_hist_default": [
@@ -44546,7 +44573,10 @@
       "TLX_Norm": 3.5,
       "TLX_First": 3.5,
       "TLX_Second": 6.5,
-      "Mistakes": 2
+      "Mistakes": 2,
+      "Reflexes": 4,
+      "Exp_Pinball": 1,
+      "Glasses": "No"
     },
     "norm": {
       "vel_hist_default": [
@@ -49235,7 +49265,10 @@
       "TLX_Norm": 7.0,
       "TLX_First": 9.333333333333334,
       "TLX_Second": 7.0,
-      "Mistakes": 4
+      "Mistakes": 4,
+      "Reflexes": 3,
+      "Exp_Pinball": 1,
+      "Glasses": "Yes"
     },
     "norm": {
       "vel_hist_default": [
@@ -53924,7 +53957,10 @@
       "TLX_Norm": 8.0,
       "TLX_First": 8.0,
       "TLX_Second": 10.833333333333334,
-      "Mistakes": 1
+      "Mistakes": 1,
+      "Reflexes": 4,
+      "Exp_Pinball": 1,
+      "Glasses": "Yes"
     },
     "norm": {
       "vel_hist_default": [
@@ -58613,7 +58649,10 @@
       "TLX_Norm": 6.5,
       "TLX_First": 10.0,
       "TLX_Second": 6.5,
-      "Mistakes": 3
+      "Mistakes": 3,
+      "Reflexes": 4,
+      "Exp_Pinball": 0,
+      "Glasses": "No"
     },
     "norm": {
       "vel_hist_default": [
@@ -63302,7 +63341,10 @@
       "TLX_Norm": 7.833333333333333,
       "TLX_First": 7.833333333333333,
       "TLX_Second": 10.5,
-      "Mistakes": 1
+      "Mistakes": 1,
+      "Reflexes": 2,
+      "Exp_Pinball": 2,
+      "Glasses": "Yes"
     },
     "norm": {
       "vel_hist_default": [
@@ -67991,7 +68033,10 @@
       "TLX_Norm": 6.666666666666667,
       "TLX_First": 6.666666666666667,
       "TLX_Second": 10.333333333333334,
-      "Mistakes": 8
+      "Mistakes": 8,
+      "Reflexes": 1,
+      "Exp_Pinball": 1,
+      "Glasses": "No"
     },
     "norm": {
       "vel_hist_default": [
@@ -72680,7 +72725,10 @@
       "TLX_Norm": 8.5,
       "TLX_First": 11.333333333333334,
       "TLX_Second": 8.5,
-      "Mistakes": 4
+      "Mistakes": 4,
+      "Reflexes": 2,
+      "Exp_Pinball": 1,
+      "Glasses": "No"
     },
     "norm": {
       "vel_hist_default": [
@@ -77369,7 +77417,10 @@
       "TLX_Norm": 7.833333333333333,
       "TLX_First": 7.833333333333333,
       "TLX_Second": 9.166666666666666,
-      "Mistakes": 3
+      "Mistakes": 3,
+      "Reflexes": 4,
+      "Exp_Pinball": 0,
+      "Glasses": "Yes"
     },
     "norm": {
       "vel_hist_default": [
@@ -82058,7 +82109,10 @@
       "TLX_Norm": 8.666666666666666,
       "TLX_First": 8.666666666666666,
       "TLX_Second": 10.333333333333334,
-      "Mistakes": 1
+      "Mistakes": 1,
+      "Reflexes": 4,
+      "Exp_Pinball": 2,
+      "Glasses": "No"
     },
     "norm": {
       "vel_hist_default": [
@@ -86747,7 +86801,10 @@
       "TLX_Norm": 10.0,
       "TLX_First": 11.666666666666666,
       "TLX_Second": 10.0,
-      "Mistakes": 7
+      "Mistakes": 7,
+      "Reflexes": 2,
+      "Exp_Pinball": 0,
+      "Glasses": "No"
     },
     "norm": {
       "vel_hist_default": [
@@ -91436,7 +91493,10 @@
       "TLX_Norm": 5.833333333333333,
       "TLX_First": 6.833333333333333,
       "TLX_Second": 5.833333333333333,
-      "Mistakes": 2
+      "Mistakes": 2,
+      "Reflexes": 4,
+      "Exp_Pinball": 3,
+      "Glasses": "Yes"
     },
     "norm": {
       "vel_hist_default": [
@@ -96125,7 +96185,10 @@
       "TLX_Norm": 3.3333333333333335,
       "TLX_First": 3.3333333333333335,
       "TLX_Second": 7.5,
-      "Mistakes": 4
+      "Mistakes": 4,
+      "Reflexes": 5,
+      "Exp_Pinball": 1,
+      "Glasses": "No"
     },
     "norm": {
       "vel_hist_default": [

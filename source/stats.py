@@ -215,15 +215,22 @@ def generate_stats(recording:ContRecording):
     TLX_2_average = np.mean(TLX_2_values)
     TLX_High, TLX_Norm = (TLX_1_average, TLX_2_average) if high_first else (TLX_2_average, TLX_1_average)
 
-    # Mistakes
+    # Other values
     mistakes = get_survey_value(participant_survey, "Mistakes", 0)
+    reflexes = get_survey_value(participant_survey, "Reflexes_1", 0)
+    experience_pinball = get_survey_value(participant_survey, "Pinball experience_1", 0)
+    prescription = "Yes" if participant_survey.get("Prescription", "") else "No"
+    print(prescription)
 
     global_stats = {
         'TLX_High': TLX_High,
         'TLX_Norm': TLX_Norm,
         'TLX_First': TLX_1_average,
         'TLX_Second': TLX_2_average,
-        'Mistakes': mistakes
+        'Mistakes': mistakes,
+        'Reflexes': reflexes,
+        'Exp_Pinball': experience_pinball,
+        'Glasses': prescription
     }
 
     # Free memory
@@ -279,10 +286,15 @@ def export_stats():
 
     data = []
     for i, participant in enumerate(stats):
+        reflexes = stats[participant]["global"]["Reflexes"]
+        reflexes_group = "Fast" if reflexes >= 4 else "Slow"
+        experience = stats[participant]["global"]["Exp_Pinball"]
+        experience_group = "High" if experience >= 2 else "Low"
+        glasses = stats[participant]["global"]["Glasses"]
         for condition in conditions:
             for task_key in task_keys:
                 condition_name = "Single ball" if condition == "default" else "Multiball"
-                entry = [i, task_key.capitalize(), condition_name]
+                entry = [i, task_key.capitalize(), condition_name, experience_group, reflexes_group, glasses]
 
                 # Values
                 entry.append(stats[participant][task_key][f"percent_looking_{condition}"]) # Look %
@@ -309,5 +321,5 @@ def export_stats():
         "Pursuits mean",
         "Pursuits per second"
     ]
-    save_csv("stats_conditions.csv", ['Participant', 'Session', 'Ball #'] + value_headers, data)
+    save_csv("stats_conditions.csv", ['Participant', 'Session', 'Ball #', 'Experience', 'Reflexes', 'Glasses'] + value_headers, data)
     print(f"Exported stats for {len(stats)} participants")
