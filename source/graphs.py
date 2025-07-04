@@ -3,20 +3,60 @@ from matplotlib.ticker import PercentFormatter
 import numpy as np
 
 from IO import import_stats
-from stats import VEL_BIN_EDGES, FLIPPER_BIN_EDGES, FIX_BIN_EDGES, SAC_BIN_EDGES, PUR_BIN_EDGES, histogram_to_counts_centers
+from stats import VEL_BIN_EDGES, FLIPPER_BIN_EDGES, FIX_BIN_EDGES, SAC_BIN_EDGES, PUR_BIN_EDGES, BALL_BIN_EDGES, histogram_to_counts_centers
 
 
 def run_graphing():
     stats = import_stats()
 
+    plot_ball_distance(stats)
     # plot_mistakes(stats)
-    plot_skill(stats)
+    # print_time(stats)
+    # plot_age(stats)
+    # plot_skill(stats)
     # plot_looking(stats)
     # plot_nasa(stats)
     # plots_vel_flip(stats)
-    # plots_duration(stats, 'Fixations', 'fix', FIX_BIN_EDGES, (50, 250))
-    # plots_duration(stats, 'Saccades', 'sac', SAC_BIN_EDGES, (0, 125))
-    # plots_duration(stats, 'Ball gaze pursuits', 'pur', PUR_BIN_EDGES, (0, 1))
+    # plots_duration(stats, 'Fixations', 'fix', FIX_BIN_EDGES, "ms", (50, 250))
+    # plots_duration(stats, 'Saccades', 'sac', SAC_BIN_EDGES, "ms", (0, 125))
+    # plots_duration(stats, 'Ball gaze pursuits', 'pur', PUR_BIN_EDGES, "s", (0, 1))
+    # plots_duration(stats, 'Ball gaze pursuits', 'pur', PUR_BIN_EDGES, "s", (0, 0.3)) # Zoomed
+
+
+def plot_ball_distance(stats):
+    bin_centers_ball = 0.5 * (BALL_BIN_EDGES[:-1] + BALL_BIN_EDGES[1:])
+    task_keys = ["norm", "high"]
+    conditions_ball = ["ball_hist_default", "ball_hist_multiball"]
+    
+    flat_data = []
+    for condition in conditions_ball:
+        reconstructed = []
+        for task_key in task_keys:
+            for participant in stats:
+                hist = np.array(stats[participant][task_key][condition])
+                raw_data = histogram_to_counts_centers(hist, bin_centers_ball)
+                reconstructed.append(raw_data)
+        flat_data.append(np.concatenate(reconstructed))
+
+    # Plot
+    plt.figure(figsize=(7, 4.5))
+    plt.violinplot(flat_data, showmeans=True, showmedians=False, widths=0.6)
+    plt.xticks([1, 2], ["Single ball", "Multiball"])
+    plt.ylabel("Distance (cm)")
+    # plt.title("Distance Between Gaze Point and Flippers per Condition")
+    plt.grid(True, axis='y', linestyle='--', alpha=0.5)
+    plt.tight_layout()
+    plt.ylim(0, 100)
+    plt.show()
+
+
+def print_time(stats):
+    time_total, time_default, time_multiball = [], [], []
+    for participant in stats:
+        time_total.append(stats[participant]['norm']['time_total'] + stats[participant]['high']['time_total'])
+        time_default.append(stats[participant]['norm']['time_default'] + stats[participant]['high']['time_default'])
+        time_multiball.append(stats[participant]['norm']['time_multiball'] + stats[participant]['high']['time_multiball'])
+    print(f"Total time: {np.mean(time_total) / 2}, single ball time: {np.mean(time_default) / 2}, multiball time: {np.mean(time_multiball) / 2}")
 
 
 def plot_mistakes(stats):
@@ -38,7 +78,6 @@ def plot_mistakes(stats):
     plt.xlabel("High demand TLX")
     plt.ylabel("Mistakes #")
     plt.legend()
-    plt.title("Relation Between High Demand TLX and Number of Mistakes Made")
     # plt.grid(True, axis='y', linestyle='--', alpha=0.5)
     plt.tight_layout()
     plt.xlim(0, 21)
@@ -50,6 +89,30 @@ def plot_mistakes(stats):
     # model = sm.OLS(mistakes, x_with_const)
     # results = model.fit()
     # print(results.summary())
+
+
+def plot_age(stats):
+    age = []
+    for participant in stats:
+        age.append(stats[participant]['global']['Age'])
+
+    print(f"Mean age: {np.mean(age)}")
+
+    # Plot
+    scores = np.array(age)
+    bins = np.arange(0, 36) - 0.5 # -0.5 to 4.5
+    counts, _ = np.histogram(scores, bins=bins)
+
+    plt.figure(figsize=(5.5, 4))
+    plt.bar(range(35), counts, width=0.6, color='skyblue', edgecolor='black')
+    plt.xticks(range(35))
+    plt.xlabel("Age")
+    plt.ylabel("Number of Participants")
+    # plt.title("Age distribution among participants")
+    plt.grid(axis='y', linestyle='--', alpha=0.5)
+    plt.tight_layout()
+    plt.xlim(19, 35)
+    plt.show()
 
 
 def plot_skill(stats):
@@ -68,7 +131,7 @@ def plot_skill(stats):
     plt.xticks(range(5))
     plt.xlabel("Experience score")
     plt.ylabel("Number of Participants")
-    plt.title("Self-Reported Experience Scores")
+    # plt.title("Self-Reported Experience Scores")
     plt.grid(axis='y', linestyle='--', alpha=0.5)
     plt.tight_layout()
     plt.ylim(0, 12)
@@ -84,7 +147,7 @@ def plot_skill(stats):
     plt.xticks(range(7))
     plt.xlabel("Reflex score")
     plt.ylabel("Number of Participants")
-    plt.title("Self-Reported Reflex Scores")
+    # plt.title("Self-Reported Reflex Scores")
     plt.grid(axis='y', linestyle='--', alpha=0.5)
     plt.tight_layout()
     plt.show()
@@ -107,8 +170,8 @@ def plot_looking(stats):
     for median in plot['medians']:
         median.set_color('black')
     plt.xticks([1, 2, 3, 4], ["Norm, single ball", "High, single ball", "Norm, multiball", "High, multiball"])
-    plt.ylabel(f"Percentage gaze on field")
-    plt.title(f"Percentage of Time Gaze Was on Field per Condition")
+    plt.ylabel(f"% of time gaze was on field")
+    # plt.title(f"Percentage of Time Gaze Was on Field per Condition")
     plt.gca().yaxis.set_major_formatter(PercentFormatter(xmax=1))
     plt.grid(True, axis='y', linestyle='--', alpha=0.5)
     plt.tight_layout()
@@ -124,8 +187,8 @@ def plot_nasa(stats):
     for median in plot['medians']:
         median.set_color('black')
     plt.xticks([1, 2], ["Normal", "High demand"])
-    plt.ylabel("Task load index")
-    plt.title("Task Load Index per Session Condition")
+    plt.ylabel("Task Load Index")
+    # plt.title("Task Load Index per Session Condition")
     plt.grid(True, axis='y', linestyle='--', alpha=0.5)
     plt.tight_layout()
     plt.ylim(0, 21)
@@ -136,8 +199,8 @@ def plot_nasa(stats):
     for median in plot['medians']:
         median.set_color('black')
     plt.xticks([1, 2], ["First session", "Second session"])
-    plt.ylabel("Task load index")
-    plt.title("Task Load Index per Session")
+    plt.ylabel("Task Load Index")
+    # plt.title("Task Load Index per Session")
     plt.grid(True, axis='y', linestyle='--', alpha=0.5)
     plt.tight_layout()
     plt.ylim(0, 21)
@@ -176,7 +239,7 @@ def plots_vel_flip(stats):
     plt.violinplot(flat_data_vel, showmeans=True, showmedians=False, widths=0.8)
     plt.xticks([1, 2, 3, 4], ["Norm, single ball", "High, single ball", "Norm, multiball", "High, multiball"])
     plt.ylabel("Angular velocity (deg/s)")
-    plt.title("Angular Gaze Velocity per Condition")
+    # plt.title("Angular Gaze Velocity per Condition")
     plt.grid(True, axis='y', linestyle='--', alpha=0.5)
     plt.tight_layout()
     plt.ylim(0, 100)
@@ -187,14 +250,14 @@ def plots_vel_flip(stats):
     plt.violinplot(flat_data_flip, showmeans=True, showmedians=False, widths=0.8)
     plt.xticks([1, 2, 3, 4], ["Norm, single ball", "High, single ball", "Norm, multiball", "High, multiball"])
     plt.ylabel("Distance (cm)")
-    plt.title("Distance Between Gaze Point and Flippers per Condition")
+    # plt.title("Distance Between Gaze Point and Flippers per Condition")
     plt.grid(True, axis='y', linestyle='--', alpha=0.5)
     plt.tight_layout()
     plt.ylim(0, 100)
     plt.show()
 
 
-def plots_duration(stats, name, shorthand, bin_edges, ylim):
+def plots_duration(stats, name, shorthand, bin_edges, units, ylim):
     task_keys = ["norm", "high"]
 
     # Box plot
@@ -212,7 +275,7 @@ def plots_duration(stats, name, shorthand, bin_edges, ylim):
         median.set_color('black')
     plt.xticks([1, 2, 3, 4], ["Norm, single ball", "High, single ball", "Norm, multiball", "High, multiball"])
     plt.ylabel(f"{name} per second")
-    plt.title(f"{name} per Second per Condition")
+    # plt.title(f"{name} per Second per Condition")
     plt.grid(True, axis='y', linestyle='--', alpha=0.5)
     plt.tight_layout()
     plt.show()
@@ -233,8 +296,8 @@ def plots_duration(stats, name, shorthand, bin_edges, ylim):
     plt.figure(figsize=(7, 4.5))
     plt.violinplot(flat_data_val, showmeans=True, showmedians=False, widths=0.8)
     plt.xticks([1, 2, 3, 4], ["Norm, single ball", "High, single ball", "Norm, multiball", "High, multiball"])
-    plt.ylabel(f"{name} duration (ms)")
-    plt.title(f"{name} duration per Condition")
+    plt.ylabel(f"{name} duration ({units})")
+    # plt.title(f"{name} duration per Condition")
     plt.grid(True, axis='y', linestyle='--', alpha=0.5)
     plt.tight_layout()
     plt.ylim(ylim[0], ylim[1])

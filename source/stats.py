@@ -10,6 +10,7 @@ from video import Video
 
 VEL_BIN_EDGES = np.linspace(0, 200, num=201) # 200 bins
 FLIPPER_BIN_EDGES = np.linspace(0, 150, num=151)
+BALL_BIN_EDGES = np.linspace(0, 150, num=151)
 FIX_BIN_EDGES = np.linspace(0, 300, num=301)
 SAC_BIN_EDGES = np.linspace(0, 200, num=201)
 PUR_BIN_EDGES = np.linspace(0, 1.5, num=301)
@@ -48,9 +49,10 @@ def generate_stats(recording:ContRecording):
     for i in range(frame_count):
         timestamp = (i / frame_count) * duration
         
-        # Get field condition
+        # Get field condition and detections
         frame_field = timestamp_to_field(timestamp)
         condition = recording.conditions[frame_field]['condition']
+        detections = recording.tracking_data.get(frame_field, [])
 
         # Find moment in export
         timestamp_export = timestamp + start_world
@@ -72,7 +74,8 @@ def generate_stats(recording:ContRecording):
                 'Flipper Distance': [],
                 'Fixation Duration': [],
                 'Saccade Duration': [],
-                'Pursuit Duration': []
+                'Pursuit Duration': [],
+                'Ball Distance': []
             }
         condition_counter[condition]['Frames'] += 1
         
@@ -89,6 +92,11 @@ def generate_stats(recording:ContRecording):
             condition_counter[condition]['Flipper Distance'].append(flipper_distance)
             if gaze_x >= 0 and gaze_x <= field_width and gaze_y >= 0 and gaze_y <= field_height:
                 condition_counter[condition]['Frames Looking'] += 1
+        
+        # Ball-flipper distance
+        for detection in detections:
+            distance = math.dist(FLIPPER_POS, [detection['cx'], detection['cy']])
+            condition_counter[condition]['Ball Distance'].append(distance)
 
         # Fixations
         fixation_index_export = export.get_val('Fixation Index', export_index, 0)
@@ -126,6 +134,11 @@ def generate_stats(recording:ContRecording):
     mean_vel_default = np.mean(histogram_to_counts_edges(counts_vel_default_normalized, VEL_BIN_EDGES))
     mean_vel_multiball = np.mean(histogram_to_counts_edges(counts_vel_multiball_normalized, VEL_BIN_EDGES))
 
+    #print(f"Fix: {sorted(condition_counter['Single ball']['Fixation Duration'], reverse=True)[:10]}")
+    #print(f"Sac: {sorted(condition_counter['Single ball']['Saccade Duration'], reverse=True)[:10]}")
+    #print(f"Pur: {sorted(condition_counter['Single ball']['Pursuit Duration'], reverse=True)[:10]}")
+    # TODO: USE AGAIN -------------------------------------------------
+
     # Flipper distance
     counts_flip_default, _ = np.histogram(condition_counter['Single ball']['Flipper Distance'], bins=FLIPPER_BIN_EDGES)
     counts_flip_multiball, _ = np.histogram(condition_counter['Multiball']['Flipper Distance'], bins=FLIPPER_BIN_EDGES)
@@ -133,6 +146,14 @@ def generate_stats(recording:ContRecording):
     counts_flip_multiball_normalized = counts_flip_multiball / counts_flip_multiball.sum()
     mean_flip_default = np.mean(histogram_to_counts_edges(counts_flip_default_normalized, FLIPPER_BIN_EDGES))
     mean_flip_multiball = np.mean(histogram_to_counts_edges(counts_flip_multiball_normalized, FLIPPER_BIN_EDGES))
+
+    # Ball distance
+    counts_ball_default, _ = np.histogram(condition_counter['Single ball']['Ball Distance'], bins=BALL_BIN_EDGES)
+    counts_ball_multiball, _ = np.histogram(condition_counter['Multiball']['Ball Distance'], bins=BALL_BIN_EDGES)
+    counts_ball_default_normalized = counts_ball_default / counts_ball_default.sum()
+    counts_ball_multiball_normalized = counts_ball_multiball / counts_ball_multiball.sum()
+    mean_ball_default = np.mean(histogram_to_counts_edges(counts_ball_default_normalized, BALL_BIN_EDGES))
+    mean_ball_multiball = np.mean(histogram_to_counts_edges(counts_ball_multiball_normalized, BALL_BIN_EDGES))
 
     # Fixations
     fixations_per_second_default = len(condition_counter['Single ball']['Fixation Duration']) / time_default
@@ -165,6 +186,9 @@ def generate_stats(recording:ContRecording):
     mean_pur_multiball = np.mean(histogram_to_counts_edges(counts_pursuits_multiball_normalized, PUR_BIN_EDGES))
 
     stats = {
+        'time_total': duration / 1000,
+        'time_default': time_default,
+        'time_multiball': time_multiball,
         'vel_hist_default': counts_vel_default_normalized.tolist(),
         'vel_hist_multiball': counts_vel_multiball_normalized.tolist(),
         'vel_mean_default': mean_vel_default,
@@ -192,7 +216,11 @@ def generate_stats(recording:ContRecording):
         'pur_hist_default': counts_pursuits_default_normalized.tolist(),
         'pur_hist_multiball': counts_pursuits_multiball_normalized.tolist(),
         'pur_mean_default': mean_pur_default,
-        'pur_mean_multiball': mean_pur_multiball
+        'pur_mean_multiball': mean_pur_multiball,
+        'ball_hist_default': counts_ball_default_normalized.tolist(),
+        'ball_hist_multiball': counts_ball_multiball_normalized.tolist(),
+        'ball_mean_default': mean_ball_default,
+        'ball_mean_multiball': mean_ball_multiball
     }
 
     # Generate survey stats
@@ -220,7 +248,7 @@ def generate_stats(recording:ContRecording):
     reflexes = get_survey_value(participant_survey, "Reflexes_1", 0)
     experience_pinball = get_survey_value(participant_survey, "Pinball experience_1", 0)
     prescription = "Yes" if participant_survey.get("Prescription", "") else "No"
-    print(prescription)
+    age = get_survey_value(participant_survey, "Age_1", 0)
 
     global_stats = {
         'TLX_High': TLX_High,
@@ -230,7 +258,8 @@ def generate_stats(recording:ContRecording):
         'Mistakes': mistakes,
         'Reflexes': reflexes,
         'Exp_Pinball': experience_pinball,
-        'Glasses': prescription
+        'Glasses': prescription,
+        'Age': age
     }
 
     # Free memory
@@ -306,6 +335,7 @@ def export_stats():
                 entry.append(stats[participant][task_key][f"sac_per_second_{condition}"]) # Saccades per second
                 entry.append(stats[participant][task_key][f"pur_mean_{condition}"]) # Pursuits mean
                 entry.append(stats[participant][task_key][f"pur_per_second_{condition}"]) # Pursuits per second
+                entry.append(stats[participant][task_key][f"ball_mean_{condition}"]) # Ball distance mean
 
                 data.append(entry)
     
@@ -319,7 +349,8 @@ def export_stats():
         "Saccades mean",
         "Saccades per second",
         "Pursuits mean",
-        "Pursuits per second"
+        "Pursuits per second",
+        "Ball dist mean"
     ]
     save_csv("stats_conditions.csv", ['Participant', 'Session', 'Ball #', 'Experience', 'Reflexes', 'Glasses'] + value_headers, data)
     print(f"Exported stats for {len(stats)} participants")
