@@ -6,6 +6,9 @@ from resources import Resources
 
 
 DIMENSIONS = (1920, 1080)
+INCLUDED_IMAGES = [0, 1, 2, 3]
+START_TIME = 0
+END_TIME = 100000000
 
 
 def render_tracking_video(recording:ContRecording):
@@ -68,7 +71,9 @@ def render_video_full(recording:ContRecording):
 
     # Get first frame for dimensions
     images = hidden_images.get_images(0, DIMENSIONS)
-    w_complete = sum(img.shape[1] for img in images)
+    w_complete = 0
+    for o in INCLUDED_IMAGES:
+        w_complete += images[o].shape[1]
     h_complete = max(img.shape[0] for img in images)
 
     # setup output
@@ -78,13 +83,19 @@ def render_video_full(recording:ContRecording):
     out = cv2.VideoWriter(path, fourcc, fps, (w_complete, h_complete))
 
     # Render frames
+    start_frame = int(START_TIME * fps / 1000)
+    end_frame = int(END_TIME * fps / 1000)
     frame_count = int(hidden_images.duration / 1000 * fps)
-    for i in range(frame_count):
+    frame_final = min(end_frame, frame_count)
+    for i in range(start_frame, frame_final):
         timestamp = (i / frame_count) * hidden_images.duration
-        (image_raw, image_gazemapped, image_perspective, image_static) = hidden_images.get_images(timestamp, DIMENSIONS)
-        frame_complete = cv2.hconcat([image_raw, image_gazemapped, image_perspective, image_static])
+        results = hidden_images.get_images(timestamp, DIMENSIONS)
+        results_final = []
+        for o in INCLUDED_IMAGES:
+            results_final.append(results[o])
+        frame_complete = cv2.hconcat(results_final)
         out.write(frame_complete)
-        print(f"{i+1}/{frame_count}", end='\r', flush=True)
+        print(f"{i+1-start_frame}/{frame_final - start_frame}", end='\r', flush=True)
 
     # Free memory
     out.release()

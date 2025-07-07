@@ -17,8 +17,8 @@ def run_graphing():
     # plot_looking(stats)
     # plot_nasa(stats)
     # plots_vel_flip(stats)
-    # plots_duration(stats, 'Fixations', 'fix', FIX_BIN_EDGES, "ms", (50, 250))
-    # plots_duration(stats, 'Saccades', 'sac', SAC_BIN_EDGES, "ms", (0, 125))
+    plots_duration(stats, 'Fixations', 'fix', FIX_BIN_EDGES, "ms", (50, 250))
+    plots_duration(stats, 'Saccades', 'sac', SAC_BIN_EDGES, "ms", (0, 125))
     # plots_duration(stats, 'Ball gaze pursuits', 'pur', PUR_BIN_EDGES, "s", (0, 1))
     # plots_duration(stats, 'Ball gaze pursuits', 'pur', PUR_BIN_EDGES, "s", (0, 0.3)) # Zoomed
 
