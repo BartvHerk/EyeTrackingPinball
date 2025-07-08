@@ -305,9 +305,13 @@ def export_stats():
 
     # Alt
     TLX_data = []
+    t1, t2 = [], []
     for i, participant in enumerate(stats):
         TLX_data.append([i, stats[participant]['global']['TLX_Norm'], stats[participant]['global']['TLX_High']])
+        t1.append(stats[participant]['global']['TLX_Norm'])
+        t2.append(stats[participant]['global']['TLX_High'])
     save_csv("stats_TLX_alt.csv", ['Participant', 'Norm', 'High'], TLX_data)
+    print(f"TLX diffs: {np.mean(t1)} to {np.mean(t2)}")
 
     # Four conditions
     task_keys = ["norm", "high"]
