@@ -17,8 +17,8 @@ def run_graphing():
     # plot_looking(stats)
     # plot_nasa(stats)
     # plots_vel_flip(stats)
-    plots_duration(stats, 'Fixations', 'fix', FIX_BIN_EDGES, "ms", (50, 250))
-    plots_duration(stats, 'Saccades', 'sac', SAC_BIN_EDGES, "ms", (0, 125))
+    # plots_duration(stats, 'Fixations', 'fix', FIX_BIN_EDGES, "ms", (50, 250))
+    # plots_duration(stats, 'Saccades', 'sac', SAC_BIN_EDGES, "ms", (0, 125))
     # plots_duration(stats, 'Ball gaze pursuits', 'pur', PUR_BIN_EDGES, "s", (0, 1))
     # plots_duration(stats, 'Ball gaze pursuits', 'pur', PUR_BIN_EDGES, "s", (0, 0.3)) # Zoomed
 
@@ -40,7 +40,8 @@ def plot_ball_distance(stats):
 
     # Plot
     plt.figure(figsize=(7, 4.5))
-    plt.violinplot(flat_data, showmeans=True, showmedians=False, widths=0.6)
+    vp = plt.violinplot(flat_data, showmeans=True, showmedians=True, widths=0.6)
+    vp['cmeans'].set_linestyle('--')
     plt.xticks([1, 2], ["Single ball", "Multiball"])
     plt.ylabel("Distance (cm)")
     # plt.title("Distance Between Gaze Point and Flippers per Condition")
@@ -153,7 +154,6 @@ def plot_skill(stats):
     plt.show()
 
 
-
 def plot_looking(stats):
     task_keys = ["norm", "high"]
 
@@ -236,7 +236,8 @@ def plots_vel_flip(stats):
 
     # Velocity violin plot
     plt.figure(figsize=(7, 4.5))
-    plt.violinplot(flat_data_vel, showmeans=True, showmedians=False, widths=0.8)
+    vp = plt.violinplot(flat_data_vel, showmeans=True, showmedians=True, widths=0.8)
+    vp['cmeans'].set_linestyle('--')
     plt.xticks([1, 2, 3, 4], ["Norm, single ball", "High, single ball", "Norm, multiball", "High, multiball"])
     plt.ylabel("Angular velocity (deg/s)")
     # plt.title("Angular Gaze Velocity per Condition")
@@ -247,7 +248,8 @@ def plots_vel_flip(stats):
 
     # Flippers violin plot
     plt.figure(figsize=(7, 4.5))
-    plt.violinplot(flat_data_flip, showmeans=True, showmedians=False, widths=0.8)
+    vp = plt.violinplot(flat_data_flip, showmeans=True, showmedians=True, widths=0.8)
+    vp['cmeans'].set_linestyle('--')
     plt.xticks([1, 2, 3, 4], ["Norm, single ball", "High, single ball", "Norm, multiball", "High, multiball"])
     plt.ylabel("Distance (cm)")
     # plt.title("Distance Between Gaze Point and Flippers per Condition")
@@ -294,7 +296,8 @@ def plots_duration(stats, name, shorthand, bin_edges, units, ylim):
             flat_data_val.append(np.concatenate(reconstructed))
     
     plt.figure(figsize=(7, 4.5))
-    plt.violinplot(flat_data_val, showmeans=True, showmedians=False, widths=0.8)
+    vp = plt.violinplot(flat_data_val, showmeans=True, showmedians=True, widths=0.8)
+    vp['cmeans'].set_linestyle('--')
     plt.xticks([1, 2, 3, 4], ["Norm, single ball", "High, single ball", "Norm, multiball", "High, multiball"])
     plt.ylabel(f"{name} duration ({units})")
     # plt.title(f"{name} duration per Condition")

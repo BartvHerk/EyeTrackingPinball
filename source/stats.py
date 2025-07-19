@@ -305,17 +305,26 @@ def export_stats():
 
     # Alt
     TLX_data = []
-    t1, t2 = [], []
     for i, participant in enumerate(stats):
         TLX_data.append([i, stats[participant]['global']['TLX_Norm'], stats[participant]['global']['TLX_High']])
-        t1.append(stats[participant]['global']['TLX_Norm'])
-        t2.append(stats[participant]['global']['TLX_High'])
     save_csv("stats_TLX_alt.csv", ['Participant', 'Norm', 'High'], TLX_data)
-    print(f"TLX diffs: {np.mean(t1)} to {np.mean(t2)}")
 
     # Four conditions
     task_keys = ["norm", "high"]
     conditions = ["default", "multiball"]
+
+    values = [
+        "percent_looking_", # Look %
+        "vel_mean_", # Velocity mean
+        "flip_mean_", # Flipper distance mean
+        "fix_mean_", # Fixations mean
+        "fix_per_second_", # Fixations per second
+        "sac_mean_", # Saccades mean
+        "sac_per_second_", # Saccades per second
+        "pur_mean_", # Pursuits mean
+        "pur_per_second_", # Pursuits per second
+        "ball_mean_" # Ball distance mean
+    ]
 
     data = []
     for i, participant in enumerate(stats):
@@ -330,18 +339,24 @@ def export_stats():
                 entry = [i, task_key.capitalize(), condition_name, experience_group, reflexes_group, glasses]
 
                 # Values
-                entry.append(stats[participant][task_key][f"percent_looking_{condition}"]) # Look %
-                entry.append(stats[participant][task_key][f"vel_mean_{condition}"]) # Velocity mean
-                entry.append(stats[participant][task_key][f"flip_mean_{condition}"]) # Flipper distance mean
-                entry.append(stats[participant][task_key][f"fix_mean_{condition}"]) # Fixations mean
-                entry.append(stats[participant][task_key][f"fix_per_second_{condition}"]) # Fixations per second
-                entry.append(stats[participant][task_key][f"sac_mean_{condition}"]) # Saccades mean
-                entry.append(stats[participant][task_key][f"sac_per_second_{condition}"]) # Saccades per second
-                entry.append(stats[participant][task_key][f"pur_mean_{condition}"]) # Pursuits mean
-                entry.append(stats[participant][task_key][f"pur_per_second_{condition}"]) # Pursuits per second
-                entry.append(stats[participant][task_key][f"ball_mean_{condition}"]) # Ball distance mean
+                for value in values:
+                    entry.append(stats[participant][task_key][value + condition])
 
                 data.append(entry)
+    
+    # print means
+    for value in values:
+        means, medians = [], []
+        for condition in conditions:
+            for task_key in task_keys:
+                data_points = []
+                for participant in stats:
+                    data_points.append(stats[participant][task_key][value + condition])
+                means.append(np.mean(data_points))
+                medians.append(np.median(data_points))
+        means_str = [str(mean) for mean in means]
+        medians_str = [str(median) for median in medians]
+        print(f"{value} means:\n{" ".join(means_str)}\n{value} medians:\n{" ".join(medians_str)}\n")
     
     # Export
     value_headers = [
