@@ -7,8 +7,8 @@ from resources import Resources
 
 DIMENSIONS = (1920, 1080)
 INCLUDED_IMAGES = [0, 1, 2, 3]
-START_TIME = 416000
-END_TIME = 450000
+START_TIME = 0
+END_TIME = 999999999
 
 
 def render_tracking_video(recording:ContRecording):
