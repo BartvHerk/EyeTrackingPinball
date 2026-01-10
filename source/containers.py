@@ -29,12 +29,13 @@ class ContReference:
 
 
 class ContField:
-    def __init__(self, name, path, image, points, cms_per_pixel):
+    def __init__(self, name, path, image, points, cms_per_pixel, zones):
         self.name = name
         self.path = path
         self.image = image
         self.points = points
         self.cms_per_pixel = cms_per_pixel
+        self.zones = zones
         self._H_inv_field = None
         self.H_computed = False
     

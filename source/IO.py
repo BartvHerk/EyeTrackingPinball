@@ -112,13 +112,16 @@ def import_fields() -> dict[str, ContField]:
         if (name in field_points):
             cms_per_pixel = float(field_points[name]["cms_per_pixel"])
             points = list(map(tuple, field_points[name]["points"]))
+            zones = [list(map(tuple, z)) for z in field_points[name]["zones"]]
         image = cv2.imread(file)
-        fields[name] = ContField(name, path, image, points, cms_per_pixel)
+        fields[name] = ContField(name, path, image, points, cms_per_pixel, zones)
     return fields
 
 
 def save_field(field:ContField):
-    obj = {"cms_per_pixel": field.cms_per_pixel, "points": list(map(lambda t: tuple(map(round, t)), field.points.copy()))}
+    obj = {"cms_per_pixel": field.cms_per_pixel, 
+           "points": list(map(lambda t: tuple(map(round, t)), field.points.copy())),
+           "zones": [[[int(round(x)), int(round(y))] for (x,y) in poly] for poly in field.zones]}
     save_dictionary_entry(field.name, obj, DIR_FIELDS / 'field_points.json')
 
 

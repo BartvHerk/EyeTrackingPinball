@@ -161,6 +161,11 @@ class InterfaceImages:
         if (timestamp_changed or size_changed):
             field_image_scaled, self.field_image_scale_factor = resize_image_to_fit(self.field_image, (self.scale, self.scale))
 
+            # Zones
+            for bounding_box in self.field.zones:
+                zone_pts = [(int(x * self.field_image_scale_factor), int(y * self.field_image_scale_factor)) for (x,y) in bounding_box]
+                cv2.polylines(field_image_scaled, [np.array(zone_pts, np.int32)], isClosed=True, color=COLORS[0], thickness=1)
+                    
             # Gaze
             position = self.get_export_position('Perspective Gaze X', 'Perspective Gaze Y')
             self.field_image_final = self.add_gaze_circle(field_image_scaled, position, self.map_to_field)
