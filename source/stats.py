@@ -356,7 +356,7 @@ def export_stats():
                 medians.append(np.median(data_points))
         means_str = [str(mean) for mean in means]
         medians_str = [str(median) for median in medians]
-        print(f"{value} means:\n{" ".join(means_str)}\n{value} medians:\n{" ".join(medians_str)}\n")
+        print(f"{value} means:\n{' '.join(means_str)}\n{value} medians:\n{' '.join(medians_str)}\n")
     
     # Export
     value_headers = [

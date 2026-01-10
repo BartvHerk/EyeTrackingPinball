@@ -83,7 +83,7 @@ def annotate_random_frame(recording:ContRecording, video:Video, frames_left:int)
         nonlocal frame_text, frames_annotated
         text = f"Annotated: {len(frames_annotated)}\nFrame: {index + 1}/{video.frame_count}"
         if offset_total != 0:
-            text += f" ({"+" if offset_total > 0 else ""}{offset_total})"
+            text += f" ({'+' if offset_total > 0 else ''}{offset_total})"
         update_text_widget(frame_text, text)
         frame_text.config(width=len(text))
 
