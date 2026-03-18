@@ -1,5 +1,7 @@
 # Ignore these files
 data/settings.json
+data/recordings
+data/survey_results.csv
 runs
 
 # Byte-compiled / optimized / DLL files
