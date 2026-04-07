@@ -6,6 +6,7 @@ from IO import save_csv, save_stats_entry, import_stats
 from resources import Resources
 from pursuit import get_pursuit_data
 from video import Video
+from zones import distance_to_polygon
 
 
 VEL_BIN_EDGES = np.linspace(0, 200, num=201) # 200 bins
@@ -14,6 +15,7 @@ BALL_BIN_EDGES = np.linspace(0, 150, num=151)
 FIX_BIN_EDGES = np.linspace(0, 300, num=301)
 SAC_BIN_EDGES = np.linspace(0, 200, num=201)
 PUR_BIN_EDGES = np.linspace(0, 1.5, num=301)
+ZON_BIN_EDGES = np.linspace(0, 150, num=151)
 FLIPPER_POS = [23, 97]
 
 
@@ -42,13 +44,17 @@ def generate_stats(recording:ContRecording):
     condition_counter = {}
     pursuit_data = get_pursuit_data(recording.tracking_data)
 
+    # Coordinates and homography matrix
+    zones = resources.fields[export.reference.field].zones
+    H = recording.export.reference.H
+
     # Iterate through recording
     frame_count = int(duration / 1000 * videoField.fps)
     export_index = 0
     fixation_index, saccade_index = -1, -1
     for i in range(frame_count):
         timestamp = (i / frame_count) * duration
-        
+
         # Get field condition and detections
         frame_field = timestamp_to_field(timestamp)
         condition = recording.conditions[frame_field]['condition']
@@ -75,15 +81,16 @@ def generate_stats(recording:ContRecording):
                 'Fixation Duration': [],
                 'Saccade Duration': [],
                 'Pursuit Duration': [],
-                'Ball Distance': []
+                'Ball Distance': [],
+                'Gaze Zone Distances': {label: [] for label in zones}
             }
         condition_counter[condition]['Frames'] += 1
-        
+
         # Velocity
         velocity = export.get_val('Gaze Velocity', export_index, t)
         if velocity is not None:
             condition_counter[condition]['Gaze Velocity'].append(velocity)
-        
+
         # Flipper distance + looking at field
         gaze_x = export.get_val('Perspective Gaze X', export_index, t)
         gaze_y = export.get_val('Perspective Gaze Y', export_index, t)
@@ -92,7 +99,14 @@ def generate_stats(recording:ContRecording):
             condition_counter[condition]['Flipper Distance'].append(flipper_distance)
             if gaze_x >= 0 and gaze_x <= field_width and gaze_y >= 0 and gaze_y <= field_height:
                 condition_counter[condition]['Frames Looking'] += 1
-        
+
+        # Zone distances
+        if gaze_x and gaze_y:
+            if gaze_x >= 0 and gaze_x <= field_width and gaze_y >= 0 and gaze_y <= field_height:
+                for label, polygon in zones.items():
+                    distance = distance_to_polygon((gaze_x, gaze_y), polygon, H)
+                    condition_counter[condition]['Gaze Zone Distances'][label].append(distance)
+
         # Ball-flipper distance
         for detection in detections:
             distance = math.dist(FLIPPER_POS, [detection['cx'], detection['cy']])
@@ -105,7 +119,7 @@ def generate_stats(recording:ContRecording):
                 fixation_index = fixation_index_export
                 fixation_duration = export.get_val('Fixation Duration', export_index, 0)
                 condition_counter[condition]['Fixation Duration'].append(fixation_duration)
-        
+
         # Saccades
         saccade_index_export = export.get_val('Saccade Index', export_index, 0)
         if saccade_index_export is not None:
@@ -113,7 +127,7 @@ def generate_stats(recording:ContRecording):
                 saccade_index = saccade_index_export
                 saccade_duration = export.get_val('Saccade Duration', export_index, 0)
                 condition_counter[condition]['Saccade Duration'].append(saccade_duration)
-        
+
         # Pursuits
         pursuit_current = pursuit_data.get(frame_field, None)
         if pursuit_current is not None:
@@ -146,6 +160,23 @@ def generate_stats(recording:ContRecording):
     counts_flip_multiball_normalized = counts_flip_multiball / counts_flip_multiball.sum()
     mean_flip_default = np.mean(histogram_to_counts_edges(counts_flip_default_normalized, FLIPPER_BIN_EDGES))
     mean_flip_multiball = np.mean(histogram_to_counts_edges(counts_flip_multiball_normalized, FLIPPER_BIN_EDGES))
+
+    zone_stats = {}
+
+    # Gaze zone distances
+    for label in condition_counter['Single ball']['Gaze Zone Distances']:
+        counts_zone_default, _ = np.histogram(condition_counter['Single ball']['Gaze Zone Distances'][label], bins=ZON_BIN_EDGES)
+        counts_zone_default_normalized = counts_zone_default / counts_zone_default.sum()
+        mean_zone_default = np.mean(histogram_to_counts_edges(counts_zone_default_normalized, ZON_BIN_EDGES))
+        zone_stats[f'zone_{label}_hist_default'] = counts_zone_default_normalized.tolist()
+        print(f"Max distance to zone {label} in Single ball: {max(condition_counter['Single ball']['Gaze Zone Distances'][label])}")
+
+    for label in condition_counter['Multiball']['Gaze Zone Distances']:
+        counts_zone_multiball, _ = np.histogram(condition_counter['Multiball']['Gaze Zone Distances'][label], bins=ZON_BIN_EDGES)
+        counts_zone_multiball_normalized = counts_zone_multiball / counts_zone_multiball.sum()
+        mean_zone_multiball = np.mean(histogram_to_counts_edges(counts_zone_multiball_normalized, ZON_BIN_EDGES))
+        zone_stats[f'zone_{label}_hist_multiball'] = counts_zone_multiball_normalized.tolist()
+        print(f"Max distance to zone {label} in Multiball: {max(condition_counter['Multiball']['Gaze Zone Distances'][label])}")
 
     # Ball distance
     counts_ball_default, _ = np.histogram(condition_counter['Single ball']['Ball Distance'], bins=BALL_BIN_EDGES)
@@ -223,13 +254,16 @@ def generate_stats(recording:ContRecording):
         'ball_mean_multiball': mean_ball_multiball
     }
 
+    # Concatenate stats and zone_stats into one dictionary
+    stats.update(zone_stats)
+
     # Generate survey stats
     participant_survey = []
     for p in resources.participants:
         if p['Name'] == participant:
             participant_survey = p
             break
-    
+
     # NASA-TLX
     high_first = True if participant_survey["High_First"] == "Yes" else False
     TLX_1_properties = ["Mental demand 1_1", "Physical demand 1_1", "Temporal demand 1_1", "Performance 1_1", "Effort 1_1", "Frustration 1_1"]
@@ -343,7 +377,7 @@ def export_stats():
                     entry.append(stats[participant][task_key][value + condition])
 
                 data.append(entry)
-    
+
     # print means
     for value in values:
         means, medians = [], []
@@ -357,7 +391,7 @@ def export_stats():
         means_str = [str(mean) for mean in means]
         medians_str = [str(median) for median in medians]
         print(f"{value} means:\n{' '.join(means_str)}\n{value} medians:\n{' '.join(medians_str)}\n")
-    
+
     # Export
     value_headers = [
         "Look %",

@@ -1,5 +1,6 @@
 # Ignore these files
 data/settings.json
+data/stats.json
 data/recordings
 data/survey_results.csv
 runs

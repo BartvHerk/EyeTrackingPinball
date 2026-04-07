@@ -156,16 +156,21 @@ class InterfaceImages:
                         #color = COLORS[0 if detection.get('interpolated', False) else 3]
                         # radius = int(detection['radius'] * self.frame_static_scale_factor)
                         draw_crosshair(self.frame_static_scaled, position_scaled, COLORS[6])
-        
+
         # Perspective image
         if (timestamp_changed or size_changed):
             field_image_scaled, self.field_image_scale_factor = resize_image_to_fit(self.field_image, (self.scale, self.scale))
 
             # Zones
-            for bounding_box in self.field.zones:
+            for label, bounding_box in self.field.zones.items():
                 zone_pts = [(int(x * self.field_image_scale_factor), int(y * self.field_image_scale_factor)) for (x,y) in bounding_box]
                 cv2.polylines(field_image_scaled, [np.array(zone_pts, np.int32)], isClosed=True, color=COLORS[0], thickness=1)
-                    
+                # Draw zone label at the center of the polygon
+                if zone_pts:
+                    center_x = int(sum(pt[0] for pt in zone_pts) / len(zone_pts))
+                    center_y = int(sum(pt[1] for pt in zone_pts) / len(zone_pts))
+                    cv2.putText(field_image_scaled, label, (center_x, center_y), cv2.FONT_HERSHEY_SIMPLEX, 0.4, COLORS[0], 1)
+
             # Gaze
             position = self.get_export_position('Perspective Gaze X', 'Perspective Gaze Y')
             self.field_image_final = self.add_gaze_circle(field_image_scaled, position, self.map_to_field)

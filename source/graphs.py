@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
 from matplotlib.ticker import PercentFormatter
 import numpy as np
+from resources import Resources
 
 from IO import import_stats
-from stats import VEL_BIN_EDGES, FLIPPER_BIN_EDGES, FIX_BIN_EDGES, SAC_BIN_EDGES, PUR_BIN_EDGES, BALL_BIN_EDGES, histogram_to_counts_centers
+from stats import VEL_BIN_EDGES, FLIPPER_BIN_EDGES, FIX_BIN_EDGES, SAC_BIN_EDGES, PUR_BIN_EDGES, BALL_BIN_EDGES, ZON_BIN_EDGES, histogram_to_counts_centers
 
 
 def run_graphing():
@@ -21,13 +22,48 @@ def run_graphing():
     # plots_duration(stats, 'Saccades', 'sac', SAC_BIN_EDGES, "ms", (0, 125))
     # plots_duration(stats, 'Ball gaze pursuits', 'pur', PUR_BIN_EDGES, "s", (0, 1))
     # plots_duration(stats, 'Ball gaze pursuits', 'pur', PUR_BIN_EDGES, "s", (0, 0.3)) # Zoomed
+    plot_zone_distance(stats, field_name="field_mandalorian")
 
+def plot_zone_distance(stats, field_name="field_jurassic_park"):
+    resources = Resources()
+    zones = resources.fields[field_name].zones
+
+    task_keys = ["norm", "high"]
+    conditions_zone = []
+    for label in zones:
+        conditions_zone.append(f"zone_{label}_hist_default")
+        conditions_zone.append(f"zone_{label}_hist_multiball")
+
+    bin_edges = ZON_BIN_EDGES
+    bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+    flat_data = []
+    for condition in conditions_zone:
+        reconstructed = []
+        for task_key in task_keys:
+            for participant in stats:
+                hist = np.array(stats[participant][task_key][condition])
+                raw_data = histogram_to_counts_centers(hist, bin_centers)
+                reconstructed.append(raw_data)
+        flat_data.append(np.concatenate(reconstructed))
+
+    # Plot
+    for label in zones:
+        plt.figure(figsize=(7, 4.5))
+        vp = plt.violinplot(flat_data, showmeans=True, showmedians=True, widths=0.6)
+        vp['cmeans'].set_linestyle('--')
+        plt.xticks([1, 2], ["Single ball", "Multiball"])
+        plt.ylabel("Distance (cm)")
+        # plt.title(f"Distance Between Gaze Point and {label} per Condition")
+        plt.grid(True, axis='y', linestyle='--', alpha=0.5)
+        plt.tight_layout()
+        plt.ylim(0, 100)
+        plt.show()
 
 def plot_ball_distance(stats):
     bin_centers_ball = 0.5 * (BALL_BIN_EDGES[:-1] + BALL_BIN_EDGES[1:])
     task_keys = ["norm", "high"]
     conditions_ball = ["ball_hist_default", "ball_hist_multiball"]
-    
+
     flat_data = []
     for condition in conditions_ball:
         reconstructed = []
