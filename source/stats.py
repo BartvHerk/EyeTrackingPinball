@@ -23,6 +23,7 @@ def generate_stats(recording:ContRecording):
     resources = Resources()
     participant = recording.metadata.get('participant', None)
     task_key = recording.metadata.get('task_key', "norm")
+    goal_key = recording.metadata.get('goal_setting', "no_goal")
     if participant is None:
         print("Error: Recording not linked to participant")
         return
@@ -30,7 +31,7 @@ def generate_stats(recording:ContRecording):
     export = recording.export
     data = export.data
     field_width, field_height = resources.fields[export.reference.field].field_dimensions
-    print(f"Generating stats for {participant}, {task_key}... ", end='', flush=True)
+    print(f"Generating stats for {participant}, {goal_key}, {task_key}... ", end='', flush=True)
 
     # Timing
     videoWorld = Video(recording.paths['VideoWorld'])
@@ -100,9 +101,7 @@ def generate_stats(recording:ContRecording):
             if gaze_x >= 0 and gaze_x <= field_width and gaze_y >= 0 and gaze_y <= field_height:
                 condition_counter[condition]['Frames Looking'] += 1
 
-        # Zone distances
-        if gaze_x and gaze_y:
-            if gaze_x >= 0 and gaze_x <= field_width and gaze_y >= 0 and gaze_y <= field_height:
+                # Zone distances
                 for label, polygon in zones.items():
                     distance = distance_to_polygon((gaze_x, gaze_y), polygon, H)
                     condition_counter[condition]['Gaze Zone Distances'][label].append(distance)
@@ -169,14 +168,12 @@ def generate_stats(recording:ContRecording):
         counts_zone_default_normalized = counts_zone_default / counts_zone_default.sum()
         mean_zone_default = np.mean(histogram_to_counts_edges(counts_zone_default_normalized, ZON_BIN_EDGES))
         zone_stats[f'zone_{label}_hist_default'] = counts_zone_default_normalized.tolist()
-        print(f"Max distance to zone {label} in Single ball: {max(condition_counter['Single ball']['Gaze Zone Distances'][label])}")
 
     for label in condition_counter['Multiball']['Gaze Zone Distances']:
         counts_zone_multiball, _ = np.histogram(condition_counter['Multiball']['Gaze Zone Distances'][label], bins=ZON_BIN_EDGES)
         counts_zone_multiball_normalized = counts_zone_multiball / counts_zone_multiball.sum()
         mean_zone_multiball = np.mean(histogram_to_counts_edges(counts_zone_multiball_normalized, ZON_BIN_EDGES))
         zone_stats[f'zone_{label}_hist_multiball'] = counts_zone_multiball_normalized.tolist()
-        print(f"Max distance to zone {label} in Multiball: {max(condition_counter['Multiball']['Gaze Zone Distances'][label])}")
 
     # Ball distance
     counts_ball_default, _ = np.histogram(condition_counter['Single ball']['Ball Distance'], bins=BALL_BIN_EDGES)
@@ -301,8 +298,8 @@ def generate_stats(recording:ContRecording):
     videoField.destroy()
 
     # Save stats
-    save_stats_entry(participant, task_key, stats, global_stats)
-    print("Done")
+    save_stats_entry(participant, goal_key, task_key, stats, global_stats)
+    print("Done!")
 
 
 def timestamp_to_frame(timestamp, start, fps):
@@ -343,8 +340,9 @@ def export_stats():
         TLX_data.append([i, stats[participant]['global']['TLX_Norm'], stats[participant]['global']['TLX_High']])
     save_csv("stats_TLX_alt.csv", ['Participant', 'Norm', 'High'], TLX_data)
 
-    # Four conditions
+    # Conditions
     task_keys = ["norm", "high"]
+    goal_keys = ["no_goal", "goal"]
     conditions = ["default", "multiball"]
 
     values = [

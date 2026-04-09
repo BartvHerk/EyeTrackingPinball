@@ -6,6 +6,7 @@ from resources import Resources
 from IO import import_stats
 from stats import VEL_BIN_EDGES, FLIPPER_BIN_EDGES, FIX_BIN_EDGES, SAC_BIN_EDGES, PUR_BIN_EDGES, BALL_BIN_EDGES, ZON_BIN_EDGES, histogram_to_counts_centers
 
+CONDITION_KEYS = ["no_goal_norm", "goal_norm", "goal_high"]
 
 def run_graphing():
     stats = import_stats()
@@ -28,7 +29,6 @@ def plot_zone_distance(stats, field_name="field_jurassic_park"):
     resources = Resources()
     zones = resources.fields[field_name].zones
 
-    task_keys = ["norm", "high"]
     conditions_zone = []
     for label in zones:
         conditions_zone.append(f"zone_{label}_hist_default")
@@ -39,9 +39,9 @@ def plot_zone_distance(stats, field_name="field_jurassic_park"):
     flat_data = []
     for condition in conditions_zone:
         reconstructed = []
-        for task_key in task_keys:
+        for c_key in CONDITION_KEYS:
             for participant in stats:
-                hist = np.array(stats[participant][task_key][condition])
+                hist = np.array(stats[participant][c_key][condition])
                 raw_data = histogram_to_counts_centers(hist, bin_centers)
                 reconstructed.append(raw_data)
         flat_data.append(np.concatenate(reconstructed))
@@ -61,15 +61,14 @@ def plot_zone_distance(stats, field_name="field_jurassic_park"):
 
 def plot_ball_distance(stats):
     bin_centers_ball = 0.5 * (BALL_BIN_EDGES[:-1] + BALL_BIN_EDGES[1:])
-    task_keys = ["norm", "high"]
     conditions_ball = ["ball_hist_default", "ball_hist_multiball"]
 
     flat_data = []
     for condition in conditions_ball:
         reconstructed = []
-        for task_key in task_keys:
+        for c_key in CONDITION_KEYS:
             for participant in stats:
-                hist = np.array(stats[participant][task_key][condition])
+                hist = np.array(stats[participant][c_key][condition])
                 raw_data = histogram_to_counts_centers(hist, bin_centers_ball)
                 reconstructed.append(raw_data)
         flat_data.append(np.concatenate(reconstructed))
@@ -157,7 +156,7 @@ def plot_skill(stats):
     for participant in stats:
         reflexes.append(stats[participant]['global']['Reflexes'])
         experience_pinball.append(stats[participant]['global']['Exp_Pinball'])
-    
+
     # Experience
     scores = np.array(experience_pinball)
     bins = np.arange(0, 6) - 0.5 # -0.5 to 4.5
@@ -191,16 +190,14 @@ def plot_skill(stats):
 
 
 def plot_looking(stats):
-    task_keys = ["norm", "high"]
-
     data = []
     for condition in ["percent_looking_default", "percent_looking_multiball"]:
-        for task_key in task_keys:
+        for c_key in CONDITION_KEYS:
             data_current = []
             for participant in stats:
-                data_current.append(stats[participant][task_key][condition])
+                data_current.append(stats[participant][c_key][condition])
             data.append(data_current)
-    
+
     plt.figure(figsize=(6, 4.5))
     plot = plt.boxplot(data, widths=0.4, patch_artist=True, boxprops=dict(facecolor='lightskyblue'))
     for median in plot['medians']:
@@ -216,7 +213,7 @@ def plot_looking(stats):
 
 def plot_nasa(stats):
     TLX_Norm, TLX_High, TLX_First, TLX_Second = get_TLX_scores(stats)
-    
+
     # Plot
     plt.figure(figsize=(5, 4.5))
     plot = plt.boxplot([TLX_Norm, TLX_High], widths=0.4, patch_artist=True, boxprops=dict(facecolor='lightskyblue'))
@@ -260,7 +257,7 @@ def plots_vel_flip(stats):
                 raw_data = histogram_to_counts_centers(hist, bin_centers_vel)
                 reconstructed.append(raw_data)
             flat_data_vel.append(np.concatenate(reconstructed))
-        
+
     for condition in conditions_flip:
         for task_key in task_keys:
             reconstructed = []

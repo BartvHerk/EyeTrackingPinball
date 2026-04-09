@@ -61,11 +61,13 @@ def import_stats():
     return load_dictionary(PATH_STATS)
 
 
-def save_stats_entry(participant, task_key, stats, global_stats):
+def save_stats_entry(participant, goal_key, task_key, stats, global_stats):
     dict = load_dictionary(PATH_STATS)
     if participant not in dict:
         dict[participant] = {}
-    dict[participant][task_key] = stats
+
+    condition_key = f"{goal_key}_{task_key}"
+    dict[participant][condition_key] = stats
     dict[participant]['global'] = global_stats
     with open(PATH_STATS, 'w') as json_file:
         json.dump(dict, json_file, indent=2)

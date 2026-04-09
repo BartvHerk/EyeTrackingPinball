@@ -178,15 +178,19 @@ class TabRecordings(Tab):
         self.dropdown_participant.set("Select")  # Default text
         self.dropdown_participant.grid(row=0, column=4, padx=(5, 0), sticky="w")
 
+        # Goal setting checkbutton
+        self.goal_setting = tk.IntVar()
+        self.goal_checkbutton = ttk.Checkbutton(action_button_frame, text='Goal setting', variable=self.goal_setting, command=self.on_goal_checkbutton_selected)
+        self.goal_checkbutton.grid(row=0, column=5, padx=(5, 0), sticky="w")
+
         # High task demand checkbutton
         self.high_task_demand = tk.IntVar()
         self.checkbutton = ttk.Checkbutton(action_button_frame, text='High demand', variable=self.high_task_demand, command=self.on_checkbutton_selected)
-        self.checkbutton.grid(row=0, column=5, padx=(5, 0), sticky="w")
+        self.checkbutton.grid(row=0, column=6, padx=(5, 0), sticky="w")
 
         # Random frame button
         self.button_rng = ttk.Button(action_button_frame, text="Random frame", command=self.on_button_rng_click)
-        self.button_rng.grid(row=0, column=6, padx=(5, 0), sticky="w")
-
+        self.button_rng.grid(row=0, column=7, padx=(5, 0), sticky="w")
         # Add recordings to interface
         for recording in self.resources.recordings:
             item_id = self.treeview.insert("", "end", values=(f"{recording.paths['Directory']}",))
@@ -214,7 +218,9 @@ class TabRecordings(Tab):
                 self.dropdown_participant.set(participant_default)
                 task_key_default = 1 if self.active_recording.metadata.get('task_key', "norm") == "high" else 0
                 self.high_task_demand.set(task_key_default)
-    
+                goal_setting_default = 1 if self.active_recording.metadata.get('goal_setting', "no_goal") == "goal" else 0
+                self.goal_setting.set(goal_setting_default)
+
 
     def start_recording(self):
         self.interface_images.set_recording(self.active_recording, self.resources)
@@ -326,11 +332,17 @@ class TabRecordings(Tab):
         save_recording_metadata(self.active_recording)
 
 
+    def on_goal_checkbutton_selected(self):
+        goal_key = "goal" if self.goal_setting.get() else "no_goal"
+        self.active_recording.metadata['goal_setting'] = goal_key
+        save_recording_metadata(self.active_recording)
+
+
     def on_checkbutton_selected(self):
         task_key = "high" if self.high_task_demand.get() else "norm"
         self.active_recording.metadata['task_key'] = task_key
         save_recording_metadata(self.active_recording)
-    
+
 
     def format_duration(self, ms:int):
         minutes = (int)((ms // 60000) % 60)
