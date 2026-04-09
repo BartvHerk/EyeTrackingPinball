@@ -37,6 +37,7 @@ def plot_zone_distance(stats, field_name="field_jurassic_park"):
     bin_edges = ZON_BIN_EDGES
     bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
     flat_data = []
+    x_labels = []
     for condition in conditions_zone:
         reconstructed = []
         for c_key in CONDITION_KEYS:
@@ -49,15 +50,33 @@ def plot_zone_distance(stats, field_name="field_jurassic_park"):
     # Plot
     for label in zones:
         plt.figure(figsize=(7, 4.5))
+        plt.title(f"Distance Between Gaze Point and Zone {label} per Condition")
         vp = plt.violinplot(flat_data, showmeans=True, showmedians=True, widths=0.6)
         vp['cmeans'].set_linestyle('--')
-        plt.xticks([1, 2], ["Single ball", "Multiball"])
+        plt.xticks([1, 2, 3, 4, 5, 6], get_x_label_zones())
         plt.ylabel("Distance (cm)")
-        # plt.title(f"Distance Between Gaze Point and {label} per Condition")
         plt.grid(True, axis='y', linestyle='--', alpha=0.5)
         plt.tight_layout()
-        plt.ylim(0, 100)
+        plt.ylim(0, 150)
         plt.show()
+
+def get_x_label_zones():
+    labels = []
+    for c in CONDITION_KEYS:
+        if "no_goal" in c:
+            if "norm" in c:
+                t = "NL"
+            else:
+                t = "NH"
+        else:
+            if "norm" in c:
+                t = "GL"
+            else:
+                t = "GH"
+
+        labels.append(f"{t} (SB)")
+        labels.append(f"{t} (MB)")
+    return labels
 
 def plot_ball_distance(stats):
     bin_centers_ball = 0.5 * (BALL_BIN_EDGES[:-1] + BALL_BIN_EDGES[1:])
